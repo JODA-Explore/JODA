@@ -1,0 +1,297 @@
+//
+// Created by Nico Schäfer on 4/25/17.
+//
+
+#include "../include/joda/queryexecution/QueryPlan.h"
+
+#include <glog/logging.h>
+#include <joda/concurrency/ThreadManager.h>
+#include <joda/document/TemporaryOrigin.h>
+#include <joda/join/FileJoinManager.h>
+#include <joda/join/JoinParser.h>
+#include <joda/join/MemoryJoinManager.h>
+#include <joda/misc/Benchmark.h>
+#include <joda/misc/MemoryUtility.h>
+#include <joda/misc/Timer.h>
+
+#include <ctime>
+#include <numeric>
+
+#include "../../export/include/joda/export/FileExport.h"
+#include "../../export/include/joda/export/IExportDestination.h"
+#include "../../export/include/joda/export/JoinExport.h"
+#include "../../export/include/joda/export/StorageExport.h"
+#include "../../storage/collection/include/joda/storage/collection/StorageCollection.h"
+#include "QueryThread.h"
+#include "executor/CacheExecutor.h"
+#include "executor/ConstExecutor.h"
+#include "executor/DefaultExecutor.h"
+
+unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
+  if (skip) return resultID;
+  bool bench = benchmark != nullptr;
+  if (bench) {
+    std::time_t t = std::time(nullptr);
+    benchmark->addValue("Time", t);
+    std::string t_str = std::ctime(&t);
+    benchmark->addValue("Pretty Time", t_str);
+  }
+  /*
+   * Initialize QueryThread
+   */
+  const auto &deleteVar = q->getDelete();
+  const auto &storeJoin = q->getStoreJoinManager();
+  const auto &loadJoin = q->getLoadJoinManager();
+  const auto &importSources = q->getImportSources();
+  LOG(INFO) << "Initializing QueryThread";
+  QueryThreadConfig execConfig(q);
+  execConfig.bench = benchmark;
+  execConfig.addExecutor(std::make_unique<DefaultExecutor>());
+  execConfig.addExecutor(std::make_unique<ConstExecutor>());
+  if (config::queryCache)
+    execConfig.addExecutor(std::make_unique<CacheExecutor>(*q));
+
+  /*
+   * Parse
+   */
+  Timer time;
+
+  if (!importSources.empty()) {
+    LOG(INFO) << "Starting parsing";
+    long long estimation =
+        std::accumulate(importSources.begin(), importSources.end(), 0l,
+                        [](long est, const auto &source) {
+                          return est + source->estimatedSize();
+                        });
+    StorageCollection::getInstance().ensureSpace(estimation);
+    parser.parse(importSources, load);
+
+    time.stop();
+    if (bench) benchmark->addValue("Parsing Threads", parser.getMaxThreads());
+    if (bench)
+      benchmark->addValue(Benchmark::RUNTIME, "Parsing",
+                          time.durationSeconds());
+  }
+
+  /*
+   * Join load
+   */
+
+  if (loadJoin != nullptr) {
+    time.start();
+    if (!config::storeJson) {
+      auto *fjm = dynamic_cast<FileJoinManager *>(loadJoin.get());
+      CHECK(fjm != nullptr)
+          << "When in nostore mode, joinmanager should always be file-based";
+      JoinParser jp;
+      jp.parse(*fjm, load);
+
+    } else {
+      auto *fjm = dynamic_cast<MemoryJoinManager *>(loadJoin.get());
+      CHECK(fjm != nullptr)
+          << "When in store mode, joinmanager should always be memory-based";
+      fjm->loadJoin(load);
+    }
+    StorageCollection::getInstance().stopJoin(*loadJoin);  // Delete JoinManager
+    time.stop();
+    if (bench)
+      benchmark->addValue(Benchmark::RUNTIME, "Load Join",
+                          time.durationSeconds());
+  }
+
+  if (load->size() == 0) {
+    addGenericBenchmarkInformation(benchmark);
+    return JODA_STORE_EMPTY_RS_ID;
+  }
+
+  /*
+   * Execute
+   */
+
+  time.start();
+
+  if (!(q->isDefault())) {
+    if (bench) benchmark->addValue("Threads", maxThreads);
+    // Execute actual query
+    auto &exportDestination = q->getExportDestination();
+    if (exportDestination ==
+        nullptr) {  // LOAD X [...] has to be stored in temporary resultset
+      auto s = std::make_shared<JSONStorage>(JODA_TEMPORARY_STORAGE_NAME);
+      exportDestination = std::make_unique<StorageExport>(s);
+      execConfig.tmpdir = s->getRegtmpdir();
+    } else {
+      auto *storeDestination =
+          dynamic_cast<StorageExport *>(exportDestination.get());
+      if (storeDestination != nullptr)
+        execConfig.tmpdir = storeDestination->getStore()->getRegtmpdir();
+      else {
+        execConfig.tmpdir = load->getRegtmpdir();
+      }
+    }
+
+    StorageCollection::getInstance().ensureSpace(load->estimatedSize(), load);
+
+    if (q->hasAggregators()) execConfig.aggQueue = aggregatorQueue.get();
+    auto exec = std::make_unique<IOThreadPool<QueryThread>>(
+        loadQueue.get(), storeQueue.get(), maxThreads, execConfig);
+    load->getDocumentsQueue(loadQueue.get());
+    if (q->hasAggregators()) {
+      auto aggCont = aggregate(q, aggregatorQueue.get(), benchmark);
+      auto ptok = std::make_unique<JsonContainerQueue::queue_t::ptok_t>(
+          storeQueue->queue);
+      storeQueue->registerProducer();
+      storeQueue->send(*ptok, std::move(aggCont));
+    }
+
+    if (exportDestination != nullptr) {
+      exportDestination->consume(*storeQueue);
+      if (bench) {
+        auto t = exportDestination->getTimer();
+        benchmark->addValue(Benchmark::RUNTIME, t.first, t.second);
+      }
+
+      // ResultID
+      auto *storeDestination =
+          dynamic_cast<StorageExport *>(exportDestination.get());
+      if (storeDestination != nullptr)
+        resultID = storeDestination->getTemporaryResultID();
+    }
+  } else {
+    resultID = StorageCollection::getInstance().addTemporaryStorage(load);
+  }
+
+  time.stop();
+  if (bench)
+    benchmark->addValue(Benchmark::RUNTIME, "Evaluation",
+                        time.durationSeconds());
+
+  // Delete
+  if (!deleteVar.empty()) {
+    LOG(INFO) << "Deleting data source " << deleteVar;
+    StorageCollection::getInstance().removeStorage(deleteVar);
+  }
+
+  if (bench && resultID > JODA_STORE_VALID_ID_START) {
+    auto tmp = StorageCollection::getInstance().getStorage(resultID);
+    assert(tmp != nullptr);
+    benchmark->addValue("Result Size", tmp->size());
+    benchmark->addValue("#Container", tmp->contSize());
+  }
+  addGenericBenchmarkInformation(benchmark);
+
+  return resultID;
+}
+
+std::unique_ptr<JSONContainer> QueryPlan::aggregate(
+    std::shared_ptr<joda::query::Query> &q, joda::query::AggregatorQueue::queue_t *queue,
+    Benchmark *benchmark) {
+  DCHECK(queue != nullptr);
+  Timer agg_timer;
+  while (!queue->isFinished()) {
+    std::unique_ptr<joda::query::IAggregator> agg = nullptr;
+    queue->retrieve(agg);
+    if (agg == nullptr) continue;
+
+    for (auto &a : q->getAggregators()) {
+      auto aStr = a->toString();
+      if (agg->toString() == aStr) {
+        a->merge(agg.get());
+        break;
+      }
+    }
+  }
+
+  /*
+   * Make object
+   */
+  RJMemoryPoolAlloc alloc(1024 * 1024);  // 1mb blocks
+
+  auto doc = std::make_unique<RJDocument>(&alloc);
+  doc->SetObject();
+  for (auto &&a : q->getAggregators()) {
+    auto val = a->terminate(alloc);
+    RJPointer p(a->getDestPointer().c_str());
+    p.Set(*doc, val);
+    DCHECK(val.IsNull()) << "Document was copied, not moved";
+  }
+
+  auto cont = std::make_unique<JSONContainer>();
+  auto tmpDoc = std::make_shared<RJDocument>(cont->getAlloc());
+  tmpDoc->CopyFrom(*doc, *cont->getAlloc());
+  cont->insertDoc(JSONStorage::getID(), std::move(tmpDoc),
+                  std::make_unique<TemporaryOrigin>());
+  cont->finalize();
+
+  agg_timer.stop();
+  if (benchmark != nullptr)
+    benchmark->addValue(Benchmark::RUNTIME, "AggMerge",
+                        agg_timer.durationSeconds());
+  return cont;
+}
+
+QueryPlan::QueryPlan(const std::shared_ptr<joda::query::Query> &q)
+    : q(q),
+      parser(),
+      resultID(JODA_STORE_EXTERNAL_RS_ID),
+      maxThreads(g_ThreadManagerInstance.getMaxThreads()),
+      loadQueue(JsonContainerRefQueue::getQueue(10, 1)),
+      storeQueue(JsonContainerQueue::getQueue(10, maxThreads + 1)),
+      aggregatorQueue(joda::query::AggregatorQueue::getQueue(10, maxThreads)) {
+  auto loadVar = q->getLoad();
+  auto deleteVar = q->getDelete();
+  auto storeJoin = q->getStoreJoinManager();
+  auto loadJoin = q->getLoadJoinManager();
+
+  // LOAD
+  CHECK(!loadVar.empty())
+      << "Load var is not optional, this should not be possible to happen";
+  load = StorageCollection::getInstance().getStorage(loadVar);
+  if (load == nullptr && q->getImportSources().empty() && loadJoin == nullptr) {
+    LOG(ERROR) << "Datasource " << loadVar << " not found.";
+    skip = true;
+    resultID = JODA_STORE_SKIPPED_QUERY_ID;
+    return;
+  } else if (load != nullptr && !q->getImportSources().empty()) {
+    LOG(INFO) << "Datasource " << loadVar
+              << " already populated, appending file-contents";
+  }
+
+  if (load == nullptr) {
+    load = StorageCollection::getInstance().getOrAddStorage(loadVar);
+  }
+
+  CHECK(load != nullptr);
+  std::string storeVar;
+  auto &exp = q->getExportDestination();
+  if (exp != nullptr) {
+    auto *storeExp = dynamic_cast<StorageExport *>(exp.get());
+    if (storeExp != nullptr && storeExp->getStorageName() == loadVar) {
+      LOG(WARNING) << "Using the same variable for store as for load results "
+                      "in duplication of the data";
+    }
+  }
+
+  parser.setMaxThreads(config::storageRetrievalThreads);
+}
+
+bool QueryPlan::hasToParse() const { return !q->getImportSources().empty(); }
+
+ExecutionStats QueryPlan::getStats() const {
+  ExecutionStats s{};
+  s.parsedDocs = parser.getParsedDocs();
+  s.parsedConts = parser.getParsedConts();
+  s.evaluatedConts = loadQueue->getStatistics().second;
+  if (parser.isParsing() || load == nullptr)
+    s.numConts = 0;
+  else
+    s.numConts = load->contSize();
+
+  return s;
+}
+
+void QueryPlan::addGenericBenchmarkInformation(Benchmark *bench) const {
+  if (bench == nullptr) return;
+  auto procUsage = MemoryUtility::procRamUsage();
+  bench->addValue<uint64_t>("RAM Proc", procUsage.getBytes());
+  bench->addValue("Pretty RAM Proc", procUsage.getHumanReadable());
+}

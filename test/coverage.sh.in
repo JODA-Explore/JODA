@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+@PEPARE_COV@
+@HTML_COV_CMD@
