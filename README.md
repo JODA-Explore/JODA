@@ -2,6 +2,11 @@
 
 ![JODA](JODA.png "JODA - JSON On-Demand Analysis")
 
+<a href="https://dbis.informatik.uni-kl.de">
+<img src="https://dbis.informatik.uni-kl.de/images/dbislogo_default.png" width="130"  />
+</a>
+
+
 ## Installation
 
 ### Precompiled
