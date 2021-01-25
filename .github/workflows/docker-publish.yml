@@ -29,6 +29,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+        with:
+          submodules: 'true'
 
       - name: Build image
         run: docker build . --file docker/multi-stage/buster/Dockerfile --tag $IMAGE_NAME
