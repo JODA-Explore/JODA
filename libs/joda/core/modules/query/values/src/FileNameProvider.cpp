@@ -15,7 +15,7 @@ bool joda::query::FileNameProvider::isConst() const {
 
 RJValue joda::query::FileNameProvider::getAtomValue(const RapidJsonDocument &json,
                                                     RJMemoryPoolAlloc &alloc) const {
-  assert(isAtom() && "Did not check for atom before calling");
+  DCHECK(isAtom() && "Did not check for atom before calling");
   RJValue val;
   auto* tmp = json.getOrigin();
   auto* fileOrig = dynamic_cast<const FileOrigin*>(tmp);
@@ -25,7 +25,7 @@ RJValue joda::query::FileNameProvider::getAtomValue(const RapidJsonDocument &jso
 }
 const RJValue *joda::query::FileNameProvider::getValue(const RapidJsonDocument &json,
                                                        RJMemoryPoolAlloc &alloc) const {
-  assert(!isAtom() && "Did not check for atom before calling");
+  DCHECK(!isAtom() && "Did not check for atom before calling");
   return nullptr;
 }
 

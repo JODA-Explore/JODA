@@ -8,7 +8,7 @@
 #include <joda/storage/JSONStorage.h>
 #include "IExportDestination.h"
 
-class StorageExport : public IExportDestination{
+class StorageExport : public IExportDestination {
  public:
   StorageExport(const std::shared_ptr<JSONStorage> &store);
   unsigned long getTemporaryResultID() const;

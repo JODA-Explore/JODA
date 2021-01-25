@@ -16,7 +16,7 @@ const std::string StorageExport::getTimerName() {
 StorageExport::StorageExport(const std::shared_ptr<JSONStorage> &store) : store(store) {}
 
 void StorageExport::exportContainer(std::unique_ptr<JSONContainer> &&cont) {
- store->insertDocuments(std::move(cont));
+  store->insertDocuments(std::move(cont));
 }
 
 unsigned long StorageExport::getTemporaryResultID() const {

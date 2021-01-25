@@ -8,13 +8,9 @@
 #include <joda/config/config.h>
 #include <joda/fs/DirectoryRegister.h>
 
-std::atomic_ulong JSONStorage::currID{0};
-
 void JSONStorage::insertDocuments(
     moodycamel::ConcurrentQueue<std::unique_ptr<JSONContainer>> &queue,
     const std::atomic_bool &cf, std::atomic_uint &cs) {
-  // std::lock_guard<std::mutex> lock(documentMutex);
-  // Initialize tmp storage and threads
   std::unique_ptr<JSONContainer> cont;
   moodycamel::ConsumerToken ctok(queue);
   while (true) {
@@ -41,9 +37,9 @@ void JSONStorage::insertDocuments(std::unique_ptr<JSONContainer> &&cont) {
   container.push_back(std::move(cont));
 }
 
-DOC_ID JSONStorage::getID() { return ++currID; }
-
-unsigned long JSONStorage::size() const { return docCount; }
+unsigned long JSONStorage::size() const {
+  return docCount;
+}
 
 unsigned long JSONStorage::contSize() const { return container.size(); }
 
@@ -62,7 +58,15 @@ size_t JSONStorage::estimatedSize() const {
   return size;
 }
 
-size_t JSONStorage::estimatedCapacity() {
+size_t JSONStorage::parsedSize() const {
+  size_t size = sizeof(JSONStorage);
+  for (auto &&item : container) {
+    size += item->parsedSize();
+  }
+  return size;
+}
+
+size_t JSONStorage::estimatedCapacity() const {
   size_t size = 0;
   for (auto &&item : container) {
     size += item->getAlloc()->Capacity();
@@ -71,6 +75,7 @@ size_t JSONStorage::estimatedCapacity() {
 }
 
 void JSONStorage::freeAllMemory() {
+  LOG(INFO) << "Freeing memory of " << name;
   for (auto &&cont : container) {
     cont->removeDocuments();
   }
@@ -89,11 +94,25 @@ JSONStorage::JSONStorage(const std::string &query_string) : name(query_string) {
 }
 JSONStorage::~JSONStorage() {
   std::lock_guard<std::mutex> lock(documentMutex);
+
+  DLOG(INFO) << "Removing containers " << name;
+  for (auto &cont : container) {
+    cont.reset();
+  }
+
   DLOG(INFO) << "Cleaning up storage " << name;
   if (!config::storeJson) {
     joda::filesystem::DirectoryRegister::getInstance().removeDirectory(regtmpdir);
   }
 }
+
+void JSONStorage::preparePurge() {
+  std::lock_guard<std::mutex> lock(documentMutex);
+  for (auto &cont : container) {
+    cont->preparePurge();
+  }
+}
+
 
 const std::string &JSONStorage::getName() const { return name; }
 
@@ -171,14 +190,13 @@ std::vector<std::string> JSONStorage::stringify(unsigned long start,
     if (skippedSize < start) contStart = start - skippedSize;
     unsigned long contEnd = contStart + count - ret.size() - 1;
     if (it == container.end()) {
-      DCHECK(false) << "If all Container contributed to the strings, this "
-                       "should not be possible";
+      DCHECK(false) << "If all Container contributed to the strings, this should not be possible";
       return ret;
     }
 
     if ((*it)->size() != 0) {
-      DLOG(INFO) << "Getting strings of container in range [" << contStart
-                 << "," << contEnd << "], with a size of " << (*it)->size();
+      DLOG(INFO) << "Getting strings of container in range [" << contStart << "," << contEnd << "], with a size of "
+                 << (*it)->size();
       auto tmp = (*it)->stringify(contStart, contEnd);
       DLOG(INFO) << "Added " << tmp.size() << " documents ";
 
@@ -298,3 +316,8 @@ unsigned long JSONStorage::getLastUsed() const {
   }
   return maxLastUsed;
 }
+
+const std::vector<std::unique_ptr<JSONContainer>> &JSONStorage::getContainer() const {
+  return container;
+}
+

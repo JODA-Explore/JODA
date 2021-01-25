@@ -8,7 +8,7 @@
 #include "CursesFWD.h"
 #include <joda/misc/RJFwd.h>
 #include <memory>
-#include <curses.h>
+#include <joda/storage/JSONStorage.h>
 
 namespace joda::cli {
 /**
@@ -27,10 +27,11 @@ class JSONInterface {
   virtual ~JSONInterface();
 
 /**
- * Displays a single JSON document.
- * @param json The document to display
+ * Displays a single JSON document from a JSONStorage.
+ * @param store The storage which contains the JSON to display
+ * @param index the position of the document
  */
-  void showJSON(std::shared_ptr<RJDocument>& json);
+  void showJSON(const std::shared_ptr<JSONStorage> &store, size_t index);
  private:
 
   void browse();

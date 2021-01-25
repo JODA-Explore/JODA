@@ -100,6 +100,7 @@ Benchmark::~Benchmark() {
   writeBenchfile();
 }
 
+
 std::string Benchmark::lastLineToString() const {
   if (valid && benchDoc.Size() > 0) {
     rapidjson::StringBuffer buff;
@@ -108,10 +109,6 @@ std::string Benchmark::lastLineToString() const {
     return buff.GetString();
   }
   return "";
-}
-
-const RJValue &Benchmark::getLastLine() const {
-  return benchDoc[benchDoc.Size() - 1];
 }
 
 std::string Benchmark::currentLineToString() const {
@@ -124,7 +121,13 @@ std::string Benchmark::currentLineToString() const {
   return "";
 }
 
-void Benchmark::addThread(double bloom, double select, double project, double agg, double copy, double serialize) {
+void Benchmark::addThread(double bloom,
+                          double select,
+                          double project,
+                          double agg,
+                          double copy,
+                          double serialize,
+                          double sample_view_cost) {
   std::lock_guard<std::mutex> lock(mut);
   RJPointer threads_ptr(THREADS);
   auto threads = threads_ptr.Get(currentLine);
@@ -138,6 +141,7 @@ void Benchmark::addThread(double bloom, double select, double project, double ag
   if (agg > 0) thread.AddMember("Aggregate", RJValue(agg), benchDoc.GetAllocator());
   if (copy > 0) thread.AddMember("Copy", RJValue(copy), benchDoc.GetAllocator());
   if (serialize > 0) thread.AddMember("Serialize", RJValue(serialize), benchDoc.GetAllocator());
+  if (sample_view_cost > 0) thread.AddMember("View_Cost", RJValue(sample_view_cost), benchDoc.GetAllocator());
 
   if (threads == nullptr) threads_ptr.Set(currentLine, RJValue(rapidjson::kArrayType), benchDoc.GetAllocator());
   thread_ptr.Set(currentLine, thread, benchDoc.GetAllocator());
@@ -146,4 +150,9 @@ void Benchmark::addThread(double bloom, double select, double project, double ag
 bool Benchmark::isValid() const {
   return valid;
 }
+
+const RJValue &Benchmark::getLastLine() const {
+  return benchDoc[benchDoc.Size() - 1];
+}
+
 

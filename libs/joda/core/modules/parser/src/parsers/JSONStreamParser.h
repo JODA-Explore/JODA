@@ -66,11 +66,11 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
 
         rapidjson::IStreamWrapper isw(*stream.second);
         while (*stream.second) {
-          std::shared_ptr<RJDocument> doc;
+          std::unique_ptr<RJDocument> doc;
           typename Scheduler::ContainerIdentifier cont;
           if (std::is_same<Scheduler, joda::docparsing::DefaultContainerScheduler<false>>::value
               || std::is_same<Scheduler, joda::docparsing::DefaultContainerScheduler<true>>::value) {
-            doc = sched.getNewDoc(0);
+            doc = std::move(sched.getNewDoc(0));
             doc->ParseStream<rapidjson::kParseStopWhenDoneFlag>(isw);
             if (doc->HasParseError()) {
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
@@ -81,7 +81,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
               continue;
             }
           } else {
-            auto tmpDoc = std::make_shared<RJDocument>();
+            auto tmpDoc = std::make_unique<RJDocument>();
             tmpDoc->ParseStream<rapidjson::kParseStopWhenDoneFlag>(isw);
             if (doc->HasParseError()) {
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
@@ -92,7 +92,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
               continue;
             }
             cont = sched.getContainerForDoc(*tmpDoc);
-            doc = sched.getNewDoc(cont);
+            doc = std::move(sched.getNewDoc(cont));
             doc->CopyFrom(*tmpDoc, doc->GetAllocator(), true);
           }
 

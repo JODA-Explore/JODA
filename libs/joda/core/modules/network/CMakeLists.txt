@@ -56,7 +56,7 @@ target_include_directories(joda-core-network-lib INTERFACE ${RAPIDJSON_INCLUDE_D
 #
 #########################################################
 find_package(Boost REQUIRED system)
-target_link_libraries(joda-core-network-lib INTERFACE Boost::boost Boost::system )
+target_link_libraries(joda-core-network-lib INTERFACE Boost::boost Boost::system)
 
 #########################################################
 #

@@ -8,7 +8,7 @@
 #include <joda/join/JoinManager.h>
 #include "IExportDestination.h"
 
-class JoinExport: public IExportDestination {
+class JoinExport : public IExportDestination {
  public:
   JoinExport(const std::shared_ptr<JoinManager> &joinManager);
   const std::string toString() override;

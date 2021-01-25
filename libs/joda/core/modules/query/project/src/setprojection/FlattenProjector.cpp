@@ -5,7 +5,7 @@
 #include "../../include/joda/query/project/FlattenProjector.h"
 
 void joda::query::FlattenProjector::project(const RapidJsonDocument &json,
-                                            std::vector<std::shared_ptr<RJDocument>> &newDocs) {
+                                            std::vector<std::unique_ptr<RJDocument>> &newDocs, bool view) {
   RJValue tmpVal;
   const RJValue *val;
   if (from->isAtom()) {
@@ -44,4 +44,8 @@ joda::query::FlattenProjector::FlattenProjector(const std::string &to, std::uniq
 }
 std::string joda::query::FlattenProjector::toString() {
   return joda::query::ISetProjector::toString() + "FLATTEN(" + from->toString() + ")";
+}
+
+std::vector<std::string> joda::query::FlattenProjector::getAttributes() const {
+  return from->getAttributes();
 }

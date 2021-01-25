@@ -114,7 +114,7 @@ class DummyNull : public IValueProvider {
 class ValueTest : public ::testing::Test {
  protected:
   ValueTest() : Test() {
-    auto rjdoc = std::make_shared<RJDocument>();
+    auto rjdoc = std::make_unique<RJDocument>();
     rjdoc->Parse(R"({"num":1,"str":"test","arr":[1,"arrstr",false,null],"bool":true,"null":null, "obj":{"nested":true}})");
     DCHECK(!rjdoc->HasParseError()) << rjdoc->GetParseError();
     doc = RapidJsonDocument(0,std::move(rjdoc),std::make_unique<TemporaryOrigin>());

@@ -37,7 +37,9 @@ const po::options_description ConfigParser::getConfigOptions()  {
       //Benchmark
       ("benchfile", po::value<std::string>(), "Sets benchmark file")
       //Multithreading
-      ("maxthreads,t", po::value<unsigned int>()->default_value(std::max(1u, std::thread::hardware_concurrency() - 1)), "Maximum threads to use")
+      ("maxthreads,t",
+       po::value<unsigned int>()->default_value(std::max(1u, std::thread::hardware_concurrency() - 1)),
+       "Maximum threads to use")
       ("readthreads,r", po::value<unsigned int>()->default_value(1), "Threads to use for reading files")
       ("parsethreads", po::value<unsigned int>(), "Threads to use for parsing files")
       //Network
@@ -68,19 +70,29 @@ const po::options_description ConfigParser::getHiddenConfigOptions()  {
   
   po::options_description options("Hidden");
   options.add_options()
-  //Indices
-      ("indices.caching.enable",po::value<bool>()->default_value(true), "Enables caching")
-  //Bloom
-      ("indices.bloom.enable",po::value<bool>()->default_value(false), "Enables bloom")
-      ("indices.bloom.approx_count",po::value<unsigned int>()->default_value(1000), "How many attributes all documents of a container roughly have")
-      ("indices.bloom.fp_prob",po::value<double>()->default_value(0.001), "Maximum tolerable false positive probability")
-  //Storage
+      //Indices
+      ("indices.caching.enable", po::value<bool>()->default_value(true), "Enables caching")
+      //Bloom
+      ("indices.bloom.enable", po::value<bool>()->default_value(false), "Enables bloom")
+      ("indices.bloom.approx_count",
+       po::value<unsigned int>()->default_value(1000),
+       "How many attributes all documents of a container roughly have")
+      ("indices.bloom.fp_prob",
+       po::value<double>()->default_value(0.001),
+       "Maximum tolerable false positive probability")
+      //Storage
       ("storage.eviction_strategy",
        po::value<config::EvictionStrategies>()->default_value(config::NO_EVICTION),
-       "Eviction strategy to use (NO_EVICTION, LARGEST, LRU)")
-      ("storage.container.max_size",po::value<unsigned int>()->default_value(0), "Maximum size of containers (in byte). If 0, then size will be picked automatically depending on the data")
-      ("storage.container.chunk_size",po::value<double>()->default_value(0.25), "Chunk size as fraction of container-size.")
-      ("storage.container.text_binary_mod",po::value<double>()->default_value(1.75), "If container max_size is set to auto (0), the file sizes times this modifier.")
+       "Eviction strategy to use (NO_EVICTION, LARGEST, LRU, EXPLORER)")
+      ("storage.container.max_size",
+       po::value<unsigned int>()->default_value(0),
+       "Maximum size of containers (in byte). If 0, then size will be picked automatically depending on the data")
+      ("storage.container.chunk_size",
+       po::value<double>()->default_value(0.25),
+       "Chunk size as fraction of container-size.")
+      ("storage.container.text_binary_mod",
+       po::value<double>()->default_value(1.75),
+       "If container max_size is set to auto (0), the file sizes times this modifier.")
       ("storage.max_memory",
        po::value<unsigned long long>()->default_value(MemoryUtility::totalRam().getBytes()),
        "Maximum amount of memory used by the system")
@@ -93,7 +105,13 @@ const po::options_description ConfigParser::getHiddenConfigOptions()  {
       ("sim.min_similarity",po::value<double>()->default_value(0.6),"Minimum similarity required to group documents")
       ("sim.measure",po::value<config::Sim_Measures>()->default_value(config::NO_SIMILARITY),"Similarity measure to use (NO_SIMILARITY, PATH_JACCARD)")
      // ("sim.merge_on_parse",po::value<bool>()->default_value(false), "Enables merging of similar containers")
-
+      // Delta Trees
+      ("delta_tree.enable",
+       po::value<bool>()->default_value(true)->implicit_value(true),
+       "Enable delta tree containers. Reduces memory usage and may increase performance for some query loads.")
+      ("delta_tree.vo_enable",
+       po::value<bool>()->default_value(true)->implicit_value(false),
+       "Enable virtual object improvement. Uses more memory, but improves multiple queries on one delta tree.")
   //History
       ("history.file",po::value<std::string>()->default_value(home), "Path to history file")
       ("history.size",po::value<int>()->default_value(0), "Max size of history. 0 for unlimited")
@@ -164,7 +182,7 @@ void ConfigParser::setConfig(const po::variables_map &vm) {
 
   //Directories
   config::home = vm["data_dir"].as<std::string>();
-  if(vm.count("tmpdir"))
+  if (vm.count("tmpdir"))
     config::tmpdir = vm["tmpdir"].as<std::string>();
   else config::tmpdir = std::string(fs::temp_directory_path().c_str()) + "/JODA";
 
@@ -219,6 +237,11 @@ void ConfigParser::setConfig(const po::variables_map &vm) {
   if (vm.count("noninteractive")) {
     config::disable_interactive_CLI = true;
   }
+
+  //Views
+  config::enable_views = vm.count("delta_tree.enable") ? vm["delta_tree.enable"].as<bool>() : false;
+  config::enable_views_vo = vm.count("delta_tree.vo_enable") ? vm["delta_tree.vo_enable"].as<bool>() : false;
+
 }
 
 void ConfigParser::produceHelpMessage() {
@@ -239,29 +262,29 @@ void ConfigParser::dumpConfig() {
   std::cout << "indices.bloom.fp_prob:"<< config::bloom_prob <<std::endl;
 
   //Directories
-  std::cout << "data_dir:"<< config::home <<std::endl;
-  std::cout << "tmpdir:"<< config::tmpdir <<std::endl;
+  std::cout << "data_dir:" << config::home << std::endl;
+  std::cout << "tmpdir:" << config::tmpdir << std::endl;
 
   //Storage
-  std::cout << "nostorage:"<< !config::storeJson <<std::endl;
+  std::cout << "nostorage:" << !config::storeJson << std::endl;
 
   //Benchmark
-  std::cout << "benchfile:"<< config::benchfile <<std::endl;
+  std::cout << "benchfile:" << config::benchfile << std::endl;
 
   //Containers
   std::cout << "storage.eviction_strategy:" << config::evictionStrategy << std::endl;
   std::cout << "storage.max_memory:" << config::maxmemory << std::endl;
   std::cout << "storage.container.max_size:" << config::JSONContainerSize << std::endl;
-  std::cout << "storage.container.chunk_size:"<< config::chunk_size <<std::endl;
+  std::cout << "storage.container.chunk_size:" << config::chunk_size << std::endl;
 
 
   //Multithreading
-  std::cout << "maxthreads:"<< config::storageRetrievalThreads <<std::endl;
-  std::cout << "readthreads:"<< config::readingThreads <<std::endl;
+  std::cout << "maxthreads:" << config::storageRetrievalThreads << std::endl;
+  std::cout << "readthreads:" << config::readingThreads << std::endl;
 
   //Parsing
-  std::cout << "parsing.read.bulk_size:"<< config::read_bulk_size <<std::endl;
-  std::cout << "parsing.read.reader:"<< config::read_reader <<std::endl;
+  std::cout << "parsing.read.bulk_size:" << config::read_bulk_size << std::endl;
+  std::cout << "parsing.read.reader:" << config::read_reader << std::endl;
   std::cout << "parsing.parse.bulk_size:"<< config::parse_bulk_size <<std::endl;
 
   //Similarity
@@ -276,6 +299,9 @@ void ConfigParser::dumpConfig() {
   std::cout << "history.persistent:"<< config::persistent_history <<std::endl;
   std::cout << "history.size:"<< config::history_size <<std::endl;
 
+  //Delta trees
+  std::cout << "delta_tree.enable:" << config::enable_views << std::endl;
+  std::cout << "delta_tree.vo_enable:" << config::enable_views_vo << std::endl;
 
 }
 

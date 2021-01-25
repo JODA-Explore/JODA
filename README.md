@@ -1,43 +1,107 @@
-# Joda - JSON On-Demand Analysis
+<h1>Joda - JSON On-Demand Analysis</h1>
 
-![JODA](JODA.png "JODA - JSON On-Demand Analysis")
-
+<div style="text-align:center">
+<img src="https://dbis.informatik.uni-kl.de/files/icons/JODA.png" width="380"  />
+<br>
 <a href="https://dbis.informatik.uni-kl.de">
 <img src="https://dbis.informatik.uni-kl.de/images/dbislogo_default.png" width="130"  />
 </a>
+</div>
+
+JODA is an in-memory vertically scalable data processor for semi-structured data, with an initial emphasis on JSON datasets.
+It can be used to efficiently filter, transform, and aggregate a large set of JSON documents.
+
+- [Installation](#installation)
+  - [Docker](#docker)
+  - [Packages](#packages)
+  - [Precompiled](#precompiled)
+    - [Requirements](#requirements)
+  - [Compiling](#compiling)
+    - [Requirements](#requirements-1)
+    - [Commands](#commands)
+- [Program Flags](#program-flags)
+- [CLI Commands](#cli-commands)
+- [Queries](#queries)
+  - [Syntax](#syntax)
+    - [Load](#load)
+    - [Sources](#sources)
+      - [Sampling](#sampling)
+    - [CHOOSE (Optional)](#choose-optional)
+      - [Variables](#variables)
+      - [Comparison](#comparison)
+    - [AS (Optional)](#as-optional)
+      - [Source](#source)
+      - [Set Functions](#set-functions)
+      - [Examples](#examples)
+    - [AGG (Optional)](#agg-optional)
+      - [Keywords](#keywords)
+      - [GROUP BY](#group-by)
+      - [Examples](#examples-1)
+    - [STORE (Optional)](#store-optional)
+    - [DELETE (Optional)](#delete-optional)
+  - [Group By](#group-by-1)
+    - [Source](#source-1)
+    - [Examples](#examples-2)
+  - [Misc](#misc)
+    - [Functions](#functions)
+        - [Metadata-/File-Functions](#metadata-file-functions)
+        - [Type/Attribute-Functions](#typeattribute-functions)
+        - [String-Functions](#string-functions)
+        - [Array-Functions](#array-functions)
+        - [Object-Functions](#object-functions)
+        - [Mathematical-Functions](#mathematical-functions)
+        - [Trigonometric-Functions](#trigonometric-functions)
+        - [Mathematical-Constants](#mathematical-constants)
+        - [Time-Functions](#time-functions)
+        - [Misc-Functions](#misc-functions)
+      - [Parameters](#parameters)
+    - [JSON-Pointer](#json-pointer)
+  - [Example Queries](#example-queries)
+- [Citation](#citation)
+  - [Bibtex:](#bibtex)
+
+# Installation
+
+## Docker
+The easiest way to get JODA up and running is to use our Docker image available in the GitHub registry.
 
 
-## Installation
+## Packages
+Packages to use with distro package managers are currently built for:
+- Debian Buster
+- Ubuntu 16.04
+- Ubuntu 18.04
 
-### Precompiled
-Precompiled debian execution files can be downloaded from the tags section on this repo.
+## Precompiled
+Precompiled binary executables are can be downloaded from the release section on this repo.
 
-#### Requirements
+### Requirements
 To be able to use the main software, the following packages have to be installed:
 
-- Glog: Google logging framework. (Debian: libgoogle-glog0v5)
-- GPerftools: Google performance tool. Enhances performance. (Debian: libgoogle-perftools4)
+- Glog: Google logging framework (Debian Buster: libgoogle-glog0v5)
+- C++ Rest SDK (Debian Buster: libcpprest)
+- SSL Lib (Debian Buster: libssl1.1)
+- Readline (Debian Buster: libreadline7)
+- NCurses (Debian: libncursesw5)
 
-To use the included client for server/client mode the following additional package is needed:
-
-- NCurses: (Debian: libncurses5)
 
 Example:
 
     apt-get update
-    apt-get install libssl-dev libcpprest-dev libgoogle-glog0v5 libgoogle-perftools4 readline-common zlib
+    apt-get install libcpprest libssl1.1 libreadline7 libncursesw5 libgoogle-glog0v5
 
-### Compiling
+## Compiling
 The program can alternatively be compiled from the sources.
 
-#### Requirements
+### Requirements
 To be able to compile the main software, the following packages have to be installed:
 
 - Glog: Google logging framework. (Debian: libgoogle-glog-dev)
-- GPerftools: (Optional) Google performance tool. Enhances performance. (Debian: libgoogle-perftools-dev)
+- Jemalloc: (Optional Enhances performance.)  (Debian: libjemalloc-dev)
 - Boost: The basic boost package + modules `system` , `regex` and `iostreams` (Debian: libboost-dev, libboost-system-dev, libboost-regex-dev, libboost-iostreams-dev)
-- NCurses: (Debian: libncurses5-dev)
-
+- NCurses: (Debian: libncursesw5-dev)
+- Readline (Debian Buster: libreadline-dev)
+- 
 For optional support for `FROM URL` imports, the following packages are also required:
 
 - cpprest: C++ REST client (Debian: libcpprest-dev)
@@ -50,7 +114,8 @@ Example:
     apt-get update
     apt-get install libssl-dev libcpprest-dev libjemalloc-dev libgoogle-glog-dev libboost-dev libboost-system-dev libboost-regex-dev libboost-program-options-dev libncurses5-dev libncursesw5-dev libreadline-dev
 
-#### Commands
+
+### Commands
 
 To compile the program in Release mode, the following commands can be used.
 
@@ -61,7 +126,7 @@ To compile the program in Release mode, the following commands can be used.
     make
     make install
 
-## Program Flags
+# Program Flags
 These are options that may be supplied to the program during invokation.
 
 - __-h --help__:        Shows help text and exits the program
@@ -77,18 +142,17 @@ These are options that may be supplied to the program during invokation.
 - __--server__:         Starts the program in server mode (Needs port option)
 - __-p --port__:        Port on which the server will listen
 
-## Commands
+# CLI Commands
 These commands can be used any time within the program.
 The commands have to be entered followed by a `;`.
 - `quit`:             Quits the program
 - `cache`:            Toggles usage of the cache
-- `cracking`:         Toggles usage of cracking
 - `sources`:     Lists all named data sources (and the # of documents stored in them)
 - `results`:     Lists all temporary data sources (and the # of documents stored in them)
 
-## Queries
+# Queries
 
-### Syntax
+## Syntax
 The basic syntax of queries is:
 ```
 LOAD    <VAR>   (<SOURCES>)
@@ -101,7 +165,7 @@ DELETE  <VAR>
 
 
 The execution order is `LOAD`->`CHOOSE`->`AS`->`AGG`->`STORE`->`DELETE`.
-#### Load
+### Load
 `LOAD <VAR>` loads an previously stored result,
 for further usage in the following query, from variable `<VAR>`.
 
@@ -114,7 +178,7 @@ to it.
 Instead of `<SOURCES>`, data can also be imported by an ongoing group by with the
 `FROM GROUPED <EXP>` command. (For more informations see [Group-By](#group-by))
 
-#### Sources
+### Sources
 Currently the following sources are implemented:
 
 `FROM FILE "<FILE>"` parses a single file in the path `<FILE>`. (Supports [sampling](#sampling))
@@ -123,7 +187,7 @@ Currently the following sources are implemented:
 
 `FROM URL "<URL>"` parses documents returned by a GET call to `<URL>`. 
 
-##### Sampling
+#### Sampling
 Some sources may be sampled, to decrease memory footprint and/or improve query times.
 
 To sample sources `SAMPLE X` has to be appended to a `<SOURCE>` command.
@@ -135,7 +199,7 @@ All results will only represent these sources.
 Currently, no further extrapolations are performed by the system to project aggregations
 like sums or similar functions.
 
-#### CHOOSE (Optional)
+### CHOOSE (Optional)
 `CHOOSE <PRED>` selects JSON documents according to the given predicates.
 If this command is not supplied, all documents will be retrieved.
 
@@ -149,7 +213,7 @@ The predicate can consist of the following:
 - `<VAR>`: Single variable/function
 
 
-##### Variables
+#### Variables
 Variables can be any of the following:
 - Numbers (e.g.: `1`, `+3.14`, `-284674`)
 - Strings (e.g.: `"Hello World!"`)
@@ -158,7 +222,7 @@ Variables can be any of the following:
 - [Functions](#functions)
 
 
-##### Comparison
+#### Comparison
 Comparisons can be any of the following:
 - `==`
 - `!=`
@@ -182,7 +246,7 @@ but they may not be compared to anything else.
 Booleans can only be checked for equality or unequality and may not be
 compared to anything else.
 
-#### AS (Optional)
+### AS (Optional)
 `AS <PROJ>` projects the chosen documents into the with `<PROJ>` given form.
 If this command is not supplied, the documents will stay as they are.
 
@@ -193,14 +257,14 @@ The projection command has the following syntax:
 ```
 
 `<TOPOINTER>`: JSON-Pointer, see section [JSON-Pointer](#json-pointer), in which the supplied source will be stored
-##### Source
+#### Source
 Source can be any of the following:
 
 - `<FROMPOINTER>`: (Any)JSON-Pointer, see section [JSON-Pointer](#json-pointer)
 - [Function](#functions)
 - [Set-Function](#set-function)
 
-##### Set Functions
+#### Set Functions
 Set functions can provide multiple values, which results in duplication of
 the given document with different values in the specified attributes.
 
@@ -208,7 +272,7 @@ Currently the following set functions are implemented:
 - `FLATTEN(<POINTER>)`: (Any) If `<POINTER>` is of type array, each element contained within
 is distibuted over multiple documents.
 
-##### Examples
+#### Examples
 With the following JSON input:
 ```json
 {
@@ -247,7 +311,7 @@ With the following JSON input:
 ```
 
 
-#### AGG (Optional)
+### AGG (Optional)
 `AGG <AGG>` aggregates the results of the projection.
 If no aggregation is supplied, the results will be returned as is.
 
@@ -259,7 +323,7 @@ The aggregation command has the following syntax:
 ```
 
 
-##### Keywords
+#### Keywords
 - __\<TOPOINTER>__: JSON-Pointer, see section [JSON-Pointer](#json-pointer), in which result of the aggregation be stored
 
 Source can be any of the following functions:
@@ -273,7 +337,7 @@ Source can be any of the following functions:
 - __COLLECT(\<ANY>)__: (Array\[Any]) Returns an array of all elements.
 - __ATTSTAT(\<Object>)__: (Object) Returns a statistic about the attributes in the given object.
 
-##### GROUP BY
+#### GROUP BY
 Aggregations can also be grouped by a specified value.
 
 ```
@@ -285,7 +349,7 @@ Aggregations can also be grouped by a specified value.
 **Note: ** Only atomic data types (string, number, boolean) can be used to group. 
 Arrays and objects are ignored.
 
-##### Examples
+#### Examples
 With the following JSON input:
 ```json
 {"num": 0, "dyn" : 1}
@@ -321,17 +385,17 @@ AGG   ('/sum':SUM('/num')),
 }
 ```
 
-#### STORE (Optional)
+### STORE (Optional)
 `STORE <VAR>` stores the result of the  query in variable `<VAR>`.
 
 `STORE AS FILE "<FILE>"` writes the result of the query to `<FILE>`.
 
 `STORE GROUPED BY <SOURCE>` groupes the dataset. (See [Group-By](#group-by))
-#### DELETE (Optional)
+### DELETE (Optional)
 `DELETE <VAR>` removes the result stored in `<VAR>`.
 
 
-### Group By
+## Group By
 Joda has the ability to group multiple documents together, depending on a value.
 
 This is achieved by storing a dataset with the `GROUPED BY` clause.
@@ -344,13 +408,13 @@ To retrieve these grouped results a new query is necessary.
 Multiple datasets can be grouped together, by repeatedly executing a `STORE` command with the same `<SOURCE>`.
 
 After the `LOAD` statement, the grouping is complete and can no longer be referenced.
-#### Source
+### Source
 Source can be any of the following:
 
 - `<FROMPOINTER>`: (Any)JSON-Pointer, see section [JSON-Pointer](#json-pointer)
 - [Function](#functions)
 
-#### Examples
+### Examples
 Lets assume we have multiple messages replying to each other:
 ```json
 {
@@ -395,9 +459,9 @@ This can be achieved by combining these two queries:
  }
 ```
 
-### Misc
-#### Functions
-###### Metadata-/File-Functions
+## Misc
+### Functions
+##### Metadata-/File-Functions
 - (String) `FILENAME()`: Returns the filename (with full path),
 or "\[PROJECTION]" if the document was projected.
 - (Int) `FILEPOSSTART()`: Returns the starting position of the document, within it's file.
@@ -406,7 +470,7 @@ or "\[PROJECTION]" if the document was projected.
 
 
 
-###### Type/Attribute-Functions
+##### Type/Attribute-Functions
 - (String) `TYPE(Any)`: Returns the type of the given attribute
 ("OBJECT","ARRAY","NUMBER","STRING","BOOL","NULL");
 - (Bool) `EXISTS(Any)`: Checks if the given attribute exists.
@@ -419,7 +483,7 @@ or "\[PROJECTION]" if the document was projected.
     - `ISARRAY`
 - (Array(String)) `LISTATTRIBUTES(Object,Bool)`: Returns all named attributes in the given object or an empty list if pointed-to value is not an object. The attributes are listed recursively for all objects, if the second parameter is set to true (Default: false).
 
-###### String-Functions
+##### String-Functions
 - (Number) `LEN(String)`: Returns the length of the string.
 - (String) `LOWER(String)`: Returns the string in lowercase.
 - (String) `UPPER(String)`: Returns the string in uppercase.
@@ -432,11 +496,14 @@ or "\[PROJECTION]" if the document was projected.
 - (Array(String)) `REGEX_EXTRACT(String,String)`: Returns a list of strings within the first parameter, matched by the regular expression in the second.
 - (String) `REGEX_REPLACE(String,String,String)`: Replaces all matches, within the first string, of the regular expression, defined in the second parameter, with the third string.
 
-###### Array-Functions
+##### Array-Functions
 - (Number) `SIZE(Array)`: Returns the size of the array.
 - (Bool) `IN(Any,Array)`: Checks if parameter 1 is contained in the array given by parameter 2.
 
-###### Mathematical-Functions
+##### Object-Functions
+- (Number) `MEMCOUNT(Object)`: Returns the number of members.
+
+##### Mathematical-Functions
 - (Number) `SUM(Number, Number)`: Calculates the sum of all arguments.
 - (Number) `SUB(Number, Number)`: Subtracts the arguments.
 - (Number) `PROD(Number, Number)`: Calculates the product of all arguments.
@@ -452,7 +519,7 @@ or "\[PROJECTION]" if the document was projected.
 - (Number) `DEGREES(Number)`: Radians to degrees.
 - (Number) `RADIANS(Number)`: Degrees to radians.
 
-###### Trigonometric-Functions
+##### Trigonometric-Functions
 - (Number) `ACOS(Number)`:	inverse cosine
 - (Number) `ASIN(Number)`:	inverse sine
 - (Number) `ATAN(Number)`:	inverse tangent
@@ -461,18 +528,18 @@ or "\[PROJECTION]" if the document was projected.
 - (Number) `SIN(Number)`:	sine
 - (Number) `TAN(Number)`:	tangent
 
-###### Mathematical-Constants
+##### Mathematical-Constants
 - (Number) `PI()`: Returns PI
 
-###### Time-Functions
+##### Time-Functions
 - (Number) `NOW()`: Returns the UNIX timestamp in milliseconds.
 
-###### Misc-Functions
+##### Misc-Functions
 - (Number) `SEQNUM()`: Returns a sequential number between 0 and the number of documents.
     - Multiple `SEQNUM()` calls within one query each return a number in the range independently from each other. (e.g.: `... AS ('/seq1':SEQNUM()),('/seq2':SEQNUM())` could result in `{"seq1":1,"seq2":3}`.
+- (Number) `HASH(Any)`: Returns the hash of the value. 
 
-
-##### Parameters
+#### Parameters
 The parameters are defined as:
 - `<NUMBER>`: (e.g.: `1`, `+3.14`, `-284674`)
 - `<STRING>`: (e.g.: `"Hello World!"`)
@@ -481,7 +548,7 @@ The parameters are defined as:
 Each parameter can be replaced by a [JSON-Pointer](#json-pointer).
 If the attributed does not exist or is of wrong type, the function will return false (or another default value).
 
-#### JSON-Pointer
+### JSON-Pointer
 JSON-Pointers are pointers to specific parts of a JSON document.
 The implementation conforms to the [RFC 6901](https://tools.ietf.org/html/rfc6901).
 
@@ -502,7 +569,7 @@ The pointer `'/test/2/sub'` would point to the string "Hello World!".
 
 The empty pointer `''` points to the root object.
 
-### Example Queries
+## Example Queries
 ```
 LOAD A FROM FILES "/home/user/jsondirectory"
 CHOOSE '/message/sender' == "Peter"
@@ -521,10 +588,10 @@ storing them as array in the attribute `/files`.
 The result is a single document, which is then written to the file `/home/user/peters_files.json`.
 Lastly the variable A is removed, so all documents are purged from the system.
 
-## Citation
+# Citation
 If you want to cite this project in your research, please use our ICDE 2020 demo paper.
 
-### Bibtex:
+## Bibtex:
 
 ```
 @inproceedings{DBLP:conf/icde/Schafer020,

@@ -132,9 +132,20 @@ class Query {
   bool chooseIsConst(bool &val) const;
 
   /**
+ * Checks whether the AS transformations can be evaluated with views.
+ * @return
+ */
+  bool canCreateView() const;
+
+  /**
    * @return the string representation of the query.
    */
   std::string toString() const;
+
+  std::vector<std::string> getAllUsedAttributes() const;
+  std::vector<std::string> getChooseAttributes() const;
+  std::vector<std::string> getASAttributes() const;
+  std::vector<std::string> getAGGAttributes() const;
 
  protected:
 

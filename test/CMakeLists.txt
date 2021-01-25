@@ -44,8 +44,10 @@ target_compile_definitions(FullStackNoStore PRIVATE JODA_TEST_NOSTORE_MODE) #Tes
 package_add_test(ValueTest ../libs/joda/core/modules/query/values/test/IValueTestHelper.h ../libs/joda/core/modules/query/values/test/ValueTest.cpp)
 package_add_test(AggregatorTest ../libs/joda/core/modules/query/aggregate/test/AggregatorTest.cpp ../libs/joda/core/modules/query/aggregate/test/AggregatorParsingTest.cpp ../libs/joda/core/modules/query/aggregate/test/NumberAggregatorTest.cpp)
 package_add_test(SimilarityTest ../libs/joda/core/modules/similarity/test/RJPathTest.cpp ../libs/joda/core/modules/similarity/test/RJAttributeTest.cpp ../libs/joda/core/modules/similarity/test/MeasureTest.cpp)
+package_add_test(ViewTest ../libs/joda/core/modules/storage/document/test/ViewTest.cpp ../libs/joda/core/modules/storage/document/test/VirtualObjectTest.cpp)
 package_add_test(DirectoryFileScannerTest ../libs/joda/core/modules/filesystem/test/DirectoryFileScannerTest.cpp)
 package_add_test(ServerTest ../libs/joda/core/modules/network/test/ServerTest.cpp ../libs/joda/core/modules/network/test/API2Test.cpp)
+package_add_test(StorageTest ../libs/joda/core/modules/storage/collection/test/CollectionTest.cpp)
 
 ################################################################
 ###############   Coverage   ######################################

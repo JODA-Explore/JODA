@@ -3,23 +3,28 @@
 //
 
 #include "QueryThread.h"
-
 #include <joda/config/config.h>
 #include <joda/document/TemporaryOrigin.h>
 #include <joda/misc/RecurringTimer.h>
 #include <joda/query/predicate/BloomAttributeVisitor.h>
 #include <joda/storage/JSONStorage.h>
+#include <joda/document/TemporaryOrigin.h>
+#include <joda/query/project/PointerCopyProject.h>
 
 QueryThread::QueryThread(IQueue *iqueue, OQueue *oqueue,
                          QueryThreadConfig &conf)
     : IWorkerThread(iqueue, oqueue, conf) {
-  oqueue->registerProducer();
+  if (oqueue != nullptr) {
+    oqueue->registerProducer();
+  }
   if (this->conf.aggQueue != nullptr) this->conf.aggQueue->registerProducer();
   DLOG(INFO) << "Started QueryThread " << getThreadID();
 }
 
 QueryThread::~QueryThread() {
-  oqueue->unregisterProducer();
+  if (oqueue != nullptr) {
+    oqueue->registerProducer();
+  }
   if (this->conf.aggQueue != nullptr) this->conf.aggQueue->unregisterProducer();
   DLOG(INFO) << "Stopped QueryThread" << getThreadID();
 }
@@ -56,11 +61,20 @@ void QueryThread::work() {
     ptok = std::make_unique<OQueue::ptok_t>(oqueue->queue);
   }
 
+  auto chooseAttributes = (conf.q)->getChooseAttributes();
+  auto asAttributes = (conf.q)->getASAttributes();
+  //Remove first "" pointer, or all views will always be completely materialized
+  if (!asAttributes.empty() && asAttributes.front().empty()) asAttributes.erase(asAttributes.begin());
+  auto aggAttributes = (conf.q)->getAGGAttributes();
+
   while (shouldRun) {
     if (!iqueue->isFinished()) {
-      IPayload inCont = nullptr;
-      iqueue->retrieve(inCont);
+      ContRef inCont = nullptr;
+      ContRef pipelineCont;
+      iqueue->retrieve(tok, inCont);
       if (inCont == nullptr) continue;
+      pipelineCont = inCont;
+      auto contLock = pipelineCont->useContInScope();
 
       /*
        * -------------------------  Query Exec
@@ -73,10 +87,10 @@ void QueryThread::work() {
       if (config::bloom_enabled) {
         bool use = true;
         for (auto &&bloom : bloomAttr) {
-          use &= inCont->probContainsAttr(bloom);
+          use &= pipelineCont->probContainsAttr(bloom);
         }
         if (!use) {
-          if (!config::storeJson) inCont->removeDocuments();
+          if (!config::storeJson) pipelineCont->removeDocuments();
           LOG(INFO) << "Skipped container because of bloom";
           continue;
         }  // If needed attribute is not in container, skip
@@ -88,11 +102,15 @@ void QueryThread::work() {
        */
       LOG(INFO) << "Starting selection";
       select_timer.start();
-      auto selectResult = select(*inCont);
+      if (pipelineCont->isView()) {
+        pipelineCont->materializeAttributesIfRequired(chooseAttributes);
+      }
+      auto selectResult = select(*pipelineCont);
       select_timer.stop();
       size_t selCount = 0;
       bool skip = false;
-      if (selectResult == nullptr || selectResult->empty()) {
+      if (selectResult == nullptr || selectResult->empty()
+          || std::all_of(selectResult->begin(), selectResult->end(), [](bool i) { return !i; })) {
         skip = true;
       } else {
         selCount = std::count(selectResult->begin(), selectResult->end(), true);
@@ -106,29 +124,51 @@ void QueryThread::work() {
       /*
        * Project
        */
-      double contFill = ((double)selCount) / inCont->size();
-      OPayload tmpCont =
-          std::make_unique<JSONContainer>(inCont->getMaxSize() * contFill);
 
-      LOG(INFO) << "Starting Projection";
-      project_timer.start();
-      auto projectResult =
-          project(*inCont, *selectResult, *tmpCont->getAlloc());
-      project_timer.stop();
-
-      copy_timer.start();
-
-      if (ptok != nullptr || hasAggregators() || conf.joinManager != nullptr) {
-        for (auto &&item : projectResult) {
-          if (item->IsNull()) continue;
-          tmpCont->insertDoc(JSONStorage::getID(), std::move(item),
-                             std::make_unique<TemporaryOrigin>());
+      OwnedCont tmpCont;
+      bool isSelected = false;
+      if (hasToProject()) {
+        double
+            contFill = ((double) std::count(selectResult->begin(), selectResult->end(), true) / pipelineCont->size());
+        LOG(INFO) << "Starting Projection";
+        project_timer.start();
+        auto &projectors = (conf.q)->getProjectors();
+        if (pipelineCont->isView()) {
+          pipelineCont->materializeAttributesIfRequired(asAttributes);
         }
-        tmpCont->finalize();
-      }
-      copy_timer.stop();
+        bool created = false;
+        if (canCreateView()) {
+          sample_view_cost_timer.start();
+          auto useView = pipelineCont->useViewBasedOnSample(*selectResult, projectors, (conf.q)->getSetProjectors());
+          sample_view_cost_timer.stop();
+          if (useView) {
+            LOG(INFO) << "Creating View";
+            tmpCont = pipelineCont->createViewFromContainer(*selectResult, projectors, (conf.q)->getSetProjectors());
+            created = true;
+          }
+        }
+        if (!created) {
+          tmpCont = std::make_unique<JSONContainer>(pipelineCont->getMaxSize() * contFill);
+          auto projectResult = defaultProject(*pipelineCont, *selectResult, *tmpCont->getAlloc());
+          copy_timer.start();
 
-      if (tmpCont->size() == 0) {
+          if (ptok != nullptr || hasAggregators() || conf.joinManager != nullptr) {
+            for (auto &&item : projectResult) {
+              if (item->IsNull()) continue;
+              tmpCont->insertDoc(std::move(item), std::make_unique<TemporaryOrigin>());
+            }
+          }
+          copy_timer.stop();
+        }
+
+
+        project_timer.stop();
+        pipelineCont = tmpCont.get();
+        isSelected = true;
+      }
+
+      auto tmpContScope = pipelineCont->useContInScope();
+      if (pipelineCont->size() == 0) {
         DLOG(INFO) << "Empty container, skipping";
         continue;
       }
@@ -137,49 +177,38 @@ void QueryThread::work() {
        */
 
       if (hasAggregators()) {
+        DCHECK(oqueue == nullptr);
         aggregate_timer.start();
-        aggregate(tmpCont->getDocuments());
+        if (pipelineCont->isView()) {
+          auto &atts = aggAttributes;
+          pipelineCont->materializeAttributesIfRequired(atts);
+        }
+        aggregate(pipelineCont, selectResult, isSelected);
+
         aggregate_timer.stop();
-        if (!config::storeJson) inCont->removeDocuments();
         continue;
       }
 
       /*
        * Store result
        */
-      CHECK(oqueue != nullptr) << "New design should require oqueue";
 
       if (oqueue != nullptr) {
         LOG(INFO) << "Storing result";
-
-        /*if(!conf.storedir.empty()){
-          LOG(INFO) << "Writing container to "<<conf.storedir+"/"+tmpFileName;
-          tmpCont->writeFile(conf.storedir+"/"+tmpFileName,true);
-        }*/
-        if (!config::storeJson) {
-          serialize_timer.start();
-          tmpCont->removeDocuments();
-          serialize_timer.stop();
-        }
-        oqueue->send(*ptok, std::move(tmpCont));
-
-      } /*else if(conf.joinManager != nullptr){
-        LOG(INFO) << "Joining container";
-        join_timer.start();
-        conf.joinManager->join(*tmpCont);
-        join_timer.stop();
+        tmpCont->finalize();
+        oqueue->send(*ptok,std::move(tmpCont));
       }
-      */
 
       LOG(INFO) << "Finished query";
-      if (!config::storeJson)
-        inCont->removeDocuments();  // Remove documents if not needed anymore
+
 
     } else {
       shouldRun = false;
     }
   }
-  oqueue->producerFinished();
+  if (oqueue != nullptr) {
+    oqueue->producerFinished();
+  }
 
   if (hasAggregators()) {
     DCHECK(conf.aggQueue != nullptr);
@@ -192,6 +221,35 @@ void QueryThread::work() {
     conf.aggQueue->producerFinished();
   }
   logTimers();
+}
+
+void QueryThread::aggregate(QueryThread::ContRef pipelineCont,
+                            const std::shared_ptr<const DocIndex> &selectResult,
+                            bool isSelected) const {
+  RJMemoryPoolAlloc a;
+  auto &aggs = conf.aggregators;
+  if (!isSelected) {
+    pipelineCont->forAll([&a, &aggs](const RapidJsonDocument &d) {
+      for (auto &j : aggs) {
+        j->accumulate(d, a);
+      }
+    }, *selectResult);
+  } else {
+    pipelineCont->forAll([&a, &aggs](const RapidJsonDocument &d) {
+      for (auto &j : aggs) {
+        j->accumulate(d, a);
+      }
+    });
+  }
+}
+
+void QueryThread::aggregate(const std::vector<RapidJsonDocument> &docs) const {
+  RJMemoryPoolAlloc alloc;
+  for (auto &&doc : docs) {
+    for (auto &j : conf.aggregators) {
+      j->accumulate(doc, alloc);
+    }
+  }
 }
 
 const std::string QueryThread::getThreadID() const {
@@ -235,66 +293,46 @@ std::shared_ptr<const DocIndex> QueryThread::select(JSONContainer &cont) const {
   return selectResult;
 }
 
-std::vector<std::shared_ptr<RJDocument>> QueryThread::project(
-    JSONContainer &cont, const DocIndex &ids, RJMemoryPoolAlloc &alloc) const {
-  std::vector<std::shared_ptr<RJDocument>> ret;
+std::vector<std::unique_ptr<RJDocument>> QueryThread::defaultProject(JSONContainer &cont,
+                                                                     const DocIndex &ids,
+                                                                     RJMemoryPoolAlloc &alloc) const {
+  std::vector<std::unique_ptr<RJDocument>> ret;
 
   auto &proj = (conf.q)->getProjectors();
   auto &setproj = (conf.q)->getSetProjectors();
   /*
    * Check for batch completion
    */
-  if (proj.empty() && setproj.empty()) {  // Star Expression
-    ret = {};
-    auto docs = cont.getDocuments(ids);
-    for (auto &doc : docs) {
-      auto d = std::make_shared<RJDocument>(&alloc);
-      d->CopyFrom(*doc.getJson(), d->GetAllocator());
-      ret.push_back(std::move(d));
-    }
-    return ret;
+  if (proj.empty() && setproj.empty()) { //Star Expression
+    return cont.getRaw(ids, alloc);
   }
 
-  /*
-  if (setproj.empty() && proj.size() == 1) {
-    CHECK(proj[0] != nullptr);
-    if (proj[0]->getType() == IDProject::type) { //ID Expression
-      auto ptr = RJPointer(proj[0]->getToPointer().c_str());
-      for (auto &&id : ids) {
-        auto doc = std::make_shared<RJDocument>(&alloc);
-        doc->SetObject();
-        RJValue v;
-        v.SetInt64(id);
-        ptr.Set(*doc, v);
-        ret.push_back(std::move(doc));
-      }
-      return ret;
-    }
-  }
-*/
-  /*
-   * Default execution
-   */
-  ret = cont.projectDocuments(ids, proj, alloc, setproj);
-  return ret;
+  return cont.projectDocuments(ids, proj, alloc, setproj);
 }
 
-void QueryThread::aggregate(const std::vector<RapidJsonDocument> &docs) const {
-  RJMemoryPoolAlloc alloc;
-  for (auto &&doc : docs) {
-    for (auto &j : conf.aggregators) {
-      j->accumulate(doc, alloc);
-    }
-  }
-}
+
 
 bool QueryThread::hasAggregators() const { return !conf.aggregators.empty(); }
+
+bool QueryThread::canCreateView() const {
+  return conf.q->canCreateView() && oqueue != nullptr; //Does have to project
+}
+
+bool QueryThread::hasToProject() const {
+  auto &projectors = conf.q->getProjectors();
+  return oqueue != nullptr
+      || !((conf.q)->getSetProjectors().empty() && (projectors.empty() || (projectors.size() == 1 &&
+          projectors.front()->getType() == joda::query::PointerCopyProject::allCopy)));
+}
 
 void QueryThread::logTimers() const {
   if (conf.bench == nullptr) return;
 
-  conf.bench->addThread(
-      bloom_timer.durationSeconds(), select_timer.durationSeconds(),
-      project_timer.durationSeconds(), aggregate_timer.durationSeconds(),
-      copy_timer.durationSeconds(), serialize_timer.durationSeconds());
+  conf.bench->addThread(bloom_timer.durationSeconds(),
+                        select_timer.durationSeconds(),
+                        project_timer.durationSeconds(),
+                        aggregate_timer.durationSeconds(),
+                        copy_timer.durationSeconds(),
+                        serialize_timer.durationSeconds(),
+                        sample_view_cost_timer.durationSeconds());
 }

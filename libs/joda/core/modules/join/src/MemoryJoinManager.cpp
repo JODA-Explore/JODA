@@ -129,14 +129,14 @@ void MemoryJoinManager::loadJoin(std::shared_ptr<JSONStorage> &load) {
   }
   auto cont = std::make_unique<JSONContainer>(size/config::storageRetrievalThreads);
   for (auto &&doc :docs) {
-    auto  tmpdoc = std::make_shared<RJDocument>(cont->getAlloc());
+    auto tmpdoc = std::make_unique<RJDocument>(cont->getAlloc());
     doc.second->deepCopyInto(*tmpdoc);
     if(!cont->hasSpace(doc.second->getMemSize())&&cont->size() > 0){
       cont->finalize();
       load->insertDocuments(std::move(cont));
       cont = std::make_unique<JSONContainer>(size/config::storageRetrievalThreads);
     }
-    cont->insertDoc(load->getID(), std::move(tmpdoc), std::make_unique<TemporaryOrigin>());
+    cont->insertDoc(std::move(tmpdoc), std::make_unique<TemporaryOrigin>());
   }
   cont->finalize();
   load->insertDocuments(std::move(cont));

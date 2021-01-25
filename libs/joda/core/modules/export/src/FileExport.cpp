@@ -15,7 +15,7 @@ FileExport::FileExport(const std::string &filename) : filename(filename) {
 }
 
 void FileExport::exportContainer(std::unique_ptr<JSONContainer> &&cont) {
-  cont->writeFile(filename,true);
+  cont->writeFile(filename, true);
 }
 
 const std::string FileExport::toString() {

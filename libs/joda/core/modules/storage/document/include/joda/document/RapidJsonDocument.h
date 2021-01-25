@@ -4,13 +4,15 @@
 
 #ifndef JODA_RAPIDJSONDOCUMENT_H
 #define JODA_RAPIDJSONDOCUMENT_H
-
+#include <atomic>
 #include <memory>
 #include <rapidjson/fwd.h>
 #include <rapidjson/allocators.h>
+#include <joda/document/view/ViewLayer.h>
 #include "IOrigin.h"
 #include "joda/misc/RJFwd.h"
 #include "../../../../../misc/include/joda/misc/FileNameRepo.h"
+
 
 typedef unsigned long DOC_ID; //The type used to identify documents
 
@@ -26,8 +28,18 @@ class RapidJsonDocument {
    * @param json The actual JSON content
    */
   RapidJsonDocument(unsigned long id,
-                    std::shared_ptr<RJDocument> &&json,
+                    std::unique_ptr<RJDocument> &&json,
                     std::unique_ptr<const IOrigin> &&origin);
+
+  /**
+   * Creates a new RapidJsonDocument
+   * @param origin The origin of the document
+   * @param json The actual JSON content
+   */
+  RapidJsonDocument(
+      std::unique_ptr<RJDocument> &&json,
+      std::unique_ptr<const IOrigin> &&origin);
+
 
   /**
    * Move constructor
@@ -38,7 +50,7 @@ class RapidJsonDocument {
    * Copy constructor
    * @param doc The RapidJsonDocument to copy from
    */
-  RapidJsonDocument(const RapidJsonDocument &doc);
+  RapidJsonDocument(const RapidJsonDocument &doc) = delete;
 
   /**
    * Creates an empty dummy RapidJsonDocument
@@ -48,17 +60,13 @@ class RapidJsonDocument {
    * Returns the internal representation
    * @return The internal RJDocument
    */
-  std::shared_ptr<RJDocument> getJson() const;
-  /**
-   * Sets the internal RJDocument
-   * @param json The document to store
-   */
-  void setJson(const std::shared_ptr<RJDocument> &json);
+  const std::unique_ptr<RJDocument> &getJson() const;
+
   /**
  * Sets the internal RJDocument
  * @param json The document to store
  */
-  void setJson(std::shared_ptr<RJDocument> &&json);
+  void setJson(std::unique_ptr<RJDocument> &&json);
 
   /**
 * Sets the Origin of the document
@@ -71,6 +79,11 @@ class RapidJsonDocument {
    */
   void removeDoc();
 
+  /**
+   * returns a unique document ID
+   * @return unique document ID
+   */
+  static DOC_ID getNewID();
 
   /**
    * Returns the DOC_ID of the document
@@ -78,16 +91,32 @@ class RapidJsonDocument {
    */
   unsigned long getId() const;
 
+  /**
+   *
+   * @return true, if the document is a view
+   */
+  bool isView() const;
+
+  void setView(std::unique_ptr<ViewLayer> &&view);
+
+  const std::unique_ptr<ViewLayer> &getView() const;
+
+  RJValue const *Get(const RJPointer &ptr) const;
+
   const IOrigin* const getOrigin() const;
 
-  RapidJsonDocument& operator=(const RapidJsonDocument& other);
+  RapidJsonDocument &operator=(const RapidJsonDocument &other) = delete;
   RapidJsonDocument& operator=(RapidJsonDocument&& other) noexcept;
-
 
  protected:
   unsigned long id;
   std::unique_ptr<const IOrigin> origin;
-  std::shared_ptr<RJDocument> json;
+  std::unique_ptr<RJDocument> json;
+  std::unique_ptr<ViewLayer> view;
+  bool isView_ = false;
+
+ private:
+  static std::atomic_ulong currID;
 
 };
 

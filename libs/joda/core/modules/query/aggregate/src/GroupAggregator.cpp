@@ -81,63 +81,34 @@ RJValue joda::query::GroupAggregator::terminate(RJMemoryPoolAlloc &alloc) {
   val.SetArray();
 
   for (auto &&str : stringGroups) {
-    auto groupName = getGroupName();
-    RJValue groupNameVal(groupName.c_str(), alloc);
-    auto valueName = getValueName();
-    RJValue valueNameVal(valueName.c_str(), alloc);
     RJValue obj(rapidjson::kObjectType);
-    RJValue strVal;
-    strVal.SetString(str.first.c_str(), alloc);
-    obj.AddMember(valueNameVal, strVal, alloc);
-    DCHECK(strVal.IsNull());
-    obj.AddMember(groupNameVal, str.second->terminate(alloc), alloc);
+    obj.AddMember({getValueName(), alloc}, {str.first.c_str(), alloc}, alloc);
+    obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
+    obj.AddMember({getGroupName(), alloc}, str.second->terminate(alloc), alloc);
     val.PushBack(obj, alloc);
-    DCHECK(obj.IsNull());
   }
   for (auto &&num : numGroups) {
-    auto groupName = getGroupName();
-    RJValue groupNameVal(groupName.c_str(), alloc);
-    auto valueName = getValueName();
-    RJValue valueNameVal(valueName.c_str(), alloc);
     RJValue obj(rapidjson::kObjectType);
-    RJValue numVal;
-    numVal.SetDouble(num.first);
-    obj.AddMember(valueNameVal, numVal, alloc);
-    DCHECK(numVal.IsNull());
-    obj.AddMember(groupNameVal, num.second->terminate(alloc), alloc);
+    obj.AddMember({getValueName(), alloc}, RJValue(num.first), alloc);
+    obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
+    obj.AddMember({getGroupName(), alloc}, num.second->terminate(alloc), alloc);
     val.PushBack(obj, alloc);
-    DCHECK(obj.IsNull());
   }
   if (trueAgg != nullptr) {
-    auto groupName = getGroupName();
-    RJValue groupNameVal(groupName.c_str(), alloc);
     RJValue obj(rapidjson::kObjectType);
-    auto valueName = getValueName();
-    RJValue valueNameVal(valueName.c_str(), alloc);
-    RJValue trueVal;
-    trueVal.SetBool(true);
-    obj.AddMember(valueNameVal, trueVal, alloc);
-    DCHECK(trueVal.IsNull());
-    obj.AddMember(groupNameVal, trueAgg->terminate(alloc), alloc);
+    obj.AddMember({getValueName(), alloc}, RJValue(true), alloc);
+    obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
+    obj.AddMember({getGroupName(), alloc}, trueAgg->terminate(alloc), alloc);
     val.PushBack(obj, alloc);
-    DCHECK(obj.IsNull());
   }
   if (falseAgg != nullptr) {
-    auto groupName = getGroupName();
-    RJValue groupNameVal(groupName.c_str(), alloc);
-    auto valueName = getValueName();
-    RJValue valueNameVal(valueName.c_str(), alloc);
     RJValue obj(rapidjson::kObjectType);
-    RJValue falseVal;
-    falseVal.SetBool(false);
-    obj.AddMember(valueNameVal, falseVal, alloc);
-    DCHECK(falseVal.IsNull());
-    obj.AddMember(groupNameVal, falseAgg->terminate(alloc), alloc);
+    obj.AddMember({getValueName(), alloc}, RJValue(false), alloc);
+    obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
+    obj.AddMember({getGroupName(), alloc}, falseAgg->terminate(alloc), alloc);
     val.PushBack(obj, alloc);
-    DCHECK(obj.IsNull());
   }
   return val;
-
 }
 
 void joda::query::GroupAggregator::accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
@@ -189,6 +160,12 @@ void joda::query::GroupAggregator::accumulate(const RapidJsonDocument &json, RJM
 
 void joda::query::GroupAggregator::setGroupAs(const std::string &groupAs) {
   GroupAggregator::groupAs = groupAs;
+}
+
+std::vector<std::string> joda::query::GroupAggregator::getAttributes() const {
+  auto attributes = protoAgg->getAttributes();
+  groupBy->getAttributes(attributes);
+  return attributes;
 }
 
 

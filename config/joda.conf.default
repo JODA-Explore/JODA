@@ -5,7 +5,7 @@
 #Directories
 data_dir = .
 tmpdir = /tmp/JODA
-readthreads=4
+readthreads=1
 
 [indices.cracking]
 enable = true
@@ -20,3 +20,15 @@ fp_prob = 0.001         # Has to be between 0 and 1
 
 [storage.container]
 max_size = 20971520     # 20 * 1024 *1024
+
+### Delta trees ###
+# Enabling delta trees vastly improves memory usage for a variety of queries.
+# This feature is still relatively experimental and may cause bugs in some edge cases.
+# To debug errors disabling this feature may help.
+[delta_tree]
+enable = true
+
+# Virtual Object optimization.
+# This optimization caches some delta-tree computations.
+# Requires slightly more memory but improves query times on the same data set.
+vo_enable = true

@@ -11,7 +11,7 @@ bool FileOrigin::isReparsable() const {
   return true;
 }
 
-std::shared_ptr<RJDocument> FileOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
+std::unique_ptr<RJDocument> FileOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
   std::string line;
   std::ifstream f(g_FileNameRepoInstance.getFile(id));
   if (!f.is_open())
@@ -25,7 +25,7 @@ std::shared_ptr<RJDocument> FileOrigin::reparse(RJMemoryPoolAlloc &alloc) const 
   /*
    * Parse
    */
-  auto doc = std::make_shared<RJDocument>(&alloc);
+  auto doc = std::make_unique<RJDocument>(&alloc);
   doc->Parse(line.c_str());
   if (doc->HasParseError()) {
     if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty) {

@@ -10,6 +10,8 @@
 #include <unordered_map>
 
 #include "../../../../../include/joda/storage/JSONStorage.h"
+#include <joda/join/JoinManager.h>
+#include <boost/functional/hash.hpp>
 
 #define JODA_TEMPORARY_STORAGE_NAME "TEMPORARY_RESULT"
 #define JODA_STORE_SKIPPED_QUERY_ID 0
@@ -124,44 +126,57 @@ class StorageCollection {
    */
   void stopJoin(const JoinManager &jm);
 
-  /**
+    /**
    * Ensures that the system has enough space for the comming operations.
    * Not enough space is available, JSONStorage s will be serialized to disk and
    * removed from memory according to a specified heuristic.
    * @param estimatedSize The estimated required size (in Bytes) for the coming
    * operation
-   * @param except A JSONStorage that cannot be removed from memory for the
+   * @param withoutDependency A JSONStorage that cannot be removed from memory for the
    * coming operation.
    */
-  void ensureSpace(long long estimatedSize,
-                   const std::shared_ptr<JSONStorage> &except = nullptr);
-
-  /**
-   * Calculates and returns the estimated complete memory requirements of this
-   * repository.
-   * @return The estimated memory requirements (in Bytes)
-   */
+  void ensureSpace(long long estimatedSize, const std::shared_ptr<JSONStorage> &withoutDependency = nullptr);
+  void addDependency(const std::shared_ptr<JSONStorage> &store, const std::shared_ptr<JSONStorage> &dependson);
+  size_t estimateHierarchySize(const std::shared_ptr<JSONStorage> &store) const;
   long long estimatedStorageSize() const;
-
+  size_t parsedHierarchySize(const std::shared_ptr<JSONStorage> &store) const;
+  size_t estimatedSize() const;
+  size_t estimatedParsedSize() const;
  protected:
-  std::shared_ptr<JSONStorage> chooseStorageToRemove(
-      const std::shared_ptr<JSONStorage> &except) const;
-  std::shared_ptr<JSONStorage> chooseLargestStorage(
-      std::vector<std::pair<std::shared_ptr<JSONStorage>, size_t>> &candidates,
-      const std::shared_ptr<JSONStorage> &except) const;
-  std::shared_ptr<JSONStorage> chooseLRUStorage(
-      std::vector<std::pair<std::shared_ptr<JSONStorage>, size_t>> &candidates,
-      const std::shared_ptr<JSONStorage> &except) const;
+  std::vector<JSONStorage *> getDependencies(
+      const std::shared_ptr<JSONStorage> &store) const;
+
+      std::vector<std::pair<JSONStorage *, size_t>> chooseStoragesToRemove(long long toFree,
+      const std::vector<JSONStorage *> &except) const;
+  void orderContainerBySize(std::vector<std::pair<JSONStorage *,
+                                                  size_t>> &candidates) const;
+  void orderContainerByLRU(
+      std::vector<std::pair<JSONStorage *,
+                                                 size_t>> &candidates) const;
+  void orderContainerByFIFO(std::vector<std::pair<JSONStorage *, size_t>> &candidates) const;
+     void orderContainerByDependencies(std::vector<std::pair<JSONStorage *,
+                                                      size_t>> &candidates) const;
+  void orderContainerByRandomExplorer(std::vector<std::pair<JSONStorage *,
+                                                            size_t>> &candidates) const;
 
   std::string getJoinName(const joda::query::IValueProvider &valProv);
   std::unordered_map<std::string, std::shared_ptr<JSONStorage>> storages;
+  std::vector<std::string> storageInsertion;
   std::unordered_map<unsigned long, std::shared_ptr<JSONStorage>> resultStorage;
   std::unordered_map<std::string, std::shared_ptr<JoinManager>> runningJoins;
   std::mutex mut;
   std::atomic_ulong tmpRes{JODA_STORE_VALID_ID_START};
 
- private:
+  std::unordered_set<std::pair<std::shared_ptr<JSONStorage>, std::shared_ptr<JSONStorage>>,
+                     boost::hash<std::pair<std::shared_ptr<JSONStorage>, std::shared_ptr<JSONStorage>>>> dependencies;
+
   StorageCollection(){};
+ private:
+
+  friend class CollectionTest;
+  friend class CollectionTest_FIFO_Test;
+  friend class CollectionTest_LARGEST_Test;
+  friend class CollectionTest_DEPENDENCIES_Test;
 };
 
 #endif  // JODA_STORAGECOLLECTION_H

@@ -15,11 +15,11 @@ std::unique_ptr<JSONContainer> joda::docparsing::DefaultContainerScheduler<meta>
 }
 
 template<>
-void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(ContainerIdentifier id, std::shared_ptr<RJDocument> &&doc,
+void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(ContainerIdentifier id, std::unique_ptr<RJDocument> &&doc,
                                                                          std::unique_ptr<IOrigin> &&origin,
                                                                          size_t size) {
 
-  currentContainer->insertDoc(JSONStorage::getID(), std::move(doc), std::move(origin));
+  currentContainer->insertDoc(std::move(doc), std::move(origin));
   if (!(currentContainer->hasMetaSpace(0) || currentContainer->size() == 0)) {
     currentContainer->metaFinalize();
     currentContainer->removeDocuments();
@@ -32,11 +32,11 @@ void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(Contain
 }
 
 template<>
-void joda::docparsing::DefaultContainerScheduler<false>::scheduleDocument(ContainerIdentifier id, std::shared_ptr<RJDocument> &&doc,
+void joda::docparsing::DefaultContainerScheduler<false>::scheduleDocument(ContainerIdentifier id, std::unique_ptr<RJDocument> &&doc,
                                                                           std::unique_ptr<IOrigin> &&origin,
                                                                           size_t size) {
   DCHECK(currentContainer != nullptr);
-  currentContainer->insertDoc(JSONStorage::getID(), std::move(doc), std::move(origin));
+  currentContainer->insertDoc(std::move(doc), std::move(origin));
   if (!(currentContainer->hasSpace(0) || currentContainer->size() == 0)) {
     currentContainer->finalize();
     queue->send(std::move(currentContainer)); //Enqueue
@@ -75,8 +75,8 @@ typename joda::docparsing::DefaultContainerScheduler<meta>::ContainerIdentifier 
 }
 
 template<bool meta>
-std::shared_ptr<RJDocument> joda::docparsing::DefaultContainerScheduler<meta>::getNewDoc(ContainerIdentifier id ) {
-  return std::make_shared<RJDocument>(currentContainer->getAlloc());
+std::unique_ptr<RJDocument> joda::docparsing::DefaultContainerScheduler<meta>::getNewDoc(ContainerIdentifier id) {
+  return std::make_unique<RJDocument>(currentContainer->getAlloc());
 }
 
 template<>

@@ -6,6 +6,7 @@
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/document.h>
 #include "JSONInterface.h"
+#include "CursesHandler.h"
 #include <glog/logging.h>
 #include <codecvt>
 #include <locale>
@@ -47,19 +48,6 @@ void joda::cli::JSONInterface::destroyWindow(WINDOW *local_win) {
   delwin(local_win);
 }
 
-void joda::cli::JSONInterface::showJSON(std::shared_ptr<RJDocument> &json) {
-if(json == nullptr) {LOG(ERROR)<< "Got null document"; return;};
-  rapidjson::StringBuffer buffer;
-  rapidjson::PrettyWriter<rapidjson::StringBuffer> writer(buffer);
-  json->Accept(writer);
-  std::string str = buffer.GetString();
-  LOG(INFO) << "JSON:" << str;
-  werase(jsonwin);
-  auto wstr = getWString(str);
-  waddwstr(jsonwin,wstr.c_str());
-  refreshAll();
-  browse();
-}
 
 void joda::cli::JSONInterface::browse() {
   bool exec = true;
@@ -86,4 +74,12 @@ std::wstring joda::cli::JSONInterface::getWString(std::string &str) {
 
   std::wstring wstr = cv.from_bytes(str);
   return wstr;
+}
+
+void joda::cli::JSONInterface::showJSON(const std::shared_ptr<JSONStorage> &store, size_t index) {
+  CursesPrettyHandler writer(jsonwin);
+  werase(jsonwin);
+  store->AcceptDocuments(writer, index, index);
+  refreshAll();
+  browse();
 }

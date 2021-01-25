@@ -55,7 +55,7 @@ class SimilarityScheduler {
    * @param id The id representing the container
    * @return A new document
    */
-  std::shared_ptr<RJDocument> getNewDoc(ContainerIdentifier id);
+  std::unique_ptr<RJDocument> getNewDoc(ContainerIdentifier id);
 
   /**
    * Schedules the document into the container given by id.
@@ -64,7 +64,7 @@ class SimilarityScheduler {
    * @param origin The origin of the document
    * @param size The size of the document (bytes)
    */
-  void scheduleDocument(ContainerIdentifier id, std::shared_ptr<RJDocument> &&doc,
+  void scheduleDocument(ContainerIdentifier id, std::unique_ptr<RJDocument> &&doc,
                         std::unique_ptr<IOrigin> &&origin,
                         size_t size);
   virtual ~SimilarityScheduler() = default;
@@ -94,17 +94,17 @@ std::unique_ptr<JSONContainer> SimilarityScheduler<SIM>::createContainer(size_t 
 
 
 template<typename SIM>
-std::shared_ptr<RJDocument> SimilarityScheduler<SIM>::getNewDoc(ContainerIdentifier id) {
-  return std::make_shared<RJDocument>(container[id].first->getAlloc());
+std::unique_ptr<RJDocument> SimilarityScheduler<SIM>::getNewDoc(ContainerIdentifier id) {
+  return std::make_unique<RJDocument>(container[id].first->getAlloc());
 }
 
 template<typename SIM>
 void SimilarityScheduler<SIM>::scheduleDocument(ContainerIdentifier id,
-                                                std::shared_ptr<RJDocument> &&doc,
+                                                std::unique_ptr<RJDocument> &&doc,
                                                 std::unique_ptr<IOrigin> &&origin,
                                                 size_t size) {
 
-      container[id].first->insertDoc(JSONStorage::getID(), std::move(doc), std::move(origin));
+  container[id].first->insertDoc(std::move(doc), std::move(origin));
       if (!(container[id].first->hasSpace(0) || container[id].first->size() == 0)) {
         container[id].first->finalize();
         DCHECK(container[id].first != nullptr);

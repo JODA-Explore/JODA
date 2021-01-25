@@ -11,6 +11,10 @@
 #include <future>
 #include <mutex>
 #include <unordered_map>
+#include <future>
+#include <joda/container/JSONContainer.h>
+#include <joda/container/ContainerFlags.h>
+class QueryPlan;
 
 /**
  * Represents a logical collection of JSON documents.
@@ -21,6 +25,7 @@
 class JSONStorage {
  public:
   virtual ~JSONStorage();
+  void preparePurge();
   explicit JSONStorage(const std::string &query_string);
   /**
    * Consumes documents from the given queue and inserts them into the
@@ -63,11 +68,6 @@ class JSONStorage {
    */
   void getDocumentsQueue(JsonContainerRefQueue::queue_t *queue);
 
-  /**
-   * Returns a new unique DOC_ID
-   * @return
-   */
-  static DOC_ID getID();
 
   /**
    * Returns the number of documents in the collection
@@ -91,7 +91,8 @@ class JSONStorage {
    * Returns the estimated memory capacity of the collection (in bytes)
    * @return
    */
-  size_t estimatedCapacity();
+
+  size_t estimatedCapacity() const;
 
   /**
    * Frees all non-essential memory.
@@ -99,6 +100,8 @@ class JSONStorage {
    * excluded)
    */
   void freeAllMemory();
+
+  size_t parsedSize() const;
 
   /**
    * Returns the name of the JSONStorage.
@@ -138,6 +141,54 @@ class JSONStorage {
       unsigned long start = 0, unsigned long end = ULONG_MAX);
 
   /**
+   * Accepts a subset of all documents in the Container with the given handler
+   * @param handler The handler to use
+   * @param start The (inclusive) start index of the documents to accept
+   * @param start The (inclusive) end index of the documents to accept
+   * @return a list of boolean values, one for each checked document.
+   */
+  template<class Handler>
+  std::vector<bool> AcceptDocuments(Handler &handler, unsigned long start = 0, unsigned long end = ULONG_MAX) {
+    std::lock_guard<std::mutex> lock(documentMutex);
+    std::vector<bool> ret;
+    if (docCount == 0) return ret;
+    end = std::min(end, docCount - 1);
+    if (start > end) return ret;
+    auto count = (end - start) + 1;
+    ret.reserve(count);
+    auto it = container.begin();
+
+    unsigned long skippedSize = 0;
+    //Browse container until designated is reached
+    while (start >= (*it)->size() + skippedSize) {
+      skippedSize += (*it)->size();
+      it++;
+      DCHECK(it != container.end());
+    }
+
+    while (ret.size() < count) {
+      size_t contStart = start - skippedSize;
+      contStart = std::max(contStart, (size_t) 0);
+      unsigned long contEnd = contStart + count - ret.size() - 1;
+      if (it == container.end()) {
+        DCHECK(false) << "If all Container contributed to the raws, this should not be possible";
+        return ret;
+      }
+
+      if ((*it)->size() != 0) {
+        auto tmp = (*it)->AcceptDocuments(handler, contStart, contEnd);
+        DCHECK_EQ(tmp.size(), contEnd - contStart + 1);
+        std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+        it++;
+      } else {
+        DLOG(INFO) << "Skipping empty container";
+      }
+
+    }
+    return ret;
+  }
+
+  /**
    * Returns the directory used for temporarily serializing documents
    * @return
    */
@@ -149,10 +200,13 @@ class JSONStorage {
   unsigned long getLastUsed() const;
 
  protected:
+
+  friend QueryPlan;
+  const std::vector<std::unique_ptr<JSONContainer>> &getContainer() const;
+
   std::string name;
   std::string regtmpdir;
 
-  static std::atomic_ulong currID;
   std::mutex documentMutex;
   std::vector<std::unique_ptr<JSONContainer>> container;
   unsigned long docCount = 0;

@@ -11,12 +11,14 @@ set(joda-core-query-pred-SOURCES
        ${CMAKE_CURRENT_LIST_DIR}/src/Predicate.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/ValToPredicate.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/BloomAttributeVisitor.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/AttributeVisitor.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/CopyPredicateVisitor.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/PredicateVisitor.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/StaticEvalVisitor.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/visitors/ToStringVisitor.cpp
        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/AndPredicate.h
        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/BloomAttributeVisitor.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/AttributeVisitor.h
        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/ComparePredicate.h
        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/CopyPredicateVisitor.h
        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/predicate/EqualizePredicate.h

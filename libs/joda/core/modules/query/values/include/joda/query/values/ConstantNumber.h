@@ -65,6 +65,7 @@ struct NowConstantFunction {
 
 typedef ConstantNumber<NowConstantFunction> NowProvider;
 
+
 template
 class ConstantNumber<joda::query::PiConstantFunction>;
 

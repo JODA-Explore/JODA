@@ -106,8 +106,7 @@ void JoinParser::parse(const FileJoinManager &jm, std::shared_ptr<JSONStorage> &
               continue;
             }
 
-
-            std::shared_ptr<RJDocument> joinDoc = std::make_shared<RJDocument>(cont->getAlloc());
+            auto joinDoc = std::make_unique<RJDocument>(cont->getAlloc());
             joinDoc->SetObject();
             RJValue joinName;
             joinName.SetString(jm.getName().c_str(),*cont->getAlloc());
@@ -129,7 +128,7 @@ void JoinParser::parse(const FileJoinManager &jm, std::shared_ptr<JSONStorage> &
             }
 
             joinDoc->AddMember("joins",std::move(arrVal),joinDoc->GetAllocator());
-            cont->insertDoc(storage->getID(),std::move(joinDoc),std::make_unique<TemporaryOrigin>());
+            cont->insertDoc(std::move(joinDoc), std::make_unique<TemporaryOrigin>());
             infile.close();
             filesParsed.fetch_add(1);
 

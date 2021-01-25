@@ -8,7 +8,7 @@ bool IDPositionOrigin::isReparsable() const {
   return false;
 }
 
-std::shared_ptr<RJDocument> IDPositionOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
+std::unique_ptr<RJDocument> IDPositionOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
   return nullptr;
 }
 

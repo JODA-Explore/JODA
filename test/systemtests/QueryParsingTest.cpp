@@ -15,6 +15,11 @@
 #include <joda/query/values/AtomProvider.h>
 #include <joda/parser/JSONFileSource.h>
 #include <joda/parser/JSONFileDirectorySource.h>
+#include <joda/query/project/ValueProviderProjector.h>
+#include <joda/query/values/ConstantNumber.h>
+#include <joda/query/project/PointerCopyProject.h>
+#include <joda/query/project/DeletePointerProjector.h>
+#include <joda/query/values/PointerProvider.h>
 #include <joda/export/FileExport.h>
 #include <joda/storage/JSONStorage.h>
 #include <joda/export/StorageExport.h>
@@ -108,6 +113,9 @@ class QueryParsingTest : public ::testing::Test {
     //AS (normal)
     EXPECT_EQ(proj.size(), q->getProjectors().size());
     for (int i = 0; i < q->getProjectors().size(); ++i) {
+      auto &info = typeid(*q->getProjectors()[i].get());
+      auto &typeInfo = typeid(*proj[i].get());
+      EXPECT_EQ(info, typeInfo);
       EXPECT_STREQ(q->getProjectors()[i]->toString().c_str(), proj[i]->toString().c_str());
     }
 
@@ -443,6 +451,99 @@ TEST_F(QueryParsingTest, StaticEvalOr) {
          default_proj,
          default_setproj,
          default_agg);
+}
+
+TEST_F(QueryParsingTest, ASValue) {
+  std::shared_ptr<joda::query::Query> q;
+  std::vector<std::unique_ptr<joda::query::IProjector>> proj;
+  proj.push_back(std::make_unique<joda::query::ValueProviderProjector>("/a", std::make_unique<joda::query::PiProvider>()));
+  EXPECT_NO_THROW(q = parseQuery("LOAD A AS ('/a' : PI())"););
+  EXPECT_NE(q, nullptr);
+  equals(q,
+         "A",
+         default_importSources,
+         default_exportDestination,
+         default_deleteVar,
+         default_choosePred,
+         proj,
+         default_setproj,
+         default_agg);
+}
+
+TEST_F(QueryParsingTest, ASPtr) {
+  std::shared_ptr<joda::query::Query> q;
+  std::vector<std::unique_ptr<joda::query::IProjector>> proj;
+  proj.push_back(std::make_unique<joda::query::ValueProviderProjector>("/a", std::make_unique<joda::query::PointerProvider>("/b")));
+  EXPECT_NO_THROW(q = parseQuery("LOAD A AS ('/a' : '/b')"););
+  EXPECT_NE(q, nullptr);
+  equals(q,
+         "A",
+         default_importSources,
+         default_exportDestination,
+         default_deleteVar,
+         default_choosePred,
+         proj,
+         default_setproj,
+         default_agg);
+}
+
+TEST_F(QueryParsingTest, ASAll) {
+  std::shared_ptr<joda::query::Query> q;
+
+  EXPECT_NO_THROW(q = parseQuery("LOAD A AS *"););
+  EXPECT_NE(q, nullptr);
+  equals(q,
+         "A",
+         default_importSources,
+         default_exportDestination,
+         default_deleteVar,
+         default_choosePred,
+         default_proj,
+         default_setproj,
+         default_agg);
+}
+
+TEST_F(QueryParsingTest, ASAllButOne) {
+  std::shared_ptr<joda::query::Query> q;
+  std::vector<std::unique_ptr<joda::query::IProjector>> proj;
+  proj.push_back(std::make_unique<joda::query::PointerCopyProject>("", ""));
+  proj.push_back(std::make_unique<joda::query::DeletePointerProjector>("/a"));
+  EXPECT_NO_THROW(q = parseQuery("LOAD A AS *, ('/a':)"););
+  EXPECT_NE(q, nullptr);
+  equals(q,
+         "A",
+         default_importSources,
+         default_exportDestination,
+         default_deleteVar,
+         default_choosePred,
+         proj,
+         default_setproj,
+         default_agg);
+}
+
+TEST_F(QueryParsingTest, ASMultiple) {
+  std::shared_ptr<joda::query::Query> q;
+  std::vector<std::unique_ptr<joda::query::IProjector>> proj;
+  proj.push_back(std::make_unique<joda::query::PointerCopyProject>("", ""));
+  proj.push_back(std::make_unique<joda::query::DeletePointerProjector>("/a"));
+  proj.push_back(std::make_unique<joda::query::ValueProviderProjector>("/b", std::make_unique<joda::query::PiProvider>()));
+  EXPECT_NO_THROW(q = parseQuery("LOAD A AS *, ('/a':),   ('/b' : PI())"););
+  EXPECT_NE(q, nullptr);
+  equals(q,
+         "A",
+         default_importSources,
+         default_exportDestination,
+         default_deleteVar,
+         default_choosePred,
+         proj,
+         default_setproj,
+         default_agg);
+}
+
+TEST_F(QueryParsingTest, MissingASExp) {
+  std::shared_ptr<joda::query::Query> q;
+  q = parseQuery("LOAD A AS ", false);
+  EXPECT_EQ(q, nullptr);
 }
 
 TEST_F(QueryParsingTest, QueryToStringTest) {

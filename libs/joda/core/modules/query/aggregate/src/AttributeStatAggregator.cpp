@@ -3,10 +3,11 @@
 //
 
 #include <rapidjson/document.h>
+#include <joda/query/values/ValueAccepter.h>
 #include "../include/joda/query/aggregation/AttributeStatAggregator.h"
 
 void joda::query::AttributeStatAggregator::merge(IAggregator *other) {
-  auto *o = dynamic_cast<AttributeStatAggregator *>(other);
+  auto* o = dynamic_cast<AttributeStatAggregator*>(other);
   assert(o != nullptr);
   assert(getName() == o->getName());
   assert(toPointer == o->toPointer);
@@ -30,19 +31,7 @@ joda::query::AttributeStatAggregator::AttributeStatAggregator(const std::string 
 }
 
 void joda::query::AttributeStatAggregator::accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
-
-  const RJValue *val;
-  RJValue val_;
-  if (params[0]->isAtom()) {
-    val_ = params[0]->getAtomValue(json, alloc);
-    val = &val_;
-  } else {
-    val = params[0]->getValue(json, alloc);
-  }
-  if (val != nullptr) {
-    val->Accept(handler);
-  }
-
+  ValueAccepter::Accept(params[0], json, alloc, handler);
   handler.finishDocument();
 }
 
@@ -50,3 +39,6 @@ const std::string joda::query::AttributeStatAggregator::getName() const {
   return getName_();
 }
 
+std::vector<std::string> joda::query::AttributeStatAggregator::getAttributes() const {
+  return {};
+}

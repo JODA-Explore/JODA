@@ -15,10 +15,13 @@ namespace joda::query {
 class FlattenProjector : public joda::query::ISetProjector {
  public:
   FlattenProjector(const std::string &to, std::unique_ptr<IValueProvider> &&from);
-  void project(const RapidJsonDocument &json, std::vector<std::shared_ptr<RJDocument>> &newDocs) override;
+  void project(const RapidJsonDocument &json,
+               std::vector<std::unique_ptr<RJDocument>> &newDocs,
+               bool view = false) override;
   std::string getType() override;
   static const std::string type;
   std::string toString() override;
+  std::vector<std::string> getAttributes() const override;
  protected:
   std::unique_ptr<IValueProvider> from;
 

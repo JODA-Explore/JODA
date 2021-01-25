@@ -148,13 +148,8 @@ void joda::cli::ResultInterface::interact() {
 
 void joda::cli::ResultInterface::startJSONViewer() const {
   joda::cli::JSONInterface ji;
-  auto docs = storage->getRaw(currResult, currResult);
-  if(docs.size()!= 1){
-    LOG(ERROR) << "Could not retrieve json for viewing";
-    return;
-  }
   LOG(INFO) << "Showing JSON";
-  ji.showJSON(docs.front());
+  ji.showJSON(storage, currResult);
 }
 
 void joda::cli::ResultInterface::forceRefresh() {
@@ -167,6 +162,15 @@ void joda::cli::ResultInterface::forceRefresh() {
 joda::cli::ResultInterface::ResultInterface() {
   setlocale(LC_ALL, "");
   initscr();
+  if (has_colors() == TRUE) {
+    start_color();
+    use_default_colors();
+    init_pair(JODA_JSON_OUTPUT_COLOR_NUMBER, COLOR_BLUE, -1);
+    init_pair(JODA_JSON_OUTPUT_COLOR_STRING, COLOR_GREEN, -1);
+    init_pair(JODA_JSON_OUTPUT_COLOR_BOOL, COLOR_BLUE, -1);
+    init_pair(JODA_JSON_OUTPUT_COLOR_NULL, COLOR_BLUE, -1);
+    init_pair(JODA_JSON_OUTPUT_COLOR_KEY, COLOR_MAGENTA, -1);
+  }
   cbreak();
   curs_set(0);
   keypad(stdscr, TRUE);

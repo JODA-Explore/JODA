@@ -11,6 +11,7 @@
 #include "joda/query/predicate/ValToPredicate.h"
 #include "joda/query/project/FlattenProjector.h"
 #include "joda/query/project/ValueProviderProjector.h"
+#include "joda/query/project/DeletePointerProjector.h"
 namespace joda::queryparsing::grammar {
 
 template<>
@@ -25,6 +26,16 @@ struct asExpAction<projectKW_ARRFLAT> {
   static void apply0(asState &state) {
     assert(state.fun == NOPROJ);
     state.fun = arrFlatProj;
+  }
+};
+
+template<>
+struct asExpAction<projectKW_ALL> {
+  template<typename Input>
+  static void apply(const Input &in, asState &state) {
+    assert(state.fun == NOPROJ);
+    if (!state.projs.empty()) throw tao::pegtl::parse_error("'*' has to be the first projection", in);
+    state.fun = allCopyProj;
   }
 };
 
@@ -51,19 +62,33 @@ struct asExpAction<projectToPointer> {
     state.toPointer = pointer.substr(1, pointer.size() - 2);
   }
 };
+
 template<>
 struct asExpAction<projectSingleExp> {
   static void apply0(asState &state) {
-    assert(state.fun != NOPROJ && state.valprov != nullptr);
     switch (state.fun) {
-      case NOPROJ: assert(false);
+      case NOPROJ: DCHECK(state.valprov == nullptr);
+        state.projs.push_back(std::make_unique<joda::query::DeletePointerProjector>(state.toPointer));
         break;
       case arrFlatProj:
         state.setprojs.push_back(std::make_unique<joda::query::FlattenProjector>(state.toPointer,
                                                                                  std::move(state.valprov)));
         break;
-      case valProvProj:assert(state.valprov != nullptr);
-        state.projs.push_back(std::make_unique<joda::query::ValueProviderProjector>(state.toPointer, std::move(state.valprov)));
+      case valProvProj: {
+        assert(state.valprov != nullptr);
+        auto *pProv = dynamic_cast<joda::query::PointerProvider *>(state.valprov.get());
+        if (state.toPointer == "" && pProv != nullptr && pProv->toString() == "''") {
+          state.projs.push_back(std::make_unique<joda::query::PointerCopyProject>("", ""));
+          state.valprov = nullptr;
+        } else {
+          state.projs.push_back(std::make_unique<joda::query::ValueProviderProjector>(state.toPointer, std::move(state.valprov)));
+        }
+
+        break;
+      }
+      case allCopyProj:DCHECK(state.valprov == nullptr);
+        DCHECK(state.toPointer.empty());
+        state.projs.push_back(std::make_unique<joda::query::PointerCopyProject>("", ""));
         break;
     }
     state.toPointer.clear();

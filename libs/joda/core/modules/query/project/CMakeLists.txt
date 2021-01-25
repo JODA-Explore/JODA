@@ -11,6 +11,8 @@ set(joda-core-query-proj-SOURCES
        ${CMAKE_CURRENT_LIST_DIR}/src/PointerCopyProject.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/setprojection/FlattenProjector.cpp
        ${CMAKE_CURRENT_LIST_DIR}/src/ValueProviderProjector.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/DeletePointerProjector.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/project/DeletePointerProjector.h
         )
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-query-proj-SOURCES} PARENT_SCOPE )
 add_library(joda-core-query-proj-lib INTERFACE)

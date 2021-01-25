@@ -45,7 +45,7 @@ class IImportSource {
   };
 
   virtual void feedSources(JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t &queue,
-                             JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t &ptok) {
+                           JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t &ptok) {
     DCHECK(false) << "Called unimplemented queue JODA_JSON_FILE_BEAUTIFIED_READER_FLAG";
   };
 

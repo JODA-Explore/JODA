@@ -44,9 +44,6 @@ class JodaClient {
   static void handleError(JodaClientException &e);
   static void handleError(JodaServerException &e);
 
-
-
-
   std::string &ltrim(std::string &str);
   std::string &rtrim(std::string &str);
   std::string parseCommand();

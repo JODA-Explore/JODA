@@ -38,6 +38,10 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/NullProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/NullProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/ConstantNumber.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/UnaryPointerAcceptProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/MemberCountProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/HashProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/ValueAccepter.h
         )
 
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-query-values-SOURCES} PARENT_SCOPE )

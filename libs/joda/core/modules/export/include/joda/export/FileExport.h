@@ -7,7 +7,7 @@
 
 #include "IExportDestination.h"
 
-class FileExport: public IExportDestination {
+class FileExport : public IExportDestination {
  public:
   FileExport(const std::string &filename);
   const std::string toString() override;

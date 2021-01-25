@@ -18,10 +18,10 @@
 
 void joda::network::client::JodaClient::cli() {
   bool exec = true;
-  while(exec){
+  while (exec) {
     auto cmd = parseCommand();
-    if(cmd == "quit") exec = false;
-    else{
+    if (cmd == "quit") exec = false;
+    else {
       try {
         auto ret = QueryRequest::query(client, cmd, prefix);
         if (ret.first != 0 && ret.second != 0) {
@@ -117,9 +117,9 @@ void joda::network::client::JodaClient::browseReturn(unsigned long id, unsigned 
             currMin-=chunkSize;
             currMax-=chunkSize;
             currMin = currMin;
-            currMax = std::max(chunkSize,currMax);
+            currMax = std::max(chunkSize, currMax);
             vec = ResultRequest::result(client, prefix, id, currMin, chunkSize, true);
-            i = vec.size()-1;
+            i = vec.size() - 1;
             jh = jw = 0;
           }
 

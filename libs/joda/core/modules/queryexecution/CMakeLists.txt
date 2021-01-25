@@ -30,6 +30,7 @@ target_link_libraries(joda-core-queryexecution-lib
         joda-core-concurrency-lib
         joda-core-config-lib
         joda-core-indexing-lib
+        joda-core-storage-lib
 )
 #########################################################
 #

@@ -9,7 +9,7 @@
 #include "IExportDestination.h"
 #include "joda/concurrency/IOThreadPool.h"
 
-class DirectoryExport: public IExportDestination {
+class DirectoryExport : public IExportDestination {
  public:
   DirectoryExport(const std::string &dirname);
   void consume(JsonContainerQueue::queue_t &queue) override;

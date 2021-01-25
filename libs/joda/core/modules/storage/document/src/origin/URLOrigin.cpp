@@ -8,7 +8,7 @@ bool URLOrigin::isReparsable() const {
   return false;
 }
 
-std::shared_ptr<RJDocument> URLOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
+std::unique_ptr<RJDocument> URLOrigin::reparse(RJMemoryPoolAlloc &alloc) const {
   return nullptr;
 }
 

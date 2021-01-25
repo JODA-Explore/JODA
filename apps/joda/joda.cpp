@@ -94,7 +94,6 @@ int main(int argc, char *argv[]) {
     bind = options["bind"].as<std::string>();
   }
 
-
   initGlobalSettings();
 
   if (fs::exists(config::tmpdir.c_str())) {

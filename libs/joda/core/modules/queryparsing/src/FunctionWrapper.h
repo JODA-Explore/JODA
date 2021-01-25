@@ -51,6 +51,8 @@ struct functionAction<FSTRUCT> { \
 #include <joda/query/values/UnaryStringProvider.h>
 #include <joda/query/values/BinaryStringProvider.h>
 #include <joda/query/values/ConstantNumber.h>
+#include <joda/query/values/MemberCountProvider.h>
+#include <joda/query/values/HashProvider.h>
 
 namespace joda::queryparsing::grammar {
 REGISTER_FUNCTION(query::ArraySizeProvider,func_kw_arrSize,"SIZE")
@@ -102,6 +104,8 @@ REGISTER_FUNCTION(query::LowerProvider,func_kw_LOWERFUNK,"LOWER")
 REGISTER_FUNCTION(query::LtrimProvider,func_kw_LTRIMFUNK,"LTRIM")
 REGISTER_FUNCTION(query::RtrimProvider,func_kw_RTRIMFUNK,"RTRIM")
 REGISTER_FUNCTION(query::PiProvider,func_kw_PIFUNK,"PI")
+REGISTER_FUNCTION(query::MemberCountProvider,func_kw_MEMCOUNTFUNK,"MEMCOUNT")
+REGISTER_FUNCTION(query::HashProvider,func_kw_HASHFUNK,"HASH")
 REGISTER_FUNCTION(query::NowProvider,func_kw_NOWFUNK,"NOW")
 
 template< typename... Rules >
@@ -164,6 +168,8 @@ struct functionKWs : stringableSOR<func_kw_exists,
                                      func_kw_LTRIMFUNK,
                                      func_kw_RTRIMFUNK,
                                      func_kw_PIFUNK,
+                                     func_kw_MEMCOUNTFUNK,
+                                     func_kw_HASHFUNK,
                                      func_kw_NOWFUNK,
                                      func_kw_DIVFUNK
 > {

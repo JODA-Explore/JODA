@@ -41,6 +41,9 @@ template<> const std::string
     query_control<projectFrom>::error_message = "Unknown/Illegal 'From-Expression' in 'AS' command";
 template<> const std::string query_control<projectToPointer>::error_message = "Illegal 'To-Pointer' in 'AS' command";
 template<> const std::string query_control<projectExp>::error_message = "Error in 'AS' command";
+template<> const std::string query_control<projectSingleExp>::error_message = "Expected '*' or '(<Ptr>:<Source>)'";
+
+
 
 //Choose
 template<> const std::string query_control<qexp>::error_message = "Error in 'CHOOSE' expression";
@@ -53,9 +56,11 @@ template<> const std::string query_control<ptrFunc>::error_message = "Atomic val
 
 //Brackets expected
 template<> const std::string query_control<tao::pegtl::pad<tao::pegtl::one<'('>, tao::pegtl::space>>::error_message = "Expected '('";
+template<> const std::string query_control<funcBracketOpen>::error_message = "Expected '('";
 template<> const std::string query_control<tao::pegtl::one<'('>>::error_message = "Expected '('";
 template<> const std::string query_control<tao::pegtl::pad<tao::pegtl::one<')'>, tao::pegtl::space>>::error_message = "Expected ')'";
 template<> const std::string query_control<tao::pegtl::one<')'>>::error_message = "Expected ')'";
+template<> const std::string query_control<funcBracketClose>::error_message = "Expected ',' or  ')'";
 template<> const std::string query_control<tao::pegtl::one<'"'>>::error_message = "Expected '\"'";
 
 //: expected

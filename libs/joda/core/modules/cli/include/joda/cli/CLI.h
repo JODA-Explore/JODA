@@ -56,7 +56,6 @@ class CLI {
   void toggleCache();
   void help();
   void dumpConfig();
-  void toggleCrack();
   void listSources();
   void listResults();
   void unknownCommand();

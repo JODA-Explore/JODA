@@ -23,6 +23,7 @@ struct asExpAction
 struct asKW : TAOCPP_PEGTL_KEYWORD("AS") {};
 
 struct projectKW_ARRFLAT : TAOCPP_PEGTL_KEYWORD("FLATTEN") {};
+struct projectKW_ALL : tao::pegtl::one<'*'> {};
 #endif
 
 #include "Literals.h"
@@ -39,12 +40,13 @@ struct setProjectionExp : tao::pegtl::if_must<setProjectionKW, tao::pegtl::seq<
 };
 struct projectFrom : tao::pegtl::sor<setProjectionExp,
                                      functionstateaction,
-                                     projectFromPointer
+                                     projectFromPointer,
+                                     tao::pegtl::success
 > {
 };
 
 struct projectToPointer : pointer {};
-struct projectSingleExp : tao::pegtl::seq<
+struct projectTupleExp : tao::pegtl::seq<
     tao::pegtl::must<tao::pegtl::one<'('>>,
     tao::pegtl::pad<tao::pegtl::must<projectToPointer>, tao::pegtl::space>,
     tao::pegtl::pad<tao::pegtl::must<tao::pegtl::one<':'>>, tao::pegtl::space>,
@@ -52,6 +54,13 @@ struct projectSingleExp : tao::pegtl::seq<
     tao::pegtl::must<tao::pegtl::pad<tao::pegtl::one<')'>, tao::pegtl::space>>
 > {
 };
+
+struct projectSingleExp : tao::pegtl::sor<
+    projectKW_ALL,
+    projectTupleExp
+> {
+};
+
 struct projectExp : tao::pegtl::list_must<projectSingleExp, tao::pegtl::one<','>, tao::pegtl::space> {};
 
 }

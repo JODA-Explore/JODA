@@ -28,7 +28,7 @@ class GroupAggregator : public IAggregator {
   RJValue terminate(RJMemoryPoolAlloc &alloc) override;
 
   void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
-
+  std::vector<std::string> getAttributes() const override;
   void setGroupAs(const std::string &groupAs);
  protected:
   const std::unique_ptr<IAggregator> protoAgg;

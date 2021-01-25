@@ -146,7 +146,10 @@ void joda::cli::CLI::start(const std::vector<std::string> &onceQueries) {
       query = qp.parse(onceQuery);
       query_i++;
       auto lastQuery = query_i == onceQueries.size();
-      executeQuery(query,lastQuery);
+      if (lastQuery)
+        executeQuery(query, lastQuery);
+      else
+        executeNonInteractiveQuery(query, lastQuery);
       if(lastQuery)
         execute = false;
     }
@@ -334,6 +337,7 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query, bool pri
       auto result = checkResult(resultId);
 
       if (result != nullptr && printResult) {
+        interface.updateStorage(result);
         interface.interact();
       }
 
@@ -411,8 +415,8 @@ std::vector<std::pair<std::string, std::function<void(const std::string&)>>> jod
       {"help",std::bind(&CLI::help,this)},
       {"dump config",std::bind(&joda::cli::CLI::dumpConfig, this)},
 #ifdef JODA_ENABLE_PROFILING
-  {"profile stop", std::bind(&CLI::profileStop, this)},
-  {"profile start", std::bind(&CLI::profileStart, this, std::placeholders::_1)},
+      {"profile stop", std::bind(&CLI::profileStop, this)},
+      {"profile start", std::bind(&CLI::profileStart, this, std::placeholders::_1)},
 #endif
   };
 }

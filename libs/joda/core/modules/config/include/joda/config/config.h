@@ -31,7 +31,7 @@ class config {
   //Storage
   static bool storeJson;
   static unsigned long long maxmemory;
-  enum EvictionStrategies { NO_EVICTION, LARGEST, LRU };
+  enum EvictionStrategies { NO_EVICTION, LARGEST, LRU, FIFO, DEPENDENCIES, EXPLORER };
   static EvictionStrategies evictionStrategy; //Which eviction strategy to use
 
   //Benchmark
@@ -70,6 +70,11 @@ class config {
   //CLI
   static bool disable_interactive_CLI;
 
+  //View
+  static bool enable_views;
+  static bool enable_views_vo;
+
+
 };
 
 
@@ -97,6 +102,12 @@ inline std::istream &operator>>(std::istream &in, config::EvictionStrategies &ev
     eviction = config::LARGEST;
   else if (token == "LRU")
     eviction = config::LRU;
+  else if (token == "FIFO")
+    eviction = config::FIFO;
+  else if (token == "DEPENDENCIES")
+    eviction = config::DEPENDENCIES;
+  else if (token == "EXPLORER")
+    eviction = config::EXPLORER;
   else
     in.setstate(std::ios_base::failbit);
   return in;

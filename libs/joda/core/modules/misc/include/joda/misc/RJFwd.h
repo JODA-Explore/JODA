@@ -5,6 +5,11 @@
 #ifndef JODA_ALLOCATOR_H
 #define JODA_ALLOCATOR_H
 
+#ifndef RAPIDJSON_ASSERT
+#include <glog/logging.h>
+#define RAPIDJSON_ASSERT(x) DCHECK(x)
+#endif // RAPIDJSON_ASSERT
+
 #include <rapidjson/allocators.h>
 #include <rapidjson/document.h>
 #include <rapidjson/pointer.h>
@@ -16,10 +21,11 @@
  * This enables rapid change of allocator or character types
  */
 
+typedef rapidjson::UTF8<char> RJChar;
 typedef rapidjson::CrtAllocator RJBaseAlloc;
 typedef rapidjson::MemoryPoolAllocator<RJBaseAlloc> RJMemoryPoolAlloc;
-typedef rapidjson::GenericDocument<rapidjson::UTF8<char>, RJMemoryPoolAlloc, RJBaseAlloc> RJDocument;
-typedef rapidjson::GenericValue<rapidjson::UTF8<char>, RJMemoryPoolAlloc> RJValue;
+typedef rapidjson::GenericDocument<RJChar, RJMemoryPoolAlloc, RJBaseAlloc> RJDocument;
+typedef rapidjson::GenericValue<RJChar, RJMemoryPoolAlloc> RJValue;
 typedef rapidjson::GenericPointer<RJValue, RJBaseAlloc> RJPointer;
 
 

@@ -28,8 +28,7 @@ const std::string &JoinManager::getName() const {
 }
 
 void JoinManager::join(JSONContainer &cont) {
-  std::function<void(RapidJsonDocument &)> func = [this](RapidJsonDocument& doc){this->join(doc);};
-  cont.forAll(func);
+  cont.forAll([this](RapidJsonDocument &doc) { this->join(doc); });
 }
 
 

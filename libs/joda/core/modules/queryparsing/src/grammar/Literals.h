@@ -65,6 +65,11 @@ struct nullAtom : tao::pegtl::sor<TAOCPP_PEGTL_KEYWORD("null"), TAOCPP_PEGTL_KEY
 /*
  * Expression
  */
+
+struct funcBracketOpen : tao::pegtl::one<'('> {};
+struct funcBracketClose : tao::pegtl::one<')'> {};
+
+
 struct gt : tao::pegtl::seq<tao::pegtl::one<'>'>, tao::pegtl::opt<tao::pegtl::one<'='>>> {};
 struct lt : tao::pegtl::seq<tao::pegtl::one<'<'>, tao::pegtl::opt<tao::pegtl::one<'='>>> {};
 struct equal : tao::pegtl::seq<tao::pegtl::sor<tao::pegtl::one<'!'>, tao::pegtl::one<'='>>, tao::pegtl::one<'='>> {};
@@ -75,7 +80,13 @@ struct beginList : tao::pegtl::one<'['> {};
 struct varExp : tao::pegtl::sor<numberAtom, stringAtom, boolAtom,nullAtom, pointer> {};
 struct functionstateaction;
 struct funcParamRule : tao::pegtl::sor<numberAtom, stringAtom, pointer, boolAtom,nullAtom, /*numList,*/ functionstateaction> {};
-struct realFunc : tao::pegtl::seq<functionKWs, tao::pegtl::must<tao::pegtl::one<'('>>, tao::pegtl::opt<tao::pegtl::list<funcParamRule, tao::pegtl::one<','>, tao::pegtl::space>>, tao::pegtl::must<tao::pegtl::one<')'>>> {};
+struct realFunc : tao::pegtl::seq<functionKWs,
+                                  tao::pegtl::must<funcBracketOpen>,
+                                  tao::pegtl::opt<tao::pegtl::list<funcParamRule,
+                                                                   tao::pegtl::one<','>,
+                                                                   tao::pegtl::space>>,
+                                  tao::pegtl::must<funcBracketClose>> {
+};
 struct atomFunc : varExp{};
 struct ptrFunc : tao::pegtl::sor<varExp,realFunc>{};
 struct functionstateaction : tao::pegtl::state<functionState, tao::pegtl::action<functionAction, ptrFunc>> {};

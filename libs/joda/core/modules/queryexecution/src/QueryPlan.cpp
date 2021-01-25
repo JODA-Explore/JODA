@@ -13,10 +13,9 @@
 #include <joda/misc/Benchmark.h>
 #include <joda/misc/MemoryUtility.h>
 #include <joda/misc/Timer.h>
-
 #include <ctime>
+#include <joda/fs/DirectoryRegister.h>
 #include <numeric>
-
 #include "../../export/include/joda/export/FileExport.h"
 #include "../../export/include/joda/export/IExportDestination.h"
 #include "../../export/include/joda/export/JoinExport.h"
@@ -51,11 +50,17 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
   if (config::queryCache)
     execConfig.addExecutor(std::make_unique<CacheExecutor>(*q));
 
+  execConfig.tmpdir = joda::filesystem::DirectoryRegister::getInstance().getUniqueDir();
+  joda::filesystem::DirectoryRegister::getInstance().registerDirectory(execConfig.tmpdir, false);
+
+
+
   /*
    * Parse
    */
   Timer time;
 
+  auto &storageCollection = StorageCollection::getInstance();
   if (!importSources.empty()) {
     LOG(INFO) << "Starting parsing";
     long long estimation =
@@ -63,7 +68,7 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
                         [](long est, const auto &source) {
                           return est + source->estimatedSize();
                         });
-    StorageCollection::getInstance().ensureSpace(estimation);
+    storageCollection.ensureSpace(estimation);
     parser.parse(importSources, load);
 
     time.stop();
@@ -92,7 +97,7 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
           << "When in store mode, joinmanager should always be memory-based";
       fjm->loadJoin(load);
     }
-    StorageCollection::getInstance().stopJoin(*loadJoin);  // Delete JoinManager
+    storageCollection.stopJoin(*loadJoin);  // Delete JoinManager
     time.stop();
     if (bench)
       benchmark->addValue(Benchmark::RUNTIME, "Load Join",
@@ -129,18 +134,27 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
       }
     }
 
-    StorageCollection::getInstance().ensureSpace(load->estimatedSize(), load);
+    double factor = 1.0;
+    if (q->canCreateView()) factor = 0.1;
+    storageCollection.ensureSpace(static_cast<long long>(load->parsedSize() - load->estimatedSize())
+                                      + static_cast<long long>(factor * load->parsedSize()), load);
 
     if (q->hasAggregators()) execConfig.aggQueue = aggregatorQueue.get();
-    auto exec = std::make_unique<IOThreadPool<QueryThread>>(
-        loadQueue.get(), storeQueue.get(), maxThreads, execConfig);
+    std::unique_ptr<IOThreadPool<QueryThread>> exec;
+    if (q->hasAggregators()) {
+      exec = std::make_unique<IOThreadPool<QueryThread>>(loadQueue.get(), nullptr, maxThreads, execConfig);
+    } else {
+      exec = std::make_unique<IOThreadPool<QueryThread>>(loadQueue.get(), storeQueue.get(), maxThreads, execConfig);
+    }
     load->getDocumentsQueue(loadQueue.get());
     if (q->hasAggregators()) {
       auto aggCont = aggregate(q, aggregatorQueue.get(), benchmark);
       auto ptok = std::make_unique<JsonContainerQueue::queue_t::ptok_t>(
           storeQueue->queue);
       storeQueue->registerProducer();
-      storeQueue->send(*ptok, std::move(aggCont));
+      storeQueue->send(*ptok,std::move(aggCont));
+      storeQueue->producerFinished();
+      storeQueue->unregisterProducer();
     }
 
     if (exportDestination != nullptr) {
@@ -150,14 +164,28 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
         benchmark->addValue(Benchmark::RUNTIME, t.first, t.second);
       }
 
-      // ResultID
-      auto *storeDestination =
-          dynamic_cast<StorageExport *>(exportDestination.get());
-      if (storeDestination != nullptr)
+      //ResultID
+      auto *storeDestination = dynamic_cast<StorageExport *>(exportDestination.get());
+      if (storeDestination != nullptr) {
         resultID = storeDestination->getTemporaryResultID();
+        /*
+         * Check for delta dependencies
+         */
+        if (config::enable_views) {
+          for (const auto &outCont : storeDestination->getStore()->getContainer()) {
+            for (const auto &inCont : load->getContainer()) {
+              if (outCont->isBaseContainer(inCont.get())) {
+                storageCollection.addDependency(storeDestination->getStore(), load);
+                goto foundDependency;
+              }
+            }
+          }
+          foundDependency:;
+        }
+      }
     }
   } else {
-    resultID = StorageCollection::getInstance().addTemporaryStorage(load);
+    resultID = storageCollection.addTemporaryStorage(load);
   }
 
   time.stop();
@@ -168,11 +196,11 @@ unsigned long QueryPlan::executeQuery(Benchmark *benchmark) {
   // Delete
   if (!deleteVar.empty()) {
     LOG(INFO) << "Deleting data source " << deleteVar;
-    StorageCollection::getInstance().removeStorage(deleteVar);
+    storageCollection.removeStorage(deleteVar);
   }
 
-  if (bench && resultID > JODA_STORE_VALID_ID_START) {
-    auto tmp = StorageCollection::getInstance().getStorage(resultID);
+  if (bench && resultID >= JODA_STORE_VALID_ID_START) {
+    auto tmp = storageCollection.getStorage(resultID);
     assert(tmp != nullptr);
     benchmark->addValue("Result Size", tmp->size());
     benchmark->addValue("#Container", tmp->contSize());
@@ -196,9 +224,11 @@ std::unique_ptr<JSONContainer> QueryPlan::aggregate(
       auto aStr = a->toString();
       if (agg->toString() == aStr) {
         a->merge(agg.get());
+        agg = nullptr;
         break;
       }
     }
+
   }
 
   /*
@@ -216,10 +246,9 @@ std::unique_ptr<JSONContainer> QueryPlan::aggregate(
   }
 
   auto cont = std::make_unique<JSONContainer>();
-  auto tmpDoc = std::make_shared<RJDocument>(cont->getAlloc());
+  auto tmpDoc = std::make_unique<RJDocument>(cont->getAlloc());
   tmpDoc->CopyFrom(*doc, *cont->getAlloc());
-  cont->insertDoc(JSONStorage::getID(), std::move(tmpDoc),
-                  std::make_unique<TemporaryOrigin>());
+  cont->insertDoc(std::move(tmpDoc), std::make_unique<TemporaryOrigin>());
   cont->finalize();
 
   agg_timer.stop();
@@ -294,4 +323,7 @@ void QueryPlan::addGenericBenchmarkInformation(Benchmark *bench) const {
   auto procUsage = MemoryUtility::procRamUsage();
   bench->addValue<uint64_t>("RAM Proc", procUsage.getBytes());
   bench->addValue("Pretty RAM Proc", procUsage.getHumanReadable());
+  auto storageSize = MemoryUtility::MemorySize(StorageCollection::getInstance().estimatedSize());
+  bench->addValue<uint64_t>("Estimated Storage Size", storageSize.getBytes());
+  bench->addValue("Pretty Estimated Storage Size", storageSize.getHumanReadable());
 }

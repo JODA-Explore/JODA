@@ -9,6 +9,7 @@ set(joda-core-cli-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/ResultInterface.h
         ${CMAKE_CURRENT_LIST_DIR}/src/JSONInterface.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/JSONInterface.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/CursesHandler.h
         )
 
 

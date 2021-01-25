@@ -54,3 +54,7 @@ int config::history_size;
 
 //CLI
 bool config::disable_interactive_CLI = false;
+
+//View
+bool config::enable_views = false;
+bool config::enable_views_vo = false;

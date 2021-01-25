@@ -20,6 +20,7 @@ class FullStack : public ::testing::Test {
     joda::filesystem::DirectoryRegister::getInstance();
     auto options =  ConfigParser::parseConfigs(1, argv);
     ConfigParser::setConfig(options);
+    config::enable_views = false;
 #ifdef JODA_TEST_NOSTORE_MODE
     config::storeJson = false;
 #endif

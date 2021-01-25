@@ -5,13 +5,15 @@
 #include "../include/joda/storage/collection/StorageCollection.h"
 
 #include <glog/logging.h>
+#include <regex>
+#include <algorithm>
+#include <joda/query/values/IValueProvider.h>
 #include <joda/config/config.h>
 #include <joda/join/FileJoinManager.h>
 #include <joda/join/JoinManager.h>
 #include <joda/join/MemoryJoinManager.h>
 #include <joda/misc/MemoryUtility.h>
 #include <joda/query/values/IValueProvider.h>
-
 #include <numeric>
 #include <regex>
 
@@ -25,12 +27,25 @@ std::shared_ptr<JSONStorage> StorageCollection::getStorage(
 void StorageCollection::removeStorage(const std::string &name) {
   std::lock_guard<std::mutex> guard(mut);
   storages.erase(name);
+  storageInsertion.erase(std::remove(storageInsertion.begin(), storageInsertion.end(), name), storageInsertion.end());
+  bool finished = false;
+  while (!finished) {
+    auto it = std::find_if(dependencies.begin(), dependencies.end(),
+                           [&name](const std::pair<std::shared_ptr<JSONStorage>, std::shared_ptr<JSONStorage>> &p) {
+                             return p.first->getName() == name || p.second->getName() == name;
+                           });
+    if (it == dependencies.end()) finished = true;
+    else dependencies.erase(it);
+  }
 }
 std::shared_ptr<JSONStorage> StorageCollection::getOrAddStorage(
     const std::string &name) {
   std::lock_guard<std::mutex> guard(mut);
-  if (storages.find(name) == storages.end())
+  if (storages.find(name) == storages.end()) {
     storages[name] = std::make_shared<JSONStorage>(name);
+    storageInsertion.emplace_back(name);
+  }
+
   return storages[name];
 }
 std::vector<std::shared_ptr<JSONStorage>> StorageCollection::getStorages() {
@@ -131,55 +146,103 @@ void StorageCollection::stopJoin(const JoinManager &jm) {
 }
 
 StorageCollection::~StorageCollection() {
-  DLOG(INFO) << "Cleaning up " << storages.size() << " Storages "
-             << "(" << resultStorage.size() << " temporaries)";
+  DLOG(INFO) << "Cleaning up " << storages.size() << " Storages " << "(" << resultStorage.size() << " temporaries)";
+  runningJoins.clear();
+  dependencies.clear();
+  for (auto &storage : storages) {
+    storage.second->preparePurge();
+  }
+  for (auto &storage : resultStorage) {
+    storage.second->preparePurge();
+  }
+  resultStorage.clear();
+  while (!storageInsertion.empty()) {
+    DLOG(INFO) << "Storage " << storageInsertion.back() << " reference count: "
+               << storages[storageInsertion.back()].use_count();
+    storages.erase(storageInsertion.back());
+    storageInsertion.pop_back();
+  }
 }
 
 void StorageCollection::ensureSpace(
-    long long estimatedSize, const std::shared_ptr<JSONStorage> &except) {
+    long long estimatedSize, const std::shared_ptr<JSONStorage> &withoutDependency) {
+  std::lock_guard<std::mutex> guard(mut);
   if (config::evictionStrategy == config::NO_EVICTION) return;
-  DCHECK(estimatedSize <
-         config::maxmemory);  // TODO: gracefully capture (move no nostore mode)
-  while (estimatedSize >= config::maxmemory - estimatedStorageSize()) {
-    auto estimatedTyped = MemoryUtility::MemorySize(estimatedSize);
-    auto remainingTyped =
-        MemoryUtility::MemorySize(config::maxmemory - estimatedStorageSize());
-    DLOG(INFO) << "Estimated required size: "
-               << estimatedTyped.getHumanReadable()
-               << " Remaining size: " << remainingTyped.getHumanReadable();
-    auto storage = chooseStorageToRemove(except);
-    if (storage == nullptr) {
-      LOG(ERROR) << "Could not ensure space, everything already freed";
-      return;
+  if (estimatedSize > config::maxmemory) {
+    LOG(WARNING) << "Estimated required size: " << MemoryUtility::MemorySize(estimatedSize).getHumanReadable()
+                 << " but only " << MemoryUtility::MemorySize(config::maxmemory).getHumanReadable()
+                 << " available to use, freeing as much as possible.";
+
+  }
+  auto estimatedCurrentlyStored = estimatedStorageSize();
+  auto estimatedHierarchy = estimateHierarchySize(withoutDependency);
+  auto estimatedParsedHierarchy = parsedHierarchySize(withoutDependency);
+  auto estimatedStorageSize1 = estimatedCurrentlyStored + (estimatedParsedHierarchy - estimatedHierarchy);
+  auto toFree = static_cast<double>(config::maxmemory) - static_cast<double>(estimatedStorageSize1)
+      - static_cast<double>(estimatedSize);
+  toFree = -toFree;
+  if (toFree > 0) {
+
+    unsigned long long freed = 0;
+    long count = 0;
+    auto except = getDependencies(withoutDependency);
+    auto stores = chooseStoragesToRemove(toFree, except);
+    LOG(INFO) << "Estimated required size: " << MemoryUtility::MemorySize(estimatedSize).getHumanReadable()
+              << " Estimated Storage: " << MemoryUtility::MemorySize(estimatedStorageSize1).getHumanReadable()
+              << " Remaining size: "
+              << MemoryUtility::MemorySize(config::maxmemory - estimatedStorageSize1).getHumanReadable()
+              << " To Be Freed: "
+              << MemoryUtility::MemorySize(toFree).getHumanReadable()
+              << " Choosing from " << stores.size() << " collections" ;
+    for (auto &storage : stores) {
+      if (static_cast<double>(freed) > toFree) break;
+      auto size = storage.second;
+      storage.first->freeAllMemory();
+      freed += size - storage.first->estimatedSize();
+      count++;
+      LOG(INFO) << "Freeing storage: " << storage.first->getName() << " Expected gain: "
+                << MemoryUtility::MemorySize(storage.second).getHumanReadable();
     }
-    LOG(INFO) << "Freeing storage: " << storage->getName() << " Expected gain: "
-              << MemoryUtility::MemorySize(storage->estimatedSize())
-                     .getHumanReadable();
-    storage->freeAllMemory();
+
   }
 }
 
-std::shared_ptr<JSONStorage> StorageCollection::chooseStorageToRemove(
-    const std::shared_ptr<JSONStorage> &except) const {
-  std::vector<std::pair<std::shared_ptr<JSONStorage>, size_t>> candidates;
+std::vector<std::pair<JSONStorage *, size_t>> StorageCollection::chooseStoragesToRemove(long long toFree,
+    const std::vector<JSONStorage *> &except) const {
+  std::vector<std::pair<JSONStorage *, size_t>> candidates;
+  int excepted = 0;
+  int sizeZero = 0;
   for (const auto &storage : storages) {
-    auto estimation = storage.second->estimatedSize();
-    if (storage.second != except &&
-        storage.second->estimatedCapacity() >
-            0) {  // Not excepted, and not freed or empty
-      candidates.emplace_back(storage.second, estimation);
+    if (std::find(except.begin(), except.end(),
+        storage.second.get()) != except.end()){
+      excepted++;
+      continue;
     }
+    if(storage.second->estimatedCapacity() <= 0){
+      sizeZero++;
+      continue;
+    }
+    candidates.emplace_back(storage.second.get(), storage.second->estimatedSize());
   }
+  LOG(INFO) << "Ignored " << excepted+sizeZero << " of " << storages.size() << " collections (" << excepted << " exceptions; " << sizeZero << " empty)";
   switch (config::evictionStrategy) {
     case config::LARGEST:
-      return chooseLargestStorage(candidates, except);
+      orderContainerBySize(candidates);
+      break;
     case config::LRU:
-      return chooseLRUStorage(candidates, except);
+      orderContainerByLRU(candidates);
+      break;
+    case config::FIFO: orderContainerByFIFO(candidates);
+      break;
+    case config::DEPENDENCIES: orderContainerByDependencies(candidates);
+      break;
+    case config::EXPLORER: orderContainerByRandomExplorer(candidates);
+      break;
     default:
       DCHECK(false) << "Not implemented";
   }
 
-  return nullptr;
+  return candidates;
 }
 
 long long StorageCollection::estimatedStorageSize() const {
@@ -189,26 +252,200 @@ long long StorageCollection::estimatedStorageSize() const {
                          });
 }
 
-std::shared_ptr<JSONStorage> StorageCollection::chooseLargestStorage(
-    std::vector<std::pair<std::shared_ptr<JSONStorage>, size_t>> &candidates,
-    const std::shared_ptr<JSONStorage> &except) const {
+void StorageCollection::orderContainerBySize(
+    std::vector<std::pair<JSONStorage *, size_t>> &candidates) const {
   std::sort(candidates.begin(), candidates.end(),
-            [](const std::pair<std::shared_ptr<JSONStorage>, size_t> &a,
-               const std::pair<std::shared_ptr<JSONStorage>, size_t> &b) {
+            [](const std::pair<JSONStorage *, size_t> &a,
+               const std::pair<JSONStorage *, size_t> &b) {
               return (a.second > b.second);
             });
-  if (candidates.empty()) return nullptr;
-  return candidates.front().first;
 }
 
-std::shared_ptr<JSONStorage> StorageCollection::chooseLRUStorage(
-    std::vector<std::pair<std::shared_ptr<JSONStorage>, size_t>> &candidates,
-    const std::shared_ptr<JSONStorage> &except) const {
+void StorageCollection::orderContainerByLRU(
+    std::vector<std::pair<JSONStorage *, size_t>> &candidates) const {
   std::sort(candidates.begin(), candidates.end(),
-            [](const std::pair<std::shared_ptr<JSONStorage>, size_t> &a,
-               const std::pair<std::shared_ptr<JSONStorage>, size_t> &b) {
+            [](const std::pair<JSONStorage *, size_t> &a,
+               const std::pair<JSONStorage *, size_t> &b) {
               return (a.first->getLastUsed() < b.first->getLastUsed());
             });
-  if (candidates.empty()) return nullptr;
-  return candidates.front().first;
+}
+
+void StorageCollection::orderContainerByFIFO(std::vector<std::pair<JSONStorage *,
+                                                                  size_t>> &candidates) const {
+  std::sort(candidates.begin(), candidates.end(),
+            [&](const std::pair<JSONStorage *, size_t> &a,
+               const std::pair<JSONStorage *, size_t> &b) {
+              const auto& a_insert = std::find(storageInsertion.begin(),storageInsertion.end(),a.first->getName());
+              const auto& b_insert = std::find(storageInsertion.begin(),storageInsertion.end(),b.first->getName());
+              return a_insert < b_insert;
+            });
+}
+
+void StorageCollection::orderContainerByDependencies(std::vector<std::pair<JSONStorage *,
+                                                                   size_t>> &candidates) const {
+  std::sort(candidates.begin(), candidates.end(),
+            [&](const std::pair<JSONStorage *, size_t> &a,
+               const std::pair<JSONStorage *, size_t> &b) {
+              int a_dependCount = 0;
+              int b_dependCount = 0;
+              for (const auto &dependency : dependencies) {
+                if(dependency.second.get() == a.first) a_dependCount++;
+                if(dependency.second.get() == b.first) b_dependCount++;
+              }
+              return a_dependCount < b_dependCount;
+            });
+}
+
+void StorageCollection::addDependency(const std::shared_ptr<JSONStorage> &store,
+                                      const std::shared_ptr<JSONStorage> &dependson) {
+  std::lock_guard<std::mutex> guard(mut);
+  dependencies.insert({store, dependson});
+}
+
+std::vector<JSONStorage *> StorageCollection::getDependencies(const std::shared_ptr<JSONStorage> &store) const {
+  std::vector<JSONStorage *> except{store.get()};
+  std::vector<JSONStorage *> todo = {store.get()};
+  //TODO WARNING! Cyclic dependencies will kill this
+  while (!todo.empty()) {
+    const auto &s = todo.back();
+    todo.pop_back();
+    for (const auto &dependency : dependencies) {
+      if (dependency.first.get() == s) {
+        except.emplace_back(dependency.second.get());
+        todo.emplace_back(dependency.second.get());
+      }
+    }
+  }
+  return except;
+}
+
+size_t StorageCollection::estimateHierarchySize(const std::shared_ptr<JSONStorage> &store) const {
+  if (store == nullptr) return 0;
+  std::vector<JSONStorage *> todo = {store.get()};
+  size_t size = 0;
+  while (!todo.empty()) {
+    const auto &s = todo.back();
+    todo.pop_back();
+    if (s != nullptr)size += s->estimatedSize();
+    for (const auto &dependency : dependencies) {
+      if (dependency.first.get() == s) {
+        todo.emplace_back(dependency.second.get());
+      }
+    }
+  }
+  return size;
+}
+
+size_t StorageCollection::parsedHierarchySize(const std::shared_ptr<JSONStorage> &store) const {
+  if (store == nullptr) return 0;
+  std::vector<JSONStorage *> todo = {store.get()};
+  size_t size = 0;
+  while (!todo.empty()) {
+    const auto &s = todo.back();
+    todo.pop_back();
+    if (s != nullptr)size += s->parsedSize();
+    for (const auto &dependency : dependencies) {
+      if (dependency.first.get() == s) {
+        todo.emplace_back(dependency.second.get());
+      }
+    }
+  }
+  return size;
+}
+
+
+
+size_t StorageCollection::estimatedSize() const {
+  size_t size = 0;
+  for (const auto &storage : storages) {
+    size += storage.second->estimatedSize();
+  }
+  return size;
+}
+
+size_t StorageCollection::estimatedParsedSize() const {
+  size_t size = 0;
+  for (const auto &storage : storages) {
+    size += storage.second->parsedSize();
+  }
+  return size;
+}
+
+void StorageCollection::orderContainerByRandomExplorer(std::vector<std::pair<JSONStorage *,
+                                                                             size_t>> &candidates) const {
+  if (candidates.empty()) return;
+  double random_jump = 0.2;
+  double go_back = 0.4;
+  double stay = 0.4;
+
+  orderContainerByLRU(candidates);
+  const auto *current = candidates.back().first;
+
+  std::vector<std::pair<JSONStorage *, std::pair<double, size_t>>> scores;
+  scores.reserve(candidates.size());
+
+  size_t max = 0;
+  std::vector<double> random_jump_scores(1.0,candidates.size());
+  for (int i = 0; i < random_jump_scores.size(); ++i) {
+    random_jump_scores[random_jump_scores.size()-i-1] /= i+1;
+  }
+  double total_random_jump_score = std::accumulate(random_jump_scores.begin(),random_jump_scores.end(),0.0);
+  for (auto &jumpScore : random_jump_scores) {
+    jumpScore /= total_random_jump_score*random_jump;
+  }
+  DCHECK(0.99 < std::accumulate(random_jump_scores.begin(),
+                                random_jump_scores.end(),
+                                0.0) < 1.01)
+  << "Should roughly equal 1";
+
+  for (int i = 0; i < candidates.size(); ++i) {
+    const auto & candidate = candidates[i];
+    scores.emplace_back(candidate.first, std::make_pair<>(random_jump_scores[i], candidate.first->estimatedSize()));
+
+    //Add stay possibility for current node
+    if (candidate.first == current) {
+      scores.back().second.first += stay;
+    }
+
+    //Add go_back possibility for previous node
+    if (std::find_if(dependencies.begin(), dependencies.end(),
+                     [&current](const std::pair<std::shared_ptr<JSONStorage>, std::shared_ptr<JSONStorage>> &p) {
+                       return p.first.get() == current;
+                     }) != dependencies.end()) {
+      scores.back().second.first += go_back;
+    }
+  }
+
+  for (auto &score : scores) {
+    double relSize = static_cast<double>(score.first->size()) / static_cast<double>(max);
+    score.second.first += random_jump * (relSize / scores.size());
+
+  }
+
+  DCHECK(0.95 < std::accumulate(scores.begin(),
+                                scores.end(),
+                                0.0,
+                                [](double score, const auto &source) { return score + source.second.first; }) < 1.05)
+  << "Should roughly equal 1";
+
+  std::sort(scores.begin(), scores.end(),
+            [](const auto &a,
+               const auto &b) {
+              //If chance equal, sort by size
+              if (a.second.first == b.second.first) return a.second.second > b.second.second;
+              else return (a.second.first < b.second.first); //Sort by chance
+            });
+  std::vector<std::pair<JSONStorage *, size_t>> newCandidates;
+  newCandidates.reserve(candidates.size());
+  for (const auto &score : scores) {
+    auto it = std::find_if(candidates.begin(), candidates.end(),
+                           [&score](const std::pair<JSONStorage *, size_t> &p) {
+                             return p.first == score.first;
+                           });
+    if (it != candidates.end()) {
+      newCandidates.emplace_back(score.first, score.second.second);
+    }
+  }
+  DCHECK(candidates.size() == newCandidates.size());
+  candidates = std::move(newCandidates);
 }

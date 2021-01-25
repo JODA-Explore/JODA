@@ -8,11 +8,13 @@ joda::query::ValueProviderProjector::ValueProviderProjector(const std::string &t
                                                             std::unique_ptr<IValueProvider> &&valprov)
     : IProjector(to), valprov(std::move(valprov)) {
   IValueProvider::replaceConstSubexpressions(this->valprov);
+  accepter = ValueAccepter(this->valprov);
 }
 
 std::string joda::query::ValueProviderProjector::getType() {
   return type;
 }
+
 RJValue joda::query::ValueProviderProjector::getVal(const RapidJsonDocument &json,
                                                     RJMemoryPoolAlloc &alloc) {
   assert(valprov != nullptr);
@@ -20,14 +22,54 @@ RJValue joda::query::ValueProviderProjector::getVal(const RapidJsonDocument &jso
   if (valprov->isAtom()) {
     return valprov->getAtomValue(json, alloc);
   }
-  auto *tmp = valprov->getValue(json, alloc);
-  RJValue val;
-  if (tmp != nullptr)
-    val.CopyFrom(*tmp, alloc);
-  return val;
+  RJDocument doc(&alloc);
+
+  if (!config::enable_views) {
+    auto *ptr = valprov->getValue(json, alloc);
+    if (ptr == nullptr) return RJValue();
+    RJValue val;
+    val.CopyFrom(*ptr, alloc, true);
+    return val;
+  } else {
+    return std::visit([this, &doc, &json, &alloc](auto &&arg) {
+      using T = std::decay_t<decltype(arg)>;
+      if constexpr (std::is_same_v<T, const RJValue>)
+        return arg;
+      else if constexpr (std::is_same_v<T, std::optional<const RJValue *>>) {
+        if (!arg.has_value()) {
+          accepter.prepareGenerator(&json, &alloc);
+          doc.Populate(accepter);
+          if (doc.IsObject()) return (RJValue) doc.GetObject();
+          if (doc.IsArray()) return (RJValue) doc.GetArray();
+          // Is non existing pointer
+          return RJValue();
+        } else {
+          auto *p = arg.value();
+          if (p == nullptr) return RJValue();
+          else {
+            RJValue val;
+            val.CopyFrom(*p, alloc, true);
+            return val;
+          }
+        }
+      } else if constexpr (std::is_same_v<T, const VirtualObject *>) {
+        if (arg == nullptr) return RJValue();
+        return arg->deepCopy(alloc);
+      } else
+        return RJValue();
+    }, accepter.getPointerIfExists(json, alloc));
+
+
+
+  }
+
 }
 
 const std::string joda::query::ValueProviderProjector::type = "ValueProviderProjection";
 std::string joda::query::ValueProviderProjector::toString() {
   return IProjector::toString() + valprov->toString();
+}
+
+std::vector<std::string> joda::query::ValueProviderProjector::getMaterializeAttributes() const {
+  return accepter.getMaterializeAttributes();
 }

@@ -16,10 +16,14 @@ class PointerCopyProject : public joda::query::IProjector {
   PointerCopyProject(const std::string &to, const std::string &from);
   std::string getType() override;
   static const std::string type;
+  static const std::string allCopy;
   std::string toString() override;
+  std::vector<std::string> getMaterializeAttributes() const override;
  protected:
   RJValue getVal(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
   RJPointer from;
+  std::string from_str;
+  bool copyAll = false;
 };
 }
 

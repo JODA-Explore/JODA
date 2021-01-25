@@ -18,9 +18,9 @@ void DirectoryExport::exportContainer(std::unique_ptr<JSONContainer> &&cont) {
   std::hash<size_t> hash;
 
   stream << std::hex << hash((size_t)cont.get());
-  std::string filename( stream.str() );
+  std::string filename(stream.str());
   filename += ".json";
-  cont->writeFile(dirname+"/"+filename,true);
+  cont->writeFile(dirname + "/" + filename, true);
 }
 
 void DirectoryExport::consume(JsonContainerQueue::queue_t &queue) {

@@ -20,19 +20,19 @@ class JodaAPIException : public std::runtime_error {
  /**
   * Initializes an exception in the JODA network API with a description
   * @param what the description of the exception
-  */ 
+  */
   explicit JodaAPIException(const std::string &what) : std::runtime_error("API Error: " + what) {};
 };
 
 /**
  * JodaServer is responsible for initializing and starting a HTTP server providing netwok functionality to JODA
- */ 
+ */
 class JodaServer {
  public:
  /**
   * The prefix is used to specify where the JODA api endpoint should be.
   * "http://<host>:<port><prefix><...>"
-  */ 
+  */
   static constexpr auto prefix = "/api";
 
   /**
@@ -81,6 +81,8 @@ class JodaServer {
 
  private:
   httplib::Server server;
+
+  static std::string printParameters(const httplib::Params &p);
 
   static void favicon(const httplib::Request &req, httplib::Response &res);
 

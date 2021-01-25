@@ -30,6 +30,7 @@ bool joda::network::JodaServer::start(const std::string &addr, int port) {
    */
   server.set_logger([](const auto &req, const auto &res) {
     LOG(INFO) << "Got request: " << req.path << " (Response: " << res.status << ")";
+    DLOG(INFO) << "Request Parameters:\n" << printParameters(req.params);
   });
 
   /*
@@ -65,4 +66,14 @@ void joda::network::JodaServer::stop() {
 
 void joda::network::JodaServer::favicon(const httplib::Request &req, httplib::Response &res) {
   res.set_content(reinterpret_cast<const char *>(&JODA_FAVICON[0]), JODA_FAVICON_len, "image/ico");
+}
+
+std::string joda::network::JodaServer::printParameters(const httplib::Params &p) {
+  std::string ret = "{";
+  for (const auto &item : p) {
+    ret += "\n" + item.first + " : " + item.second;
+  }
+  if (ret.size() > 1) ret += "\n";
+  ret += "}";
+  return ret;
 }

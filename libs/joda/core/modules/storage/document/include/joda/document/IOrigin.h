@@ -40,7 +40,7 @@ class IOrigin {
    * @param alloc Allocator used for allocating memoty
    * @return Reparsed RJDocument, or nullpointer if not reparsable
    */
-  virtual std::shared_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const {
+  virtual std::unique_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const {
     DCHECK(isReparsable())
         << "Origin not reparsable, should be checked before calling function";
     return nullptr;

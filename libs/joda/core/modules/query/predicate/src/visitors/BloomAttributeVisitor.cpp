@@ -29,16 +29,12 @@ std::vector<std::string> joda::query::BloomAttributeVisitor::getAttributes() con
   else return std::vector<std::string>();
 }
 void joda::query::BloomAttributeVisitor::visit(EqualizePredicate *e) {
-  auto tmp = e->getAttributes();
-  for (auto &&item : tmp) {
-    attributes.push_back(std::move(item));
-  }
+  e->getLhs()->getAttributes(attributes);
+  e->getRhs()->getAttributes(attributes);
 }
 void joda::query::BloomAttributeVisitor::visit(ComparePredicate *e) {
-  auto tmp = e->getAttributes();
-  for (auto &&item : tmp) {
-    attributes.push_back(std::move(item));
-  }
+  e->getLhs()->getAttributes(attributes);
+  e->getRhs()->getAttributes(attributes);
 }
 
 void joda::query::BloomAttributeVisitor::visit(ValToPredicate *e) {

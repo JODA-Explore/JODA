@@ -6,7 +6,6 @@
 
 JoinExport::JoinExport(const std::shared_ptr<JoinManager> &joinManager) : joinManager(joinManager) {}
 
-
 const std::string JoinExport::getTimerName() {
   return "Join Export";
 }

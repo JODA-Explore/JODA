@@ -20,7 +20,7 @@ class IExportDestination {
    * Normally this queue is filled with the results of a query.
    * @param queue The queue to consume from
    */
-  virtual void consume(JsonContainerQueue::queue_t& queue){
+  virtual void consume(JsonContainerQueue::queue_t &queue) {
     timer.start();
     this->consumeContainer(queue);
     timer.stop();
@@ -48,7 +48,7 @@ class IExportDestination {
   virtual const std::string toQueryString() = 0;
 
  protected:
-  virtual void consumeContainer(JsonContainerQueue::queue_t& queue) {
+  virtual void consumeContainer(JsonContainerQueue::queue_t &queue) {
     std::unique_ptr<JSONContainer> cont;
     while (!queue.isFinished()) {
       queue.retrieve(cont);

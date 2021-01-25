@@ -187,9 +187,7 @@ class IValueProvider {
    */
   virtual std::vector<std::string> getAttributes() const {
     std::vector<std::string> ret;
-    for (auto &&param : params) {
-      param->getAttributes(ret);
-    }
+    getAttributes(ret);
     return ret;
   }
 

@@ -44,11 +44,12 @@ std::vector<std::string> joda::network::apiv2::JodaQueryRequest::splitQueries(co
 void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request &req, httplib::Response &res) {
   auto q = req.params.find("query");
   if (q == req.params.end()) throw (JodaQueryException());
+  LOG(INFO) << "Got query: " << q->second;
 
   auto querystrings = splitQueries(q->second);
 
   LOG(INFO) << "Got " << querystrings.size() << " queries.";
-  
+
   queryparsing::QueryParser parser;
   std::vector<std::shared_ptr<query::Query>> queries;
   for (const auto& q : querystrings){
@@ -131,6 +132,7 @@ void joda::network::apiv2::JodaQueryRequest::success_(unsigned long result,
     throw (JodaQueryUnkownErrorException());
   }
   auto doc = successDocument(result, r->size(), "", &benchmark);
+  DLOG(INFO) << "Successful query: " << result << " (size: " << r->size() << ")";
   JodaServer::sendResponse(doc, res);
 }
 

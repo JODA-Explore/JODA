@@ -31,13 +31,19 @@ class ISetProjector {
    * in
    */
   virtual void project(const RapidJsonDocument &json,
-                       std::vector<std::shared_ptr<RJDocument>> &newDocs) = 0;
+                       std::vector<std::unique_ptr<RJDocument>> &newDocs, bool view = false) = 0;
 
   /**
    * Returns the destination pointer string
-   * @return the destination pointer string
+   * @return
    */
   virtual std::string getToPointer() const final { return ptr_str; }
+
+  /**
+   * Returns the destination pointer
+   * @return
+   */
+  RJPointer getRawToPointer() const {return ptr;}
 
   /**
    * Returns a string representing the transformation function
@@ -52,11 +58,16 @@ class ISetProjector {
    */
   virtual std::string toString() { return "'" + ptr_str + "':"; }
 
+  /**
+   * Returns a list of attributes used by this projection
+   * @return
+   */
+  virtual std::vector<std::string> getAttributes() const = 0;
  protected:
   RJPointer ptr;
   std::string ptr_str;
 
-  unsigned long multiplicate(std::vector<std::shared_ptr<RJDocument>> &newDocs,
+  unsigned long multiplicate(std::vector<std::unique_ptr<RJDocument>> &newDocs,
                              int times) {
     auto origDocs = newDocs.size();
     newDocs.reserve(origDocs * times);
@@ -64,7 +75,7 @@ class ISetProjector {
     for (int i = 0; i < times - 1; ++i) {
       for (size_t j = 0; j < origDocs; ++j) {
         assert(j < newDocs.size() && j >= 0 && "Stay in range of array");
-        auto doc = std::make_shared<RJDocument>(&newDocs[j]->GetAllocator());
+        auto doc = std::make_unique<RJDocument>(&newDocs[j]->GetAllocator());
         doc->CopyFrom(*newDocs[j], doc->GetAllocator());
         newDocs.push_back(std::move(doc));
       }
@@ -72,7 +83,7 @@ class ISetProjector {
     return origDocs;
   }
 
-  void fillArrayRangeWithVal(std::vector<std::shared_ptr<RJDocument>> &newDocs,
+  void fillArrayRangeWithVal(std::vector<std::unique_ptr<RJDocument>> &newDocs,
                              unsigned long origDocs, int i, RJValue &val) {
     for (unsigned long j = origDocs * i; j < origDocs * (i + 1); ++j) {
       assert(j < newDocs.size() && j >= 0 && "Stay in range of array");

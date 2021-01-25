@@ -37,11 +37,8 @@ std::string joda::query::EqualizePredicate::toString() {
 }
 std::vector<std::string> joda::query::EqualizePredicate::getAttributes() const {
   std::vector<std::string> ret;
-  auto *tmp = dynamic_cast<PointerProvider *>(lhs.get());
-  if (tmp != nullptr) ret.push_back(tmp->getAttributeString());
-
-  tmp = dynamic_cast<PointerProvider *>(rhs.get());
-  if (tmp != nullptr) ret.push_back(tmp->getAttributeString());
+  lhs->getAttributes(ret);
+  rhs->getAttributes(ret);
   return ret;
 }
 std::unique_ptr<joda::query::Predicate> joda::query::EqualizePredicate::duplicate() {

@@ -15,7 +15,7 @@ class URLOrigin : public IDPositionOrigin {
  public:
   URLOrigin(FILEID url);
   URLOrigin(FILEID url, long start, long end, int index);
-  std::shared_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
+  std::unique_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
   bool isReparsable() const override;
   ~URLOrigin() override = default;
   const FILEID &getUrl() const;

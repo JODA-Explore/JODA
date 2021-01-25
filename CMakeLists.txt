@@ -21,7 +21,7 @@ system_info(DISTRO)
 set(JODA_ALLOC "AUTO") #Possible values: JEMALLOC, TCMALLOC, AUTO , PROFILE
 set(PACKAGE_AUTHOR "Nico Schäfer")
 
-project(JODA VERSION 0.11.2 LANGUAGES CXX)
+project(JODA VERSION 0.12.1 LANGUAGES CXX)
 
 SET(JODA_API_VERSION 2)
 
@@ -44,9 +44,6 @@ ENDIF (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/.git)
 string(TIMESTAMP JODA_BUILD_TIME "%H:%M:%S %d-%m-%Y")
 
 
-configure_file( "${CMAKE_SOURCE_DIR}/libs/joda/core/include/joda/version.h.in"
-        "${CMAKE_BINARY_DIR}/libs/joda/core/include/joda/version.h"
-        )
 configure_file( "${CMAKE_SOURCE_DIR}/libs/joda/core/include/joda/version.h.in"
         "${CMAKE_SOURCE_DIR}/libs/joda/core/include/joda/version.h"
         )

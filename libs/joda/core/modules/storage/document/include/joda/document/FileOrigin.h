@@ -27,7 +27,7 @@ class FileOrigin : public IDPositionOrigin {
    */
   bool isReparsable() const override;
   std::unique_ptr<IOrigin> clone() const override;
-  std::shared_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
+  std::unique_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
   std::string toString() const override;
   std::string getStreamName() const override;
 

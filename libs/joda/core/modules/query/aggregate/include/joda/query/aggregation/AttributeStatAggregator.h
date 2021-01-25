@@ -17,7 +17,7 @@ class AttributeStatAggregator : public IAggregator{
   std::unique_ptr<IAggregator> duplicate() const override;
   void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
   const std::string getName() const override;
-
+  std::vector<std::string> getAttributes() const override;
 
   static constexpr auto getName_() { return "ATTSTAT"; }
  protected:

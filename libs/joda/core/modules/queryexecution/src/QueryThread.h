@@ -76,6 +76,9 @@ class QueryThread
   QueryThread(IQueue *iqueue, OQueue *oqueue, WConf &conf);
   ~QueryThread() override;
 
+  typedef IPayload ContRef;
+  typedef OPayload OwnedCont;
+
   /**
    * Returns a unique ID identifying this querythread
    * @return
@@ -91,6 +94,12 @@ class QueryThread
    * @return true if yes, false if not
    */
   bool hasAggregators() const;
+
+ protected:
+
+  bool hasToProject() const;
+  bool canCreateView() const;
+
 
   /*
    * Functions
@@ -112,16 +121,27 @@ class QueryThread
    * @return A list of all documents obtained by transforming the input
    * documents
    */
-  std::vector<std::shared_ptr<RJDocument>> project(
+  std::vector<std::unique_ptr<RJDocument>> defaultProject(
       JSONContainer &cont, const DocIndex &ids, RJMemoryPoolAlloc &alloc) const;
+
   /**
    * Aggregates the given list of documents.
    * The results are stored in the aggregator classed within the config objects
    * @param docs The documents to aggregate
    */
-  void aggregate(const std::vector<RapidJsonDocument> &docs) const;
+  void aggregate(const std::vector<RapidJsonDocument> &docs) const ;
 
- protected:
+  /**
+   * Aggregates all documents within the container.
+   * The results are stored in the aggregator classed within the config objects
+   * @param pipelineCont The container having the documents
+   * @param selectResult The index showing which documents have to be aggregated
+   * @param isSelected flag dictating if selectResult should be used or not.
+   */
+  void aggregate(ContRef pipelineCont,
+                 const std::shared_ptr<const DocIndex> &selectResult,
+                 bool isSelected) const;
+
   void work() override;
 
   void logTimers() const;
@@ -131,6 +151,8 @@ class QueryThread
   RecurringTimer aggregate_timer;
   RecurringTimer copy_timer;
   RecurringTimer serialize_timer;
+  RecurringTimer sample_view_cost_timer;
+
 };
 
 #endif  // JODA_QUERYTHREAD_H

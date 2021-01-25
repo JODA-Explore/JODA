@@ -13,10 +13,11 @@ TEST_F(DirectoryFileScannerTest, GetAllFilesInDir) {
 
     auto files = scanner.getFilesInDir(dir);
 
-    EXPECT_EQ(files.size(), 2);
+    EXPECT_EQ(files.size(), 3);
 
     ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"/formattest.json") != files.end());
     ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"/numtest.json") != files.end());
+    ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"/viewtest.json") != files.end());
 }
 
 TEST_F(DirectoryFileScannerTest, GetAllFilesInDirTrailingSlash) {
@@ -25,10 +26,11 @@ TEST_F(DirectoryFileScannerTest, GetAllFilesInDirTrailingSlash) {
 
     auto files = scanner.getFilesInDir(dir);
 
-    EXPECT_EQ(files.size(), 2);
+    EXPECT_EQ(files.size(), 3);
 
     ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"formattest.json") != files.end());
     ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"numtest.json") != files.end());
+    ASSERT_TRUE(std::find(files.begin(),files.end(),dir+"viewtest.json") != files.end());
 }
 
 TEST_F(DirectoryFileScannerTest, GetFilteredFilesInDir) {

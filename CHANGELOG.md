@@ -1,11 +1,25 @@
 # Changelog
 ## DEV
 #### Added
+#### Changed
+#### Fixed
 
+
+## 0.12.X
+### 0.12.1
+#### Added
+#### Changed
+- Docker build improvements (speedup, multi-stage builds, ...)
+#### Fixed
+- First query since program start not returning result size
+### 0.12.0
+#### Added
+- Add [Delta-Tree](https://dbis.informatik.uni-kl.de/files/papers/edbt2020_joda_data_wrangling.pdf) feature to significantly reduce memory usage
+- Add color to JSON viewer in CLI
 #### Changed
 - OSUtility now caches OS and kernel info as it will not change during execution
 - Server requests are now timed
-#### Fixed
+
 
 ## 0.11.X
 ### 0.11.2

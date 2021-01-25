@@ -2,6 +2,8 @@
 // Created by Nico Schäfer on 4/24/17.
 //
 
+#include <joda/query/predicate/AttributeVisitor.h>
+#include <joda/query/project/PointerCopyProject.h>
 #include "../include/joda/query/Query.h"
 
 #include "../predicate/include/joda/query/predicate/CopyPredicateVisitor.h"
@@ -60,7 +62,7 @@ const std::string &joda::query::Query::getDelete() const {
 }
 
 void joda::query::Query::setDelete(const std::string &del) {
-  Query::del = del;
+  joda::query::Query::del = del;
 }
 
 bool joda::query::Query::isDefault() const {
@@ -154,7 +156,7 @@ const std::shared_ptr<JoinManager> &joda::query::Query::getStoreJoinManager() co
 }
 
 void joda::query::Query::setStoreJoinManager(const std::shared_ptr<JoinManager> &storeJoinManager) {
-  Query::storeJoinManager = storeJoinManager;
+  joda::query::Query::storeJoinManager = storeJoinManager;
 }
 
 const std::vector<std::unique_ptr<joda::docparsing::IImportSource>> &joda::query::Query::getImportSources() const {
@@ -172,3 +174,71 @@ std::unique_ptr<IExportDestination> &joda::query::Query::getExportDestination() 
 void joda::query::Query::setExportDestination(std::unique_ptr<IExportDestination> &&exportDestination) {
   joda::query::Query::exportDestination = std::move(exportDestination);
 }
+
+std::vector<std::string> joda::query::Query::getAllUsedAttributes() const {
+  //Get Choose attributes
+  AttributeVisitor attVisitor;
+  pred->accept(attVisitor);
+  std::vector<std::string> ret = attVisitor.getAttributes();
+  //Get AS Attributes
+  for (const auto &item : projectors) {
+    auto tmp = item->getMaterializeAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  for (const auto &item : setProjectors) {
+    auto tmp = item->getAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  //Get AGG Attributes
+  for (const auto &item : aggregators) {
+    auto tmp = item->getAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  std::sort(ret.begin(), ret.end());
+  ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
+  return ret;
+}
+
+std::vector<std::string> joda::query::Query::getChooseAttributes() const {
+  AttributeVisitor attVisitor;
+  pred->accept(attVisitor);
+  std::vector<std::string> ret = attVisitor.getAttributes();
+  std::sort(ret.begin(), ret.end());
+  ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
+  return ret;
+}
+
+std::vector<std::string> joda::query::Query::getASAttributes() const {
+  std::vector<std::string> ret;
+  for (const auto &item : projectors) {
+    auto tmp = item->getMaterializeAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  for (const auto &item : setProjectors) {
+    auto tmp = item->getAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  std::sort(ret.begin(), ret.end());
+  ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
+  return ret;
+}
+
+std::vector<std::string> joda::query::Query::getAGGAttributes() const {
+  std::vector<std::string> ret;
+  for (const auto &item : aggregators) {
+    auto tmp = item->getAttributes();
+    std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
+  }
+  std::sort(ret.begin(), ret.end());
+  ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
+  return ret;
+}
+
+bool joda::query::Query::canCreateView() const {
+  return config::enable_views && (
+      (!projectors.empty() && projectors.front()->getType() == PointerCopyProject::allCopy) //Delta Tree
+          || (projectors.empty() && setProjectors.empty()) //Star expression
+  );
+}
+
+

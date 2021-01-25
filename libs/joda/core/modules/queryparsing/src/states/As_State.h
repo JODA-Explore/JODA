@@ -15,7 +15,8 @@ namespace joda::queryparsing::grammar {
 enum projFun {
   NOPROJ,
   arrFlatProj,
-  valProvProj
+  valProvProj,
+  allCopyProj
 };
 
 struct asState {
@@ -26,6 +27,8 @@ struct asState {
 
   template<typename Input>
   inline void success(const Input &in, queryState &qs) {
+    if (setprojs.empty() && projs.size() == 1 && projs.front()->toString() == "*")
+      return; //If AS is only "*", then do not pass on projections
     for (auto &proj : projs) {
       qs.q->addProjection(std::move(proj));
     }

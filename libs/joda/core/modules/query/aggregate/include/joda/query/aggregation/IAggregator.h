@@ -85,6 +85,14 @@ class IAggregator {
    */
   const std::string getName() const = 0;
 
+  virtual std::vector<std::string> getAttributes() const {
+    std::vector<std::string> ret;
+    for (const auto &param : params) {
+      param->getAttributes(ret);
+    }
+    return ret;
+  };
+
   std::string getParameterStringRepresentation() const {
     std::vector<std::string> pars;
     for (auto &&param : params) {

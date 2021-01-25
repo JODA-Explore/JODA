@@ -55,7 +55,7 @@ class DefaultContainerScheduler {
    * @param origin The origin of the document
    * @param size The size of the document (bytes)
    */
-  void scheduleDocument(ContainerIdentifier id, std::shared_ptr<RJDocument> &&doc,
+  void scheduleDocument(ContainerIdentifier id, std::unique_ptr<RJDocument> &&doc,
                         std::unique_ptr<IOrigin> &&origin,
                         size_t size);
 
@@ -64,7 +64,7 @@ class DefaultContainerScheduler {
  * @param id The id representing the container
  * @return A new document
  */
-  std::shared_ptr<RJDocument> getNewDoc(ContainerIdentifier id);
+  std::unique_ptr<RJDocument> getNewDoc(ContainerIdentifier id);
 
   /**
  * Finalizes the Scheduler.

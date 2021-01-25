@@ -25,7 +25,7 @@ class AggregatorTest : public ::testing::Test {
   std::vector<RapidJsonDocument> getDocs(std::vector<std::string> strs, RJMemoryPoolAlloc& alloc){
     std::vector<RapidJsonDocument> docs;
     for (const auto &str : strs) {
-      auto rjdoc = std::make_shared<RJDocument>();
+      auto rjdoc = std::make_unique<RJDocument>();
       rjdoc->Parse(str.c_str());
       DCHECK(!rjdoc->HasParseError()) << rjdoc->GetParseError();
      docs.emplace_back(0,std::move(rjdoc),std::make_unique<TemporaryOrigin>());
@@ -47,13 +47,13 @@ class AggregatorTest : public ::testing::Test {
     return buffer.GetString();
   }
 
-  void aggregate(std::vector<RapidJsonDocument> docs, RJMemoryPoolAlloc &alloc, std::unique_ptr<joda::query::IAggregator> &agg) {
+  void aggregate(const std::vector<RapidJsonDocument>& docs, RJMemoryPoolAlloc &alloc, std::unique_ptr<joda::query::IAggregator> &agg) {
     for (const auto &doc : docs) {
       agg->accumulate(doc, alloc);
     }
   }
 
-  void testAgg(std::vector<RapidJsonDocument> docs,
+  void testAgg(const std::vector<RapidJsonDocument>& docs,
                RJMemoryPoolAlloc &alloc,
                std::string res,
                std::unique_ptr<joda::query::IAggregator> &agg) {
@@ -66,13 +66,19 @@ class AggregatorTest : public ::testing::Test {
     EXPECT_TRUE(aggVal == resVal) << "Agg: " << rjvalToString(aggVal) << " ; Expected: " << rjvalToString(resVal);
   }
 
+    void testAgg(RJMemoryPoolAlloc &alloc, std::string res, std::unique_ptr<joda::query::IAggregator> &agg) {
+    std::vector<RapidJsonDocument> docs;
+    return testAgg(docs, alloc, res, agg);
+  }
+
+
   void checkDuplicate(std::unique_ptr<joda::query::IAggregator>& agg){
     auto dupe = agg->duplicate();
     EXPECT_STREQ(agg->getName().c_str(),dupe->getName().c_str());
     EXPECT_STREQ(agg->toString().c_str(),dupe->toString().c_str());
   }
 
-  ::testing::AssertionResult testArrayAgg(std::vector<RapidJsonDocument> docs, RJMemoryPoolAlloc& alloc, std::vector<std::unique_ptr<
+  ::testing::AssertionResult testArrayAgg(const std::vector<RapidJsonDocument>& docs, RJMemoryPoolAlloc& alloc, std::vector<std::unique_ptr<
       joda::query::IValueProvider>>& vals, std::unique_ptr<joda::query::IAggregator>& agg){
     aggregate(docs, alloc, agg);
     auto aggVal = agg->terminate(alloc);
@@ -123,14 +129,14 @@ TEST_F(AggregatorTest, CountAggregator) {
     EXPECT_NO_THROW(agg2 = agg->duplicate());
     testAgg(docs, alloc, "5", agg2);
     EXPECT_NO_FATAL_FAILURE(agg->merge(agg2.get()));
-    testAgg({}, alloc, "10", agg);
+    testAgg(alloc, "10", agg);
   }
-  
+
   //Nulltest
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "0", ptr);
+    testAgg(alloc, "0", ptr);
   }
 }
 
@@ -168,14 +174,14 @@ TEST_F(AggregatorTest, SumAggregator) {
                    }, alloc);
     testAgg(docs, alloc, "-10", agg2);
     EXPECT_NO_FATAL_FAILURE(agg->merge(agg2.get()));
-    testAgg({}, alloc, "5", agg);
+    testAgg(alloc, "5", agg);
   }
 
   //Nulltest
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "null", ptr);
+    testAgg(alloc, "null", ptr);
   }
 }
 
@@ -212,14 +218,14 @@ TEST_F(AggregatorTest, AverageAggregator) {
                    }, alloc);
     testAgg(docs, alloc, "-2", agg2);
     EXPECT_NO_FATAL_FAILURE(agg->merge(agg2.get()));
-    testAgg({}, alloc, "1.125", agg);
+    testAgg(alloc, "1.125", agg);
   }
 
   //Nulltest
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "null", ptr);
+    testAgg(alloc, "null", ptr);
   }
 }
 
@@ -256,14 +262,14 @@ TEST_F(AggregatorTest, MaxAggregator) {
                    }, alloc);
     testAgg(docs, alloc, "-1", agg2);
     EXPECT_NO_FATAL_FAILURE(agg->merge(agg2.get()));
-    testAgg({}, alloc, "5", agg);
+    testAgg(alloc, "5", agg);
   }
 
   //Nulltest
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "null", ptr);
+    testAgg(alloc, "null", ptr);
   }
 }
 
@@ -300,14 +306,14 @@ TEST_F(AggregatorTest, MinAggregator) {
                    }, alloc);
     testAgg(docs, alloc, "-3", agg2);
     EXPECT_NO_FATAL_FAILURE(agg->merge(agg2.get()));
-    testAgg({}, alloc, "-3", agg);
+    testAgg(alloc, "-3", agg);
   }
 
   //Nulltest
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "null", ptr);
+    testAgg(alloc, "null", ptr);
   }
 }
 
@@ -371,7 +377,7 @@ TEST_F(AggregatorTest, DistinctAggregator) {
   {
     SCOPED_TRACE("Null");
     auto ptr = agg->duplicate();
-    testAgg({}, alloc, "[]", ptr);
+    testAgg(alloc, "[]", ptr);
   }
 }
 
