@@ -16,6 +16,7 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/RegexReplaceProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/SeqNumberProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/TypeProvider.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/SubStringProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/ArraySizeProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/BinaryNumberProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/UnaryNumberProvider.h
@@ -42,6 +43,7 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/MemberCountProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/HashProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/ValueAccepter.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/SubStringProvider.h
         )
 
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-query-values-SOURCES} PARENT_SCOPE )

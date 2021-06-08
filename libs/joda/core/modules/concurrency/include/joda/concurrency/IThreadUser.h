@@ -13,6 +13,7 @@
 class IThreadUser {
  public:
   explicit IThreadUser(size_t maxThreads) : maxThreads(maxThreads) {}
+  virtual ~IThreadUser() = default;
 
   virtual void forceThreads(size_t threads) = 0;
   virtual size_t getUsedThreads() const = 0;

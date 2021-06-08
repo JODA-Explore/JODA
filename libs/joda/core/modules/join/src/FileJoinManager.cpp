@@ -156,7 +156,7 @@ bool FileJoinManager::appendDocToFile(const RapidJsonDocument &doc, const std::s
   //Get rapidjson string
   rapidjson::StringBuffer b;
   rapidjson::Writer<rapidjson::StringBuffer> w(b);
-  doc.getJson()->Accept(w);
+  doc.Accept(w);
 
   o << b.GetString() << std::endl; //Write to file
 

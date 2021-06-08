@@ -1,27 +1,16 @@
 # Set the base image
-FROM debian:buster
+FROM debian:buster-backports
 # Dockerfile author / maintainer
 LABEL maintainer="Nico Schaefer <n_schaefer11@cs.uni-kl.de>"
-ARG BUILD_PACKAGES="build-essential software-properties-common git ca-certificates wget gcc-8 g++-8 make file graphviz"
+ARG BUILD_PACKAGES="build-essential software-properties-common git gcovr cmake/buster-backports ca-certificates wget gcc-8 g++-8 make file graphviz"
 ARG DEPENDENCY_PACKAGES="libgoogle-perftools-dev libboost-dev libboost-program-options-dev libboost-regex-dev libboost-system-dev libcpprest-dev libgoogle-glog-dev libjemalloc-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev"
+
+ENV DEBIAN_FRONTEND=noninteractive 
 
 # Install build tools
 RUN apt-get update && apt-get install -y  --fix-missing  --no-install-recommends $BUILD_PACKAGES
 
 
-# Install gcovr
-RUN apt-get update && apt-get install -y --no-install-recommends python3-pip python3-setuptools \
-    && pip3 install wheel \
-    && pip3 install git+https://github.com/gcovr/gcovr.git
-
-# Install cmake
-RUN mkdir cmake && cd cmake && wget https://cmake.org/files/v3.14/cmake-3.14.0-Linux-x86_64.sh \
-    && bash cmake-3.14.0-Linux-x86_64.sh --skip-license \
-    && cp -r bin /usr/ && rm -r bin \
-    && cp -r share /usr/ && rm -r share \
-    && cp -r doc /usr/share/ && rm -r doc \
-    && cp -r man /usr/share/ && rm -r man \
-    && cd .. && rm -r cmake
 
 # Install Doxygen
 RUN apt-get update && apt-get install -y --no-install-recommends flex bison \

@@ -492,6 +492,8 @@ or "\[PROJECTION]" if the document was projected.
 - (String) `CONCAT(String,String)`: Concatenates two strings.
 - (Bool) `SCONTAINS(String,String)`: Returns true if first string contains the second.
 - (Bool) `STARTSWITH(String,String)`: Returns true if first string starts with the second.
+- (Number) `FINDSTR(String,String)`: Returns the position of the second string in the first string, or -1 if it is not contained.
+- (String) `SUBSTR(String,Number,Number)`: Returns a substring of the given string. The first number is the starting position of the substring, the second (optional) number is the length of the substring. If the second is not given, everything until the end is returned.
 - (Bool) `REGEX(String,String)`: Returns true if first string matches the regular expression defined in the second.
 - (Array(String)) `REGEX_EXTRACT(String,String)`: Returns a list of strings within the first parameter, matched by the regular expression in the second.
 - (String) `REGEX_REPLACE(String,String,String)`: Replaces all matches, within the first string, of the regular expression, defined in the second parameter, with the third string.

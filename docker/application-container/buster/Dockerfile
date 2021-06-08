@@ -3,6 +3,7 @@ FROM debian:buster
 # Dockerfile author / maintainer
 LABEL maintainer="Nico Schaefer <n_schaefer11@cs.uni-kl.de>"
 
+ENV DEBIAN_FRONTEND=noninteractive 
 # Copy JODA executable
 COPY *.deb .
 

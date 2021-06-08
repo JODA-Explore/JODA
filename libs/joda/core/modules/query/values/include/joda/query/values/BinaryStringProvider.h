@@ -125,10 +125,28 @@ struct BinaryConcatCalculationFunction {
 
 typedef BinaryStringProvider<BinaryConcatCalculationFunction> ConcatProvider;
 
+/*
+ * FINDSTR
+ */
+struct BinaryFINDSTRCalculationFunction {
+  static constexpr auto name = "FINDSTR";
+  static constexpr joda::query::IValueType retType = IV_Number;
+
+  inline static RJValue calculate(std::string &&lhs, std::string &&rhs,
+                                  RJMemoryPoolAlloc &alloc) {
+    return RJValue((int64_t)lhs.find(rhs));
+  };
+};
+
+typedef BinaryStringProvider<BinaryFINDSTRCalculationFunction> FINDSTRProvider;
+
+
 template class BinaryStringProvider<BinarySCONTAINSCalculationFunction>;
 
 template class BinaryStringProvider<BinarySTARTSWITHCalculationFunction>;
 
 template class BinaryStringProvider<BinaryConcatCalculationFunction>;
+
+template class BinaryStringProvider<BinaryFINDSTRCalculationFunction>;
 }
 #endif  // JODA_BINARYSTRINGPROVIDER_H

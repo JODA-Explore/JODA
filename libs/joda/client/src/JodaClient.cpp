@@ -234,8 +234,9 @@ void joda::network::client::JodaClient::nonInteractiveQuery(const std::string &q
 
 }
 
-joda::network::client::JodaClient::JodaClient(const std::string &addr, int port) : client(addr.c_str(), port, JODA_CLIENT_TIMEOUT) {
+joda::network::client::JodaClient::JodaClient(const std::string &addr, int port) : client(addr.c_str(),port) {
   client.set_read_timeout(JODA_CLIENT_TIMEOUT, JODA_CLIENT_TIMEOUT * 1000);
+  client.set_write_timeout(JODA_CLIENT_TIMEOUT, JODA_CLIENT_TIMEOUT * 1000);
 }
 
 void joda::network::client::JodaClient::handleError(JodaClientException &e) {

@@ -108,6 +108,17 @@ class RapidJsonDocument {
   RapidJsonDocument &operator=(const RapidJsonDocument &other) = delete;
   RapidJsonDocument& operator=(RapidJsonDocument&& other) noexcept;
 
+  template<typename Handler>
+  bool Accept(Handler &handler) const {
+    if (isView()) {
+      DCHECK(view != nullptr) << "View was not computed";
+      return view->Accept(handler);
+    } else {
+      DCHECK(json != nullptr) << "Json was not loaded";
+      return json->Accept(handler);
+    }
+  }
+
  protected:
   unsigned long id;
   std::unique_ptr<const IOrigin> origin;

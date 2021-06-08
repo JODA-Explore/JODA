@@ -43,8 +43,14 @@ class AttributeStatAggregator : public IAggregator{
       size_t count_null = 0;
       size_t count_str = 0;
       size_t count_double = 0;
+      double max_double = std::numeric_limits<double>::min();
+      double min_double = std::numeric_limits<double>::max();;
       size_t count_int = 0;
+      int64_t max_int = std::numeric_limits<int64_t>::min();
+      int64_t min_int = std::numeric_limits<int64_t>::max();
       size_t count_bool = 0;
+      size_t count_true = 0;
+      size_t count_false = 0;
 
       size_t getCount() const {
         return count_null + count_obj + count_arr + count_int + count_double + count_bool + count_str;
@@ -96,6 +102,12 @@ class AttributeStatAggregator : public IAggregator{
         count_str += o->count_str;
         count_null += o->count_null;
         count_bool += o->count_bool;
+        count_true += o->count_true;
+        count_false += o->count_false;
+        min_int = std::min(min_int,o->min_int);
+        max_int = std::max(max_int,o->max_int);
+        min_double = std::min(min_double,o->min_double);
+        max_double = std::max(max_double,o->max_double);
         for (const auto &child : o->children) {
           auto c = findChild(child.name);
           c->merge(&child);
@@ -116,7 +128,19 @@ class AttributeStatAggregator : public IAggregator{
         r.AddMember("Count_Array", count_arr, alloc);
         r.AddMember("Count_Null", count_null, alloc);
         r.AddMember("Count_Boolean", count_bool, alloc);
+        r.AddMember("Count_True", count_true, alloc);
+        r.AddMember("Count_False", count_false, alloc);
         r.AddMember("Count_String", count_str, alloc);
+        r.AddMember("Count_Int", count_int , alloc);
+        if (count_int > 0){
+          r.AddMember("Min_Int", min_int , alloc);
+          r.AddMember("Max_Int", max_int , alloc);
+        }
+        r.AddMember("Count_Float", count_double , alloc);
+        if (count_double > 0){
+          r.AddMember("Min_Float", min_double , alloc);
+          r.AddMember("Max_Float", max_double , alloc);
+        }
         r.AddMember("Count_Number", count_int + count_double, alloc);
         if (!children.empty()) {
           RJValue ch(rapidjson::kArrayType);
@@ -169,6 +193,7 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_bool++;
+      if (b) {currnode->count_true++;}else{currnode->count_false++;}
       finishValue();
       return true;
     }
@@ -177,6 +202,8 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_int++;
+      currnode->min_int = std::min((int64_t)i,currnode->min_int);
+      currnode->max_int = std::max((int64_t)i,currnode->max_int);
       finishValue();
       return true;
     }
@@ -185,6 +212,8 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_int++;
+      currnode->min_int = std::min((int64_t)i,currnode->min_int);
+      currnode->max_int = std::max((int64_t)i,currnode->max_int);
       finishValue();
       return true;
     }
@@ -193,6 +222,8 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_int++;
+      currnode->min_int = std::min(i,currnode->min_int);
+      currnode->max_int = std::max(i,currnode->max_int);
       finishValue();
       return true;
     }
@@ -201,6 +232,8 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_int++;
+      currnode->min_int = std::min((int64_t)i,currnode->min_int);
+      currnode->max_int = std::max((int64_t)i,currnode->max_int);
       finishValue();
       return true;
     }
@@ -209,6 +242,8 @@ class AttributeStatAggregator : public IAggregator{
       checkArray();
       DCHECK(currnode != nullptr);
       currnode->count_double++;
+      currnode->min_double = std::min(d,currnode->min_double);
+      currnode->max_double = std::max(d,currnode->max_double);
       finishValue();
       return true;
     }

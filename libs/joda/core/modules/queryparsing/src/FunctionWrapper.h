@@ -53,6 +53,7 @@ struct functionAction<FSTRUCT> { \
 #include <joda/query/values/ConstantNumber.h>
 #include <joda/query/values/MemberCountProvider.h>
 #include <joda/query/values/HashProvider.h>
+#include <joda/query/values/SubStringProvider.h>
 
 namespace joda::queryparsing::grammar {
 REGISTER_FUNCTION(query::ArraySizeProvider,func_kw_arrSize,"SIZE")
@@ -99,6 +100,8 @@ REGISTER_FUNCTION(query::TanProvider,func_kw_TANFUNK,"TAN")
 REGISTER_FUNCTION(query::TruncProvider,func_kw_TRUNCFUNK,"TRUNC")
 REGISTER_FUNCTION(query::LenProvider,func_kw_LENFUNK,"LEN")
 REGISTER_FUNCTION(query::ConcatProvider,func_kw_CONCATFUNK,"CONCAT")
+REGISTER_FUNCTION(query::FINDSTRProvider,func_kw_FINDSTRFUNK,"FINDSTR")
+REGISTER_FUNCTION(query::SubStringProvider,func_kw_SUBSTRFUNK,"SUBSTR")
 REGISTER_FUNCTION(query::UpperProvider,func_kw_UPPERFUNK,"UPPER")
 REGISTER_FUNCTION(query::LowerProvider,func_kw_LOWERFUNK,"LOWER")
 REGISTER_FUNCTION(query::LtrimProvider,func_kw_LTRIMFUNK,"LTRIM")
@@ -171,7 +174,9 @@ struct functionKWs : stringableSOR<func_kw_exists,
                                      func_kw_MEMCOUNTFUNK,
                                      func_kw_HASHFUNK,
                                      func_kw_NOWFUNK,
-                                     func_kw_DIVFUNK
+                                     func_kw_DIVFUNK,
+                                     func_kw_FINDSTRFUNK,
+                                     func_kw_SUBSTRFUNK
 > {
 
 };

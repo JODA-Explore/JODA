@@ -77,7 +77,7 @@ int main(int argc, char *argv[]) {
   if (options.count("queryfile")) {
     std::ifstream infile(options["queryfile"].as<std::string>());
     for (std::string line; getline(infile, line);) {
-      if (line.empty()) continue;
+      if (line.empty() || line.front() == '#' || std::all_of(line.begin(),line.end(),isspace)) continue;
       onceQueries.emplace_back(line);
     }
     LOG(INFO) << "Loaded " << onceQueries.size() << " queries";

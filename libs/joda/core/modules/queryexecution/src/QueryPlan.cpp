@@ -215,9 +215,10 @@ std::unique_ptr<JSONContainer> QueryPlan::aggregate(
     Benchmark *benchmark) {
   DCHECK(queue != nullptr);
   Timer agg_timer;
+  auto aggCtok = std::make_unique<joda::query::AggregatorQueue::queue_t::ctok_t>(queue->queue);
   while (!queue->isFinished()) {
     std::unique_ptr<joda::query::IAggregator> agg = nullptr;
-    queue->retrieve(agg);
+    queue->retrieve(*aggCtok,agg);
     if (agg == nullptr) continue;
 
     for (auto &a : q->getAggregators()) {
@@ -265,7 +266,7 @@ QueryPlan::QueryPlan(const std::shared_ptr<joda::query::Query> &q)
       maxThreads(g_ThreadManagerInstance.getMaxThreads()),
       loadQueue(JsonContainerRefQueue::getQueue(10, 1)),
       storeQueue(JsonContainerQueue::getQueue(10, maxThreads + 1)),
-      aggregatorQueue(joda::query::AggregatorQueue::getQueue(10, maxThreads)) {
+      aggregatorQueue(joda::query::AggregatorQueue::getQueue(maxThreads*(q->getAggregators().size()), maxThreads)) {
   auto loadVar = q->getLoad();
   auto deleteVar = q->getDelete();
   auto storeJoin = q->getStoreJoinManager();

@@ -15,6 +15,7 @@
 #include <joda/query/values/RegexExtractProvider.h>
 #include <joda/query/values/RegexProvider.h>
 #include <joda/query/values/RegexReplaceProvider.h>
+#include <joda/query/values/SubStringProvider.h>
 #include <joda/query/values/SeqNumberProvider.h>
 #include <joda/query/values/TypeProvider.h>
 #include <joda/document/TemporaryOrigin.h>
@@ -1492,6 +1493,75 @@ TEST_F(ValueTest, SCONTAINSProvider) {
     ival = SCONTAINSProvider::_FACTORY(std::move(p));
     std::unique_ptr<IValueProvider> res = IValueTestHelper::getBoolVal(false);
     EXPECT_TRUE(checkFunction(ival, res));
+  }
+
+}
+
+TEST_F(ValueTest, FINDSTRProvider) {
+  SCOPED_TRACE("FINDSTRProvider");
+  //Return Type
+  Params p = {};
+  IValueTestHelper::param(p,std::move(IValueTestHelper::getStringVal("some string with 'the data i want' inside")),std::move(IValueTestHelper::getStringVal("'the data i want'")));
+  auto ival = FINDSTRProvider::_FACTORY(std::move(p));
+  checkType(ival, IV_Number);
+
+  //Parameters
+  std::vector<IValueType> t = {IV_String,IV_String};
+  testParams<FINDSTRProvider>(t);
+
+  //Duplicate
+  checkDuplicate(ival);
+
+  //Check Function
+  {
+    SCOPED_TRACE("FINDSTRProvider_Func1");
+    std::unique_ptr<IValueProvider> res = IValueTestHelper::getNumVal((int64_t)17);
+    EXPECT_TRUE(checkFunction(ival, res));
+  }
+  {
+    SCOPED_TRACE("FINDSTRProvider_Func2");
+    IValueTestHelper::param(p, std::move(IValueTestHelper::getStringVal("some string without my data inside")),std::move(IValueTestHelper::getStringVal("'the data i want'")));
+    ival = FINDSTRProvider::_FACTORY(std::move(p));
+    std::unique_ptr<IValueProvider> res = IValueTestHelper::getNumVal((int64_t)std::string::npos);
+    EXPECT_TRUE(checkFunction(ival, res));
+  }
+
+}
+
+TEST_F(ValueTest, SubStringProvider) {
+  SCOPED_TRACE("SubStringProvider");
+  //Return Type
+  Params p = {};
+  IValueTestHelper::param(p,std::move(IValueTestHelper::getStringVal("some string with 'the data i want' inside")),std::move(IValueTestHelper::getNumVal((u_int64_t)17)),std::move(IValueTestHelper::getNumVal((u_int64_t)17)));
+  auto ival = SubStringProvider::_FACTORY(std::move(p));
+  checkType(ival, IV_String);
+
+  //Parameters
+  std::vector<IValueType> t = {IV_String,IV_Number,IV_Number};
+  testParams<SubStringProvider>(t,false,false);
+
+  //Duplicate
+  checkDuplicate(ival);
+
+  //Check Function
+  {
+    SCOPED_TRACE("SubStringProvider_Func1");
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(),R"("'the data i want'")");
+  }
+  {
+    SCOPED_TRACE("SubStringProvider_Func2 (out of bounds)");
+    IValueTestHelper::param(p, std::move(IValueTestHelper::getStringVal("some string with 'the data i want' inside")),std::move(IValueTestHelper::getNumVal((u_int64_t)50)));
+    ival = SubStringProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(),R"("")");
+  }
+  {
+    SCOPED_TRACE("SubStringProvider_Func3 (Single param)");
+    IValueTestHelper::param(p, std::move(IValueTestHelper::getStringVal("some string with 'the data i want' inside")),std::move(IValueTestHelper::getNumVal((u_int64_t)17)));
+    ival = SubStringProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(),R"("'the data i want' inside")");
   }
 
 }
