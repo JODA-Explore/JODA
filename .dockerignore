@@ -101,4 +101,5 @@ CTestTestfile.cmake
 
 lib/
 
-
+.gitlab-ci.yml
+/.devcontainer/

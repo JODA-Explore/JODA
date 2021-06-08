@@ -8,7 +8,7 @@
 	branch = 2.x
 [submodule "extern/rapidjson"]
 	path = extern/rapidjson
-	url = https://github.com/N-Schaef/rapidjson.git
+	url = https://github.com/Tencent/rapidjson
 [submodule "extern/cpp-httplib"]
 	path = extern/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git

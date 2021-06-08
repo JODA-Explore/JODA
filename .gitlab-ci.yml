@@ -1,0 +1,253 @@
+variables:
+  DOCKER_TLS_CERTDIR: ""
+  DOCKER_DAEMON_OPTIONS: "--insecure-registry=${CI_DOCKER_REGISTRY_URL}"
+
+services:
+  - name: docker:19.03.1-dind
+    entrypoint: [ "sh", "-c", "dockerd-entrypoint.sh $DOCKER_DAEMON_OPTIONS" ]
+
+stages:
+  - container
+  - build
+  - test
+  - deploy
+  - deploycontainer
+
+
+###################################################################################
+############  Docker Build Containers                      ########################
+###################################################################################
+bustercontainer:
+  image: docker:19.03.1
+  stage: container
+  tags: 
+   - docker
+  only:
+    changes:
+      - docker/build-container/buster/Dockerfile
+  script:
+    - docker build -t joda_build:buster -f docker/build-container/buster/Dockerfile .
+    - docker tag joda_build:buster $CI_DOCKER_REGISTRY_URL/joda_build:buster
+    - docker push $CI_DOCKER_REGISTRY_URL/joda_build:buster
+
+ubuntu20container:
+  image: docker:19.03.1
+  stage: container
+  tags: 
+   - docker
+  only:
+    changes:
+      - docker/build-container/ubuntu20.04/Dockerfile
+  script:
+    - docker build -t joda_build:ubuntu20.04 -f docker/build-container/ubuntu20.04/Dockerfile .
+    - docker tag joda_build:ubuntu20.04 $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+    - docker push $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+
+
+build:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: build
+  tags:
+    - build
+    - binaries
+    - debian
+    - joda
+  except:
+    - tags
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE=Debug ..
+    - make -j$(nproc)
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    untracked: true
+    paths:
+      - build/
+  artifacts:
+    name: debug
+    paths:
+      - build/apps/joda/joda
+      - build/apps/client/joda-client
+    expire_in: 5h
+
+profile:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: deploy
+  tags:
+    - build
+    - binaries
+    - debian
+    - joda
+  except:
+    - tags
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE=RelWithDebInfo -DENABLE_PROFILING=ON ..
+    - make -j$(nproc)
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    untracked: true
+    paths:
+      - build/
+  artifacts:
+    name: profiling
+    paths:
+      - build/apps/joda/joda
+      - build/apps/client/joda-client
+    expire_in: 5h
+
+release:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: deploy
+  tags:
+    - build
+    - binaries
+    - debian
+    - joda
+  #  only:
+  #    - tags
+  script:
+    - mkdir -p release
+    - cd release
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make -j$(nproc)
+
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    untracked: true
+    paths:
+      - release/
+
+  artifacts:
+    name: release
+    paths:
+      - release/apps/joda/joda
+      - release/apps/client/joda-client
+    expire_in: 5h
+
+
+test:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: test
+  tags:
+    - build
+    - binaries
+    - debian
+    - joda
+  except:
+    - tags
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE=Debug -DBUILD_TESTS=ON -DCODE_COVERAGE=ON ..
+    - make -j$(nproc)
+    - chmod +x test/coverage.sh
+    - ctest --verbose
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    untracked: true
+    paths:
+      - build/
+  artifacts:
+    name: coverage
+    paths:
+      - build/coverage
+    expire_in: 24h
+  coverage: '/^.*? lines: (\d*%|\d*\.\d*%)/'
+
+
+
+pages:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: deploy
+  tags:
+    - build
+    - binaries
+    - debian
+    - joda
+  except:
+    - tags
+  script:
+    - mkdir -p build
+    - cd build
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - mkdir -p documentation
+    - doxygen doc/Doxyfile
+  cache:
+    key: "$CI_JOB_NAME-$CI_COMMIT_REF_SLUG"
+    untracked: true
+    paths:
+      - build/
+  artifacts:
+    name: documentation
+    paths:
+      - build/documentation
+    expire_in: 24h
+
+
+
+package_ubuntu_focal:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:ubuntu20.04
+  stage: deploy
+  tags:
+    - build
+    - binaries
+    - debian
+  only:
+    - tags
+  script:
+    - mkdir -p deb
+    - cd deb
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - cpack --verbose -G DEB -C Release
+    - mv *.deb ../.
+
+  artifacts:
+    name: Ubuntu Focal
+    paths:
+      - "*.deb"
+    expire_in: 5h
+
+package_debian_buster:
+  image: $CI_DOCKER_REGISTRY_URL/joda_build:buster
+  stage: deploy
+  tags:
+    - build
+    - binaries
+    - debian
+  only:
+    - tags
+  script:
+    - mkdir -p deb
+    - cd deb
+    - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - cpack --verbose -G DEB -C Release
+    - mv *.deb ../.
+  artifacts:
+    name: Debian Buster
+    paths:
+      - "*.deb"
+    expire_in: 5h
+
+
+
+###################################################################################
+############  Docker Application Containers                      ########################
+###################################################################################
+appcontainer:
+  image: docker:19.03.1
+  stage: deploycontainer
+  tags: 
+   - docker
+  only:
+   - tags
+  dependencies:
+    - package_debian_buster
+  script:
+    - docker build -t joda:latest -f docker/application-container/buster/Dockerfile .
+    - docker tag joda:latest $CI_DOCKER_REGISTRY_URL/joda:latest
+    - docker push $CI_DOCKER_REGISTRY_URL/joda:latest
+    - docker tag joda:latest $CI_DOCKER_REGISTRY_URL/joda:$CI_COMMIT_REF_NAME
+    - docker push $CI_DOCKER_REGISTRY_URL/joda:$CI_COMMIT_REF_NAME
