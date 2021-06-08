@@ -5,7 +5,7 @@
 [submodule "extern/PEGTL"]
 	path = extern/PEGTL
 	url = https://github.com/taocpp/PEGTL.git
-	branch = master
+	branch = 2.x
 [submodule "extern/rapidjson"]
 	path = extern/rapidjson
 	url = https://github.com/N-Schaef/rapidjson.git
