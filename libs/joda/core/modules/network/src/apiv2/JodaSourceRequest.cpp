@@ -43,42 +43,40 @@ void joda::network::apiv2::JodaSourceRequest::registerEndpoint(const std::string
 }
 
 void joda::network::apiv2::JodaSourceRequest::sendSources(const httplib::Request &req, httplib::Response &res) {
-  res.set_header("Content-Type", "application/json");
   res.set_header("charset", "utf-8");
-  res.set_chunked_content_provider([](uint64_t offset_,
-                                      httplib::DataSink out,
-                                      httplib::Done done) {
-    out("[", 1);
+  res.set_chunked_content_provider("application/json",[](uint64_t offset_,
+                                      httplib::DataSink& out) {
+    out.write("[", 1);
     auto storages = StorageCollection::getInstance().getStorages();
     for (int i = 0; i < storages.size(); ++i) {
       auto str = storageToJSON(*storages[i]);
-      out(str.c_str(), str.size());
+      out.write(str.c_str(), str.size());
       if (i != storages.size() - 1) {
-        out(",", 1);
+        out.write(",", 1);
       }
     }
-    out("]", 1);
-    done();
+    out.write("]", 1);
+    out.done();
+    return true;
   });
 }
 
 void joda::network::apiv2::JodaSourceRequest::sendTemporaries(const httplib::Request &req, httplib::Response &res) {
-  res.set_header("Content-Type", "application/json");
   res.set_header("charset", "utf-8");
-  res.set_chunked_content_provider([](uint64_t offset_,
-                                      httplib::DataSink out,
-                                      httplib::Done done) {
-    out("[", 1);
+  res.set_chunked_content_provider("application/json",[](uint64_t offset_,
+                                      httplib::DataSink& out) {
+    out.write("[", 1);
     auto storages = StorageCollection::getInstance().getTemporaryIDStorages();
     for (int i = 0; i < storages.size(); ++i) {
       auto str = storageToJSON(*storages[i].second, storages[i].first);
-      out(str.c_str(), str.size());
+      out.write(str.c_str(), str.size());
       if (i != storages.size() - 1) {
-        out(",", 1);
+        out.write(",", 1);
       }
     }
-    out("]", 1);
-    done();
+    out.write("]", 1);
+    out.done();
+    return true;
   });
 }
 

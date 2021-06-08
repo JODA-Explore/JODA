@@ -81,12 +81,9 @@ void joda::network::apiv2::JodaResultRequest::sendResult(httplib::Response &res,
     count = offset + count;
   }
 
-  res.set_header("Content-Type", "application/json");
   res.set_header("charset", "utf-8");
-  res.set_chunked_content_provider([offset, count, result](uint64_t offset_,
-                                                           httplib::DataSink out,
-                                                           httplib::Done done) {
-    out("{\"result\":[", 11);
+  res.set_chunked_content_provider("application/json",[offset, count, result](size_t offset_, httplib::DataSink &out) {
+    out.write("{\"result\":[", 11);
     auto start = offset;
     auto end = count;
 
@@ -96,16 +93,17 @@ void joda::network::apiv2::JodaResultRequest::sendResult(httplib::Response &res,
       auto stringified = result->stringify(start, start + size - 1);
       for (auto &&str : stringified) {
         if (prev) {
-          out(",", 1);
+          out.write(",", 1);
         } else {
           prev = true;
         }
-        out(str.c_str(), str.size());
+        out.write(str.c_str(), str.size());
       }
       start += size;
     }
-    out("]}", 2);
-    done();
+    out.write("]}", 2);
+    out.done();
+    return true;
   });
 }
 

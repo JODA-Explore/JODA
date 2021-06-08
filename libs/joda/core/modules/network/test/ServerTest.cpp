@@ -1,4 +1,4 @@
-#define CPPHTTPLIB_THREAD_POOL_COUNT -1
+#define CPPHTTPLIB_THREAD_POOL_COUNT 1
 
 #include <gtest/gtest.h>
 #include <future>     
@@ -37,7 +37,7 @@ TEST_F(ServerTest, Response) {
     std::string responseStr = R"({"Test":"Test"})";
     RJDocument responseObj;
     responseObj.Parse(responseStr);
-
+    auto threads = CPPHTTPLIB_THREAD_POOL_COUNT;
     server.sendResponse(responseObj,resp);
 
     EXPECT_STREQ(resp.get_header_value("Content-Type").c_str(),"application/json");

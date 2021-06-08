@@ -61,7 +61,7 @@ class DocumentCostHandler {
 
   bool String(const Ch *ch, rapidjson::SizeType len, bool copy) {
     theoreticalCost += sizeof(RJValue);
-    if (copy && !RJValue::ShortString::Usable(len))
+    if (copy && !canBeShortString(len))
       theoreticalCost += sizeof(RJValue::Ch) * len;
     return true;
   };
@@ -115,7 +115,7 @@ class DocumentCostHandler {
       case rapidjson::kStringType: {
         cost += sizeof(RJValue);
         auto len = doc.GetStringLength();
-        if ((doc.data_.f.flags & RJDocument::kShortStringFlag) != RJDocument::kShortStringFlag) {
+        if (!isShortString(doc)) {
           cost += sizeof(RJValue::Ch) * len;
         }
       }
@@ -144,6 +144,16 @@ class DocumentCostHandler {
  private:
   size_t cost = 0;
   size_t theoreticalCost = 0;
+
+   // Checks against the rules in https://rapidjson.org/structrapidjson_1_1_generic_value_1_1_short_string.html
+  bool canBeShortString(size_t len) const {
+    if (RAPIDJSON_64BIT == 0 || RAPIDJSON_48BITPOINTER_OPTIMIZATION == 1) return len <= 13;
+    return len <= 21;
+  }
+
+  bool isShortString(const RJValue &doc) const {
+    return canBeShortString(doc.GetStringLength());
+  }
 };
 
 #endif //JODA_DOCUMENTCOSTHANDLER_H

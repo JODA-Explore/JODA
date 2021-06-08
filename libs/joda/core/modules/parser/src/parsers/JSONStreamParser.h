@@ -76,7 +76,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
               LOG(WARNING) << std::string(rapidjson::GetParseError_En(doc->GetParseError())) <<
                            " from stream " << stream.first->getStreamName() << " : " << begin << "-"
-                           << stream.second->tellg();
+                           << isw.Tell();
 
               continue;
             }
@@ -87,7 +87,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
               LOG(WARNING) << std::string(rapidjson::GetParseError_En(doc->GetParseError())) <<
                            " from stream " << stream.first->getStreamName() << " : " << begin << "-"
-                           << stream.second->tellg();
+                           << isw.Tell();
 
               continue;
             }
@@ -96,7 +96,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
             doc->CopyFrom(*tmpDoc, doc->GetAllocator(), true);
           }
 
-          end = stream.second->tellg();
+          end = isw.Tell();
 
           auto ptr = stream.first->clone();
           auto *tmp = dynamic_cast<IDPositionOrigin *>(ptr.get());
