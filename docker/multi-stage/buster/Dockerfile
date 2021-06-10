@@ -40,7 +40,8 @@ ARG DEPENDENCY_PACKAGES="libjemalloc2 libcpprest libssl1.1 libreadline7 libncurs
 ENV DEBIAN_FRONTEND=noninteractive 
 
 # Copy JODA executable
-COPY --from=0 /app/build/apps/joda/joda .
+COPY --from=0 /app/build/apps/joda/joda /bin/joda
+COPY --from=0 /app/build/apps/joda/joda-client /bin/joda/joda-client
 
 #Install JODA
 RUN apt-get update && apt-get install -y $DEPENDENCY_PACKAGES
@@ -54,4 +55,4 @@ COPY docker/application-container/buster/joda.conf joda.conf
 EXPOSE 5632/tcp
 
 # Start JODA server
-CMD ["./joda","--server", "--bind", "0.0.0.0", "--logtostderr", "-c"]
+CMD ["joda","--server", "--bind", "0.0.0.0", "--logtostderr", "-c"]

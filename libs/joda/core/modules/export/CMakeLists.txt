@@ -1,7 +1,7 @@
 project(JODA-Core-export CXX)
 
 set(joda-core-export-SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/IExportDestination
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/IExportDestination.h
         ${CMAKE_CURRENT_LIST_DIR}/src/StorageExport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/StorageExport.h
         ${CMAKE_CURRENT_LIST_DIR}/src/FileExport.cpp

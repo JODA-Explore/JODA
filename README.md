@@ -611,5 +611,6 @@ If you want to cite this project in your research, please use our ICDE 2020 demo
   timestamp = {Fri, 05 Jun 2020 17:54:57 +0200},
   biburl    = {https://dblp.org/rec/conf/icde/Schafer020.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
+}
 ```
 
