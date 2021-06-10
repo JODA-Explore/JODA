@@ -41,7 +41,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 # Copy JODA executable
 COPY --from=0 /app/build/apps/joda/joda /bin/joda
-COPY --from=0 /app/build/apps/joda/joda-client /bin/joda/joda-client
+COPY --from=0 /app/build/apps/joda-client/joda-client /bin/joda-client
 
 #Install JODA
 RUN apt-get update && apt-get install -y $DEPENDENCY_PACKAGES
