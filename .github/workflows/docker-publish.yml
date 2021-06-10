@@ -68,7 +68,7 @@ jobs:
       
       - name: Push image to Dockerhub
         run: |
-          IMAGE_ID=nicotin/joda
+          IMAGE_ID=${{ secrets.DOCKERHUB_USER }}/joda
 
           # Strip git ref prefix from version
           VERSION=$(echo "${{ github.ref }}" | sed -e 's,.*/\(.*\),\1,')
