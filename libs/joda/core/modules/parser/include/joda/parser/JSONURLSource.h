@@ -11,17 +11,18 @@ namespace joda::docparsing {
 /**
  * Represents a web url which contains a single JSON file to be imported.
  */
-class JSONURLSource : public joda::docparsing::IImportSource{
+class JSONURLSource : public joda::docparsing::IImportSource {
  public:
-  explicit JSONURLSource(const std::string &urlPath);
+  explicit JSONURLSource(std::string urlPath);
   virtual void feedSources(JsonURLReaderQueue::queue_t &queue,
-                           JsonURLReaderQueue::queue_t::ptok_t &ptok);
+                           JsonURLReaderQueue::queue_t::ptok_t &ptok) override;
   size_t estimatedSize() override;
   const std::string toString() override;
   const std::string toQueryString() override;
+
  private:
   std::string urlPath;
 };
-}
+}  // namespace joda::docparsing
 
-#endif //JODA_JSONURLSOURCE_H
+#endif  // JODA_JSONURLSOURCE_H

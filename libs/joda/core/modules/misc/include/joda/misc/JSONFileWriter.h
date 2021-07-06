@@ -4,8 +4,8 @@
 
 #ifndef JODA_JSONFILEWRITER_H
 #define JODA_JSONFILEWRITER_H
-#include <vector>
 #include <string>
+#include <vector>
 /**
  * A helper class serializing JSON documents into a file
  */
@@ -17,8 +17,8 @@ class JSONFileWriter {
    * @param lines The lines to write
    * @param append Decides if lines are appended or the file is replaced
    */
-  void writeFile(const std::string &file, const std::vector<std::string> &lines, bool append = false);
-
+  void writeFile(const std::string &file, const std::vector<std::string> &lines,
+                 bool append = false);
 };
 
-#endif //JODA_JSONFILEWRITER_H
+#endif  // JODA_JSONFILEWRITER_H

@@ -9,26 +9,29 @@
 #include "IValueProvider.h"
 
 namespace joda::query {
-#define degreesToRadians(angleDegrees) ((angleDegrees) * M_PI / 180.0)
-#define radiansToDegrees(angleRadians) ((angleRadians) * 180.0 / M_PI)
+#define degreesToRadians(angleDegrees) ((angleDegrees)*M_PI / 180.0)
+#define radiansToDegrees(angleRadians) ((angleRadians)*180.0 / M_PI)
 
 /**
  * Template class used for all unary mathamatical functions.
- * The template argument has to be a struct with the following attributes/functions.
+ * The template argument has to be a struct with the following
+ * attributes/functions.
  * @code{.cpp}
  * struct <StructName> {
  *  static constexpr auto name = "<Name>";
  *  static constexpr IValueType retType = <IValueType returntype>;
- *  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return <result>; };
- *  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {  return <result>;  };
- *  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {  return <result>; };
+ *  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+ * return <result>; }; inline static RJValue calculate(u_int64_t val,
+ * RJMemoryPoolAlloc &alloc) {  return <result>;  }; inline static RJValue
+ * calculate(int64_t val, RJMemoryPoolAlloc &alloc) {  return <result>; };
  * };
  * @endcode
  */
-template<class Calc>
+template <class Calc>
 class UnaryNumberProvider : public joda::query::IValueProvider {
  public:
-  explicit UnaryNumberProvider(std::vector<std::unique_ptr<IValueProvider>> &&parameters)
+  explicit UnaryNumberProvider(
+      std::vector<std::unique_ptr<IValueProvider>> &&parameters)
       : IValueProvider(std::move(parameters)) {
     checkParamSize(1);
     checkAllParamTypes();
@@ -39,11 +42,7 @@ class UnaryNumberProvider : public joda::query::IValueProvider {
     return Calc::retType;
   }
 
-  std::string getName() const override {
-
-    return Calc::name;
-
-  };
+  std::string getName() const override { return Calc::name; };
 
   std::string toString() const override {
     return joda::query::IValueProvider::toString();
@@ -61,7 +60,8 @@ class UnaryNumberProvider : public joda::query::IValueProvider {
     return c;
   }
 
-  RJValue getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const override {
+  RJValue getAtomValue(const RapidJsonDocument &json,
+                       RJMemoryPoolAlloc &alloc) const override {
     if (params[0]->isAtom()) {
       auto val = params[0]->getAtomValue(json, alloc);
       if (!val.IsNumber()) return RJValue();
@@ -77,7 +77,8 @@ class UnaryNumberProvider : public joda::query::IValueProvider {
     }
   };
 
-  const RJValue *getValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const override {
+  const RJValue *getValue(const RapidJsonDocument &json,
+                          RJMemoryPoolAlloc &alloc) const override {
     DCHECK(!isAtom()) << "Did not check for atom first";
     return nullptr;
   };
@@ -85,13 +86,11 @@ class UnaryNumberProvider : public joda::query::IValueProvider {
   CREATE_FACTORY(UnaryNumberProvider<Calc>)
 
  protected:
-
   void checkAllParamTypes() {
     for (unsigned int i = 0; i < params.size(); ++i) {
       checkParamType(i, IV_Number);
     }
   }
-
 };
 
 /*
@@ -101,11 +100,17 @@ struct UnaryAbsCalculationFunction {
   static constexpr auto name = "ABS";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::abs(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::abs(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::abs(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::abs(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryAbsCalculationFunction> AbsProvider;
@@ -117,11 +122,17 @@ struct UnaryRoundCalculationFunction {
   static constexpr auto name = "ROUND";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::round(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::round(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 };
 
 typedef UnaryNumberProvider<UnaryRoundCalculationFunction> RoundProvider;
@@ -133,11 +144,17 @@ struct UnaryTruncCalculationFunction {
   static constexpr auto name = "TRUNC";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::trunc(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::trunc(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 };
 
 typedef UnaryNumberProvider<UnaryTruncCalculationFunction> TruncProvider;
@@ -174,11 +191,17 @@ struct UnaryCeilCalculationFunction {
   static constexpr auto name = "CEIL";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::ceil(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::ceil(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 };
 
 typedef UnaryNumberProvider<UnaryCeilCalculationFunction> CeilProvider;
@@ -190,11 +213,17 @@ struct UnaryFloorCalculationFunction {
   static constexpr auto name = "FLOOR";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::floor(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::floor(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(val); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(val);
+  };
 };
 
 typedef UnaryNumberProvider<UnaryFloorCalculationFunction> FloorProvider;
@@ -206,11 +235,17 @@ struct UnaryDegreesCalculationFunction {
   static constexpr auto name = "DEGREES";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(radiansToDegrees(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(radiansToDegrees(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(radiansToDegrees(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(radiansToDegrees(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(radiansToDegrees(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(radiansToDegrees(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryDegreesCalculationFunction> DegreesProvider;
@@ -222,11 +257,17 @@ struct UnaryRadiansCalculationFunction {
   static constexpr auto name = "RADIANS";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(degreesToRadians(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(degreesToRadians(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(degreesToRadians(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(degreesToRadians(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(degreesToRadians(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(degreesToRadians(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryRadiansCalculationFunction> RadiansProvider;
@@ -288,11 +329,17 @@ struct UnaryAtanCalculationFunction {
   static constexpr auto name = "ATAN";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::atan(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::atan(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::atan(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::atan(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::atan(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::atan(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryAtanCalculationFunction> AtanProvider;
@@ -304,11 +351,17 @@ struct UnaryCosCalculationFunction {
   static constexpr auto name = "COS";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::cos(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::cos(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::cos(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::cos(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::cos(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::cos(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryCosCalculationFunction> CosProvider;
@@ -320,11 +373,17 @@ struct UnarySinCalculationFunction {
   static constexpr auto name = "SIN";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::sin(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::sin(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::sin(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::sin(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::sin(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::sin(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnarySinCalculationFunction> SinProvider;
@@ -336,56 +395,47 @@ struct UnaryTanCalculationFunction {
   static constexpr auto name = "TAN";
   static constexpr joda::query::IValueType retType = IV_Number;
 
-  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) { return RJValue(std::tan(val)); };
+  inline static RJValue calculate(double val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::tan(val));
+  };
 
-  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::tan(val)); };
+  inline static RJValue calculate(u_int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::tan(val));
+  };
 
-  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) { return RJValue(std::tan(val)); };
+  inline static RJValue calculate(int64_t val, RJMemoryPoolAlloc &alloc) {
+    return RJValue(std::tan(val));
+  };
 };
 
 typedef UnaryNumberProvider<UnaryTanCalculationFunction> TanProvider;
 
+template class UnaryNumberProvider<UnaryAbsCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryAbsCalculationFunction>;
+template class UnaryNumberProvider<UnaryRoundCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryRoundCalculationFunction>;
+template class UnaryNumberProvider<UnaryTruncCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryTruncCalculationFunction>;
+template class UnaryNumberProvider<UnarySqrtCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnarySqrtCalculationFunction>;
+template class UnaryNumberProvider<UnaryCeilCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryCeilCalculationFunction>;
+template class UnaryNumberProvider<UnaryFloorCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryFloorCalculationFunction>;
+template class UnaryNumberProvider<UnaryDegreesCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryDegreesCalculationFunction>;
+template class UnaryNumberProvider<UnaryRadiansCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryRadiansCalculationFunction>;
+template class UnaryNumberProvider<UnaryAcosCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryAcosCalculationFunction>;
+template class UnaryNumberProvider<UnaryAsinCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryAsinCalculationFunction>;
+template class UnaryNumberProvider<UnaryAtanCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryAtanCalculationFunction>;
+template class UnaryNumberProvider<UnaryCosCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnaryCosCalculationFunction>;
+template class UnaryNumberProvider<UnarySinCalculationFunction>;
 
-template
-class UnaryNumberProvider<UnarySinCalculationFunction>;
-
-template
-class UnaryNumberProvider<UnaryTanCalculationFunction>;
-}
-#endif //JODA_UNARYNUMBERPROVIDER_H
+template class UnaryNumberProvider<UnaryTanCalculationFunction>;
+}  // namespace joda::query
+#endif  // JODA_UNARYNUMBERPROVIDER_H

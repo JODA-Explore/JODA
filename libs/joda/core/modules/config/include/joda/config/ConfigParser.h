@@ -20,16 +20,18 @@ class ConfigParser {
    * @param argv argv of main function
    * @return The parsed variables
    */
-  static const po::variables_map parseConfigs(int argc, char *argv[]);
+  static const po::variables_map parseConfigs(int argc, char* argv[]);
 
   /**
-   * Sets the configurations of the program, by providing the previously parsed variables
+   * Sets the configurations of the program, by providing the previously parsed
+   * variables
    * @param vm The variables map to get configs from
    */
   static void setConfig(const po::variables_map& vm);
 
   /**
-   * Prints the help message that appears when providing the "-h", "--help" command line flag or when using a wrong option
+   * Prints the help message that appears when providing the "-h", "--help"
+   * command line flag or when using a wrong option
    */
   static void produceHelpMessage();
 
@@ -37,11 +39,12 @@ class ConfigParser {
    * Dumps a visual representation of all configs
    */
   static void dumpConfig();
+
  protected:
-  static const po::options_description getCMDOptions() ;
-  static const po::options_description getConfigOptions() ;
-  static const po::options_description getHiddenConfigOptions() ;
+  static const po::options_description getCMDOptions();
+  static const po::options_description getConfigOptions();
+  static const po::options_description getHiddenConfigOptions();
   static const std::string getConfigFile();
 };
 
-#endif //JODA_CONFIGPARSER_H
+#endif  // JODA_CONFIGPARSER_H

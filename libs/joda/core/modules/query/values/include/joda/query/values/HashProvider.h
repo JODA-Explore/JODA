@@ -1,9 +1,9 @@
 //
 // Created by Nico on 16/07/2019.
 //
+#include <unordered_map>
 #include "UnaryPointerAcceptProvider.h"
 #include "ValueAccepter.h"
-#include <unordered_map>
 #ifndef JODA_HASHPROVIDER_H
 #define JODA_HASHPROVIDER_H
 namespace joda::query::providers::hash {
@@ -57,9 +57,7 @@ class HashHandler {
     return true;
   }
 
-  bool StartObject() {
-    return true;
-  }
+  bool StartObject() { return true; }
 
   bool Key(const Ch *str, rapidjson::SizeType length, bool copy) {
     hash_combine(hash, std::string(str, length));
@@ -81,9 +79,7 @@ class HashHandler {
     return true;
   }
 
-  size_t getHash() const {
-    return hash;
-  }
+  size_t getHash() const { return hash; }
 
   void reset() {
     stack = 0;
@@ -94,7 +90,7 @@ class HashHandler {
   int stack = 0;
   size_t hash = 0;
 
-  template<class T>
+  template <class T>
   inline void hash_combine(std::size_t &seed, T const &v) {
     std::hash<T> hasher;
     seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
@@ -108,7 +104,8 @@ class HashCalculator {
   static constexpr bool acceptAll = true;
   static constexpr auto name = "HASH";
 
-  static RJValue accept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc, const ValueAccepter &accepter) {
+  static RJValue accept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
+                        const ValueAccepter &accepter) {
     HashHandler handler;
     accepter.Accept(json, alloc, handler);
     return RJValue(handler.getHash());
@@ -127,14 +124,14 @@ class HashCalculator {
     vo->Accept(handler);
     return RJValue(handler.getHash());
   }
-
 };
-}
+}  // namespace joda::query::providers::hash
 
 namespace joda::query {
-template
-class UnaryPointerAcceptProvider<joda::query::providers::hash::HashCalculator>;
+template class UnaryPointerAcceptProvider<
+    joda::query::providers::hash::HashCalculator>;
 
-typedef UnaryPointerAcceptProvider<joda::query::providers::hash::HashCalculator> HashProvider;
-}
-#endif //JODA_HASHPROVIDER_H
+typedef UnaryPointerAcceptProvider<joda::query::providers::hash::HashCalculator>
+    HashProvider;
+}  // namespace joda::query
+#endif  // JODA_HASHPROVIDER_H

@@ -32,8 +32,7 @@ class RegexProvider : public joda::query::IValueProvider {
 
  private:
   std::regex regex;
-  bool constregex = false;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_REGEXPROVIDER_H

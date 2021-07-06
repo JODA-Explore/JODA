@@ -21,12 +21,12 @@ bool joda::query::SubStringProvider::isConst() const {
 }
 
 RJValue joda::query::SubStringProvider::getAtomValue(
-    const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& alloc) const {
   DCHECK(isAtom()) << "Did not check for atom before calling";
   std::string toCheck;
   RJValue val;
   if (getParamString(toCheck, params[0], json)) {
-    auto begin = (u_int64_t)0;
+    auto begin = static_cast<u_int64_t>(0);
     if (params[1]->isAtom()) {
       auto first = params[1]->getAtomValue(json, alloc);
       if (first.IsUint64()) {
@@ -37,31 +37,31 @@ RJValue joda::query::SubStringProvider::getAtomValue(
           toCheck.size());  // Never larger than string, or exception is thrown
     }
     if (params.size() == 2) {
-      val = RJValue(utf8_substr(toCheck,begin).c_str(), alloc);
+      val = RJValue(utf8_substr(toCheck, begin).c_str(), alloc);
     } else if (params.size() == 3) {
-      auto len = (u_int64_t)toCheck.size();
+      auto len = static_cast<u_int64_t>(toCheck.size());
       if (params[2]->isAtom()) {
         auto second = params[2]->getAtomValue(json, alloc);
         if (second.IsUint64()) {
           len = second.GetUint64();
         }
       }
-      val = RJValue(utf8_substr(toCheck,begin,len).c_str(), alloc);
+      val = RJValue(utf8_substr(toCheck, begin, len).c_str(), alloc);
     }
   }
-  return std::move(val);
+  return val;
 }
 
 bool joda::query::SubStringProvider::isAtom() const { return true; }
 
-const RJValue *joda::query::SubStringProvider::getValue(
-    const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+const RJValue* joda::query::SubStringProvider::getValue(
+    const RapidJsonDocument& /*json*/, RJMemoryPoolAlloc& /*alloc*/) const {
   DCHECK(!isAtom()) << "Did not check for atom before calling";
   return nullptr;
 }
 
 joda::query::SubStringProvider::SubStringProvider(
-    std::vector<std::unique_ptr<joda::query::IValueProvider>> &&parameters)
+    std::vector<std::unique_ptr<joda::query::IValueProvider>>&& parameters)
     : joda::query::IValueProvider(std::move(parameters)) {
   if (params.size() < 2 || params.size() > 3) {
     throw WrongParameterCountException(params.size(), 2, getName());

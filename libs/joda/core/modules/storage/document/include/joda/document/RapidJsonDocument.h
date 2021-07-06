@@ -4,20 +4,20 @@
 
 #ifndef JODA_RAPIDJSONDOCUMENT_H
 #define JODA_RAPIDJSONDOCUMENT_H
+#include <joda/document/view/ViewLayer.h>
+#include <rapidjson/allocators.h>
+#include <rapidjson/fwd.h>
 #include <atomic>
 #include <memory>
-#include <rapidjson/fwd.h>
-#include <rapidjson/allocators.h>
-#include <joda/document/view/ViewLayer.h>
+#include "../../../../../misc/include/joda/misc/FileNameRepo.h"
 #include "IOrigin.h"
 #include "joda/misc/RJFwd.h"
-#include "../../../../../misc/include/joda/misc/FileNameRepo.h"
 
-
-typedef unsigned long DOC_ID; //The type used to identify documents
+typedef unsigned long DOC_ID;  // The type used to identify documents
 
 /**
- * The wrapper class of JSON documents, parsed into the internal rapidJSON format
+ * The wrapper class of JSON documents, parsed into the internal rapidJSON
+ * format
  */
 class RapidJsonDocument {
  public:
@@ -27,8 +27,7 @@ class RapidJsonDocument {
    * @param origin The origin of the document
    * @param json The actual JSON content
    */
-  RapidJsonDocument(unsigned long id,
-                    std::unique_ptr<RJDocument> &&json,
+  RapidJsonDocument(unsigned long id, std::unique_ptr<RJDocument> &&json,
                     std::unique_ptr<const IOrigin> &&origin);
 
   /**
@@ -36,16 +35,14 @@ class RapidJsonDocument {
    * @param origin The origin of the document
    * @param json The actual JSON content
    */
-  RapidJsonDocument(
-      std::unique_ptr<RJDocument> &&json,
-      std::unique_ptr<const IOrigin> &&origin);
-
+  RapidJsonDocument(std::unique_ptr<RJDocument> &&json,
+                    std::unique_ptr<const IOrigin> &&origin);
 
   /**
    * Move constructor
    * @param doc other document
    */
-   RapidJsonDocument(RapidJsonDocument &&doc) noexcept ;
+  RapidJsonDocument(RapidJsonDocument &&doc) noexcept;
   /**
    * Copy constructor
    * @param doc The RapidJsonDocument to copy from
@@ -63,15 +60,15 @@ class RapidJsonDocument {
   const std::unique_ptr<RJDocument> &getJson() const;
 
   /**
- * Sets the internal RJDocument
- * @param json The document to store
- */
+   * Sets the internal RJDocument
+   * @param json The document to store
+   */
   void setJson(std::unique_ptr<RJDocument> &&json);
 
   /**
-* Sets the Origin of the document
-* @param orig The new origin
-*/
+   * Sets the Origin of the document
+   * @param orig The new origin
+   */
   void setOrigin(std::unique_ptr<const IOrigin> &&orig);
 
   /**
@@ -103,12 +100,12 @@ class RapidJsonDocument {
 
   RJValue const *Get(const RJPointer &ptr) const;
 
-  const IOrigin* const getOrigin() const;
+  const IOrigin *const getOrigin() const;
 
   RapidJsonDocument &operator=(const RapidJsonDocument &other) = delete;
-  RapidJsonDocument& operator=(RapidJsonDocument&& other) noexcept;
+  RapidJsonDocument &operator=(RapidJsonDocument &&other) noexcept;
 
-  template<typename Handler>
+  template <typename Handler>
   bool Accept(Handler &handler) const {
     if (isView()) {
       DCHECK(view != nullptr) << "View was not computed";
@@ -120,7 +117,7 @@ class RapidJsonDocument {
   }
 
  protected:
-  unsigned long id;
+  unsigned long id{};
   std::unique_ptr<const IOrigin> origin;
   std::unique_ptr<RJDocument> json;
   std::unique_ptr<ViewLayer> view;
@@ -128,10 +125,9 @@ class RapidJsonDocument {
 
  private:
   static std::atomic_ulong currID;
-
 };
 
 typedef std::unique_ptr<RapidJsonDocument> RJDocumentPointer;
 typedef std::unique_ptr<RJMemoryPoolAlloc> RJMemoryPoolPointer;
 
-#endif //JODA_RAPIDJSONDOCUMENT_H
+#endif  // JODA_RAPIDJSONDOCUMENT_H

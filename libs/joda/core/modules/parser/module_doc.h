@@ -2,6 +2,6 @@
 
 /**
  * @namespace joda::docparsing
- * This namespace provides the capabilities of parsing textual document representations into their in-memory format.
+ * This namespace provides the capabilities of parsing textual document
+ * representations into their in-memory format.
  */
-

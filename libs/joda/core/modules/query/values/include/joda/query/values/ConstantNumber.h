@@ -20,7 +20,7 @@ namespace joda::query {
  * };
  * @endcode
  */
-template<class Calc>
+template <class Calc>
 class ConstantNumber : public AtomProvider<typename Calc::AtomType> {
  public:
   explicit ConstantNumber(
@@ -65,11 +65,8 @@ struct NowConstantFunction {
 
 typedef ConstantNumber<NowConstantFunction> NowProvider;
 
+template class ConstantNumber<joda::query::PiConstantFunction>;
 
-template
-class ConstantNumber<joda::query::PiConstantFunction>;
-
-template
-class ConstantNumber<joda::query::NowConstantFunction>;
-}
+template class ConstantNumber<joda::query::NowConstantFunction>;
+}  // namespace joda::query
 #endif  // JODA_CONSTANTNUMBER_H

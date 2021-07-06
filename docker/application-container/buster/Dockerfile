@@ -19,4 +19,5 @@ COPY docker/application-container/buster/joda.conf joda.conf
 EXPOSE 5632/tcp
 
 # Start JODA server
-CMD ["joda","--server", "--bind", "0.0.0.0", "--logtostderr", "-c"]
+ENTRYPOINT ["joda"]
+CMD ["--server", "--bind", "0.0.0.0", "--logtostderr", "-c"]

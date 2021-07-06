@@ -4,10 +4,11 @@
 
 #include "../../include/joda/query/project/FlattenProjector.h"
 
-void joda::query::FlattenProjector::project(const RapidJsonDocument &json,
-                                            std::vector<std::unique_ptr<RJDocument>> &newDocs, bool view) {
+void joda::query::FlattenProjector::project(
+    const RapidJsonDocument& json,
+    std::vector<std::unique_ptr<RJDocument>>& newDocs, bool /*view*/) {
   RJValue tmpVal;
-  const RJValue *val;
+  const RJValue* val;
   if (from->isAtom()) {
     tmpVal = from->getAtomValue(json, newDocs.front()->GetAllocator());
     val = &tmpVal;
@@ -18,12 +19,12 @@ void joda::query::FlattenProjector::project(const RapidJsonDocument &json,
   if (val != nullptr && val->IsArray() && !val->Empty() && !newDocs.empty()) {
     auto count = val->Size();
 
-    //Multiplicate array
+    // Multiplicate array
     auto origDocs = multiplicate(newDocs, count);
 
-    //Fill parts of array with new value
-    auto *alloc = &newDocs.front()->GetAllocator();
-    for (int i = 0; i < count; ++i) {
+    // Fill parts of array with new value
+    auto* alloc = &newDocs.front()->GetAllocator();
+    for (size_t i = 0; i < count; ++i) {
       auto arrptrstr = std::string("/" + std::to_string(i));
       RJPointer arrptr(arrptrstr.c_str());
       RJValue newval;
@@ -33,17 +34,15 @@ void joda::query::FlattenProjector::project(const RapidJsonDocument &json,
   }
 }
 
-std::string joda::query::FlattenProjector::getType() {
-  return type;
-}
+std::string joda::query::FlattenProjector::getType() { return type; }
 
 const std::string joda::query::FlattenProjector::type = "FlattenProjector";
-joda::query::FlattenProjector::FlattenProjector(const std::string &to, std::unique_ptr<IValueProvider> &&from)
-    : joda::query::ISetProjector(to), from(std::move(from)) {
-
-}
+joda::query::FlattenProjector::FlattenProjector(
+    const std::string& to, std::unique_ptr<IValueProvider>&& from)
+    : joda::query::ISetProjector(to), from(std::move(from)) {}
 std::string joda::query::FlattenProjector::toString() {
-  return joda::query::ISetProjector::toString() + "FLATTEN(" + from->toString() + ")";
+  return joda::query::ISetProjector::toString() + "FLATTEN(" +
+         from->toString() + ")";
 }
 
 std::vector<std::string> joda::query::FlattenProjector::getAttributes() const {

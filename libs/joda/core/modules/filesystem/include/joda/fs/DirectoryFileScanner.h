@@ -9,7 +9,8 @@
 
 namespace joda::filesystem {
 /**
- * This class scans a directory on the filesystem and returns a list of all files within
+ * This class scans a directory on the filesystem and returns a list of all
+ * files within
  */
 class DirectoryFileScanner {
  public:
@@ -23,10 +24,12 @@ class DirectoryFileScanner {
   /**
    * Returns all files in the given directory with the provided file extension
    * @param dir The directory to scan
-   * @param ending The file extension (without "."). If ending is empty, all files will be returned
+   * @param ending The file extension (without "."). If ending is empty, all
+   * files will be returned
    * @return  A list of filepaths in string representation
    */
-  std::vector<std::string> getFilesInDir(const std::string &dir, const std::string &ending);
+  std::vector<std::string> getFilesInDir(const std::string &dir,
+                                         const std::string &ending);
   /**
    * Checks if a given file path is a valid file
    * @param file The file path to check
@@ -46,18 +49,19 @@ class DirectoryFileScanner {
    * @param file The file path to check
    * @return The size of the file if it is valid; 0 if not
    */
-  size_t getFileSize(const std::string& file) const;
+  size_t getFileSize(const std::string &file) const;
 
   /**
    * Returns the size (in byte) of a given directory.
    * @param dir The directory to calculate the size of
    * @param recursive Decides if subdirectories are traversed recursivley
-   * @param extension An optional file extension to filter the found files. If empty all files are counted
+   * @param extension An optional file extension to filter the found files. If
+   * empty all files are counted
    * @return The size of the directory if the path was valid; 0 else
    */
-  size_t getDirectorySize(const std::string &dir, bool recursive, const std::string &extension) const;
-
+  size_t getDirectorySize(const std::string &dir, bool recursive,
+                          const std::string &extension) const;
 };
-}
+}  // namespace joda::filesystem
 
-#endif //JODA_DIRECTORYFILESCANNER_H
+#endif  // JODA_DIRECTORYFILESCANNER_H

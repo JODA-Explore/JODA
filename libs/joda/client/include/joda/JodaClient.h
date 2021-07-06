@@ -4,9 +4,9 @@
 
 #ifndef JODA_JODACLIENT_H
 #define JODA_JODACLIENT_H
-#include <string>
 #include <httplib.h>
 #include <rapidjson/document.h>
+#include <string>
 #include "../../../../../extern/cpp-httplib/httplib.h"
 
 namespace joda::network::client {
@@ -15,21 +15,24 @@ namespace joda::network::client {
 
 class JodaClientException : public std::runtime_error {
  public:
-  explicit JodaClientException(const std::string &what) : runtime_error("Client Error: " + what) {};
+  explicit JodaClientException(const std::string &what)
+      : runtime_error("Client Error: " + what){};
 };
 
 class JodaServerException : public std::runtime_error {
  public:
-  explicit JodaServerException(const std::string &what) : runtime_error("Server Error: " + what) {};
+  explicit JodaServerException(const std::string &what)
+      : runtime_error("Server Error: " + what){};
 };
 
 class JodaClient {
  public:
   JodaClient(const std::string &addr, int port);
-  //Interactive
+  // Interactive
   void cli();
-  //Non-Interactive
-  void nonInteractiveQuery(const std::string &query, unsigned long offset, unsigned long count);
+  // Non-Interactive
+  void nonInteractiveQuery(const std::string &query, unsigned long offset,
+                           unsigned long count);
 
   static rapidjson::Document parseResponse(httplib::Response &res);
   static void checkError(const rapidjson::Document &doc);
@@ -54,24 +57,27 @@ class JodaClient {
 
 class JodaClientNoResponseException : public JodaClientException {
  public:
-  explicit JodaClientNoResponseException() : JodaClientException("Got no response, server online?") {};
+  explicit JodaClientNoResponseException()
+      : JodaClientException("Got no response, server online?"){};
 };
 
 class JodaServerHTTPException : public JodaServerException {
  public:
-  explicit JodaServerHTTPException(int status) : JodaServerException("Got status " + std::to_string(status)) {};
+  explicit JodaServerHTTPException(int status)
+      : JodaServerException("Got status " + std::to_string(status)){};
 };
 
 class JodaServerAPIErrorException : public JodaServerException {
  public:
-  explicit JodaServerAPIErrorException(const std::string &what) : JodaServerException("API returned error: " + what) {};
+  explicit JodaServerAPIErrorException(const std::string &what)
+      : JodaServerException("API returned error: " + what){};
 };
 
 class JodaServerInvalidJSONException : public JodaServerException {
  public:
-  explicit JodaServerInvalidJSONException(const std::string &what) : JodaServerException(
-      "Could not parse response: " + what) {};
+  explicit JodaServerInvalidJSONException(const std::string &what)
+      : JodaServerException("Could not parse response: " + what){};
 };
-}
+}  // namespace joda::network::client
 
-#endif //JODA_JODACLIENT_H
+#endif  // JODA_JODACLIENT_H

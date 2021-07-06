@@ -46,6 +46,6 @@ class ComparePredicate : public Predicate {
   bool greater = true;
   bool include = true;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_COMPAREPREDICATE_H

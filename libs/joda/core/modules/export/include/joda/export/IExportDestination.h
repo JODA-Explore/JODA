@@ -27,7 +27,8 @@ class IExportDestination {
   };
 
   /**
-   * Returns a pair consisting of the name of the Export Destination and a time (in seconds) it required to consume the queues.
+   * Returns a pair consisting of the name of the Export Destination and a time
+   * (in seconds) it required to consume the queues.
    * @return The timing of the execution.
    */
   std::pair<std::string, double> getTimer() {
@@ -37,13 +38,13 @@ class IExportDestination {
   /**
    * Returns a (human readable) string describing the ExportDestination.
    * A.toString() == B.toString() => A == B
-   * @return 
+   * @return
    */
   virtual const std::string toString() = 0;
 
   /**
    * Returns a string as this ExportDestination would be represented in a query
-   * @return 
+   * @return
    */
   virtual const std::string toQueryString() = 0;
 
@@ -59,9 +60,9 @@ class IExportDestination {
       this->exportContainer(std::move(cont));
     }
   };
-  virtual void exportContainer(std::unique_ptr<JSONContainer> && cont) = 0;
+  virtual void exportContainer(std::unique_ptr<JSONContainer> &&cont) = 0;
   virtual const std::string getTimerName() = 0;
   RecurringTimer timer;
 };
 
-#endif //JODA_IEXPORTDESTINATION_H
+#endif  // JODA_IEXPORTDESTINATION_H

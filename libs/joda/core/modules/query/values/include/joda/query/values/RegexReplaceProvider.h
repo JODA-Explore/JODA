@@ -32,6 +32,6 @@ class RegexReplaceProvider : public joda::query::IValueProvider {
  private:
   std::regex regex;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_REGEXREPLACEPROVIDER_H

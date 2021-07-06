@@ -12,19 +12,16 @@ namespace joda::queryparsing::grammar {
 /*
  * Forward Declaration Actions
  */
-template<typename Rule>
-struct chooseExpAction
-    : tao::pegtl::nothing<Rule> {
-};
+template <typename Rule>
+struct chooseExpAction : tao::pegtl::nothing<Rule> {};
 
 /*
  * Keywords
  */
-#ifndef __CLION_IDE__ //Prevent lag from expanding all macros
+#ifndef __CLION_IDE__  // Prevent lag from expanding all macros
 struct chooseKW : TAOCPP_PEGTL_KEYWORD("CHOOSE") {};
 #endif
 
-}
+}  // namespace joda::queryparsing::grammar
 
-
-#endif //JODA_CHOOSE_H
+#endif  // JODA_CHOOSE_H

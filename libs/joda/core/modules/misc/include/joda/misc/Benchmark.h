@@ -5,36 +5,38 @@
 #ifndef JODA_BENCHMARK_H
 #define JODA_BENCHMARK_H
 
-#include <vector>
-#include <string>
-#include <cassert>
-#include <iomanip>
-#include <filesystem>
-#include "RJFwd.h"
-#include <rapidjson/document.h>
 #include <glog/logging.h>
+#include <rapidjson/document.h>
+#include <cassert>
+#include <filesystem>
+#include <iomanip>
 #include <mutex>
+#include <string>
+#include <vector>
+#include "RJFwd.h"
 namespace fs = std::filesystem;
 
 /**
- * The Benchmark class is mainly used to manage the measured execution times of queries.
- * But additional information can also be stored in the benchmark class.
+ * The Benchmark class is mainly used to manage the measured execution times of
+ * queries. But additional information can also be stored in the benchmark
+ * class.
  *
  * The benchmark file is a JSON document where the top-level entry is an array.
  * This array then contains one benchmark "line" for each query execution.
  */
 class Benchmark {
  public:
- /**
-  * Initializes an in-memory benchmark document.
-  * This can be used to display collected informations in CLI
-  */
+  /**
+   * Initializes an in-memory benchmark document.
+   * This can be used to display collected informations in CLI
+   */
   Benchmark();
 
   /**
    * Initializes an benchmark document on the filesystem.
    * If the file already exists it is parsed into a JSON document.
-   * If this is not a valid benchmark file, an error will be logged and the benchmark will only be in-memory instead.
+   * If this is not a valid benchmark file, an error will be logged and the
+   * benchmark will only be in-memory instead.
    * @param file The path to the file, where the benchmark should be stored.
    */
   explicit Benchmark(const std::string &file);
@@ -44,8 +46,8 @@ class Benchmark {
   Benchmark &operator=(Benchmark &&b) = default;
 
   /**
-   * If the benchmark is stored on the filesystem, the file will be flushed and closed.
-   * If not, all data is simply discarded.
+   * If the benchmark is stored on the filesystem, the file will be flushed and
+   * closed. If not, all data is simply discarded.
    */
   virtual ~Benchmark();
 
@@ -54,7 +56,7 @@ class Benchmark {
    * @param header The attribute name to be stored
    * @param val The value to be stored
    */
-  template<typename T>
+  template <typename T>
   void addValue(const std::string &header, T &&val) {
     return addValueAt("/" + header, val);
   }
@@ -65,17 +67,18 @@ class Benchmark {
    * @param header The attribute name to be stored
    * @param val The value to be stored
    */
-  template<typename T>
+  template <typename T>
   void addValue(const std::string &prefix, const std::string &header, T &&val) {
     return addValueAt(prefix + "/" + header, val);
   }
 
   /**
-   * Adds a value of type T at the JSON pointer (in string representation) "pointer"
+   * Adds a value of type T at the JSON pointer (in string representation)
+   * "pointer"
    * @param pointer The pointer where the value will be stored
    * @param val The value to be stored
    */
-  template<typename T>
+  template <typename T>
   void addValueAt(const std::string &pointer, T &&val) {
     if (!valid) return;
     RJPointer ptr(pointer.c_str());
@@ -83,11 +86,12 @@ class Benchmark {
   }
 
   /**
-   * Adds a value of type T at the JSON pointer (in string representation) "pointer"
+   * Adds a value of type T at the JSON pointer (in string representation)
+   * "pointer"
    * @param pointer The pointer where the value will be stored
    * @param val The value to be stored
    */
-  template<typename T>
+  template <typename T>
   void addValueAt(const RJPointer &pointer, T &&val) {
     if (!valid) return;
     std::lock_guard<std::mutex> lock(mut);
@@ -98,11 +102,12 @@ class Benchmark {
   /**
    * Adds a new entry in the "thread" attribute with the given values
    */
-  void addThread(double bloom, double select, double project, double agg, double copy, double serialize, double sample_view_cost);
+  void addThread(double bloom, double select, double project, double agg,
+                 double copy, double serialize, double sample_view_cost);
 
   /**
-   * Completes, and optionally flushes, one line in the benchmark array-document.
-   * A new line is created for further use.
+   * Completes, and optionally flushes, one line in the benchmark
+   * array-document. A new line is created for further use.
    */
   void finishLine();
 
@@ -111,7 +116,6 @@ class Benchmark {
    * @return The benchmark file as string representation
    */
   std::string toString() const;
-
 
   /**
    * Stringifies the last benchmark line and returns it.
@@ -159,5 +163,4 @@ class Benchmark {
   static auto constexpr THREADS = "/Runtime/Threads";
 };
 
-
-#endif //JODA_BENCHMARK_H
+#endif  // JODA_BENCHMARK_H

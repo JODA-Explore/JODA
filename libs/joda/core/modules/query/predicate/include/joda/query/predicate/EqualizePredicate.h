@@ -5,12 +5,13 @@
 #ifndef JODA_EQUALIZEPREDICATE_H
 #define JODA_EQUALIZEPREDICATE_H
 
-#include "Predicate.h"
 #include "../../../../../values/include/joda/query/values/IValueProvider.h"
+#include "Predicate.h"
 
 namespace joda::query {
 /**
- * Describes two incompatible types that are supposed to be checked for incompatability
+ * Describes two incompatible types that are supposed to be checked for
+ * incompatability
  */
 class NotEqualizableException : public std::exception {
   virtual const char *what() const throw() {
@@ -24,8 +25,7 @@ class NotEqualizableException : public std::exception {
 class EqualizePredicate : public joda::query::Predicate {
  public:
   EqualizePredicate(std::unique_ptr<IValueProvider> &&lhs,
-                    std::unique_ptr<IValueProvider> &&rhs,
-                    bool equal);
+                    std::unique_ptr<IValueProvider> &&rhs, bool equal);
   bool check(const RapidJsonDocument &val) override;
   bool isCompatible(Predicate *other) override;
   std::string getType() override;
@@ -43,6 +43,6 @@ class EqualizePredicate : public joda::query::Predicate {
   std::unique_ptr<IValueProvider> rhs;
   bool equal = true;
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_EQUALIZEPREDICATE_H
+#endif  // JODA_EQUALIZEPREDICATE_H

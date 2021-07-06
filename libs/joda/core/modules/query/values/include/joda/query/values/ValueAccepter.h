@@ -3,10 +3,10 @@
 //
 
 #include <joda/document/RapidJsonDocument.h>
+#include <joda/misc/RJFwd.h>
 #include <joda/query/values/IValueProvider.h>
 #include <joda/query/values/PointerProvider.h>
 #include <variant>
-#include <joda/misc/RJFwd.h>
 
 #ifndef JODA_VALUEACCEPTER_H
 #define JODA_VALUEACCEPTER_H
@@ -15,7 +15,8 @@ namespace joda::query {
 
 class ValueAccepter {
  public:
-  explicit ValueAccepter(const std::unique_ptr<joda::query::IValueProvider> &ival) {
+  explicit ValueAccepter(
+      const std::unique_ptr<joda::query::IValueProvider> &ival) {
     auto pProvider = dynamic_cast<PointerProvider *>(ival.get());
     if (pProvider != nullptr) {
       pp = pProvider;
@@ -27,10 +28,9 @@ class ValueAccepter {
 
   ValueAccepter() {}
 
-  template<class Handler>
-  bool Accept(const RapidJsonDocument &json,
-              RJMemoryPoolAlloc &alloc, Handler &h) const {
-
+  template <class Handler>
+  bool Accept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
+              Handler &h) const {
     if (pp != nullptr) {
       return pp->Accept(json, alloc, h);
     } else {
@@ -38,39 +38,40 @@ class ValueAccepter {
     }
   }
 
-  void prepareGenerator(const RapidJsonDocument *json_, RJMemoryPoolAlloc *alloc_) {
+  void prepareGenerator(const RapidJsonDocument *json_,
+                        RJMemoryPoolAlloc *alloc_) {
     this->json_ = json_;
     this->alloc_ = alloc_;
   }
 
-  template<typename Handler>
+  template <typename Handler>
   bool operator()(Handler &handler) {
     return Accept(*json_, *alloc_, handler);
   }
 
-  template<class Handler>
-  static bool Accept(const std::unique_ptr<IValueProvider> &ival, const RapidJsonDocument &json,
-                     RJMemoryPoolAlloc &alloc, Handler &h) {
-
+  template <class Handler>
+  static bool Accept(const std::unique_ptr<IValueProvider> &ival,
+                     const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
+                     Handler &h) {
     if (dynamic_cast<PointerProvider *>(ival.get()) != nullptr) {
       auto *pp = dynamic_cast<PointerProvider *>(ival.get());
       return pp->Accept(json, alloc, h);
     } else {
       return DefaultAccept<Handler>(ival, json, alloc, h);
     }
-
   }
 
-/**
- * If possible returns a pointer or Virtualobject, if it does not exist, it returns a nullptr_t nulltr.
- * @param json
- * @param alloc
- * @return
- */
-  std::variant<const RJValue,
-               std::optional<const RJValue *>,
-               const VirtualObject *> getPointerIfExists(const RapidJsonDocument &json,
-                                                         RJMemoryPoolAlloc &alloc) const {
+  /**
+   * If possible returns a pointer or Virtualobject, if it does not exist, it
+   * returns a nullptr_t nulltr.
+   * @param json
+   * @param alloc
+   * @return
+   */
+  std::variant<const RJValue, std::optional<const RJValue *>,
+               const VirtualObject *>
+  getPointerIfExists(const RapidJsonDocument &json,
+                     RJMemoryPoolAlloc &alloc) const {
     if (def != nullptr) {
       if (def->isAtom()) {
         RJValue val = def->getAtomValue(json, alloc);
@@ -78,7 +79,7 @@ class ValueAccepter {
         return std::move(val);
       } else {
         auto *val = def->getValue(json, alloc);
-        if (val == nullptr) return (nullptr_t) nullptr;
+        if (val == nullptr) return (std::nullptr_t) nullptr;
         return val;
       }
     }
@@ -86,7 +87,6 @@ class ValueAccepter {
       return pp->getPointerIfExists(json, alloc);
     }
     return std::optional<const RJValue *>(nullptr);
-
   }
 
  private:
@@ -95,8 +95,9 @@ class ValueAccepter {
   const RapidJsonDocument *json_ = nullptr;
   RJMemoryPoolAlloc *alloc_ = nullptr;
 
-  template<class Handler>
-  static bool DefaultAccept(const std::unique_ptr<IValueProvider> &ival, const RapidJsonDocument &json,
+  template <class Handler>
+  static bool DefaultAccept(const std::unique_ptr<IValueProvider> &ival,
+                            const RapidJsonDocument &json,
                             RJMemoryPoolAlloc &alloc, Handler &h) {
     if (ival->isAtom()) {
       auto val = ival->getAtomValue(json, alloc);
@@ -107,9 +108,9 @@ class ValueAccepter {
     }
   }
 
-  template<class Handler>
-  bool DefaultAccept(const RapidJsonDocument &json,
-                     RJMemoryPoolAlloc &alloc, Handler &h) const {
+  template <class Handler>
+  bool DefaultAccept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
+                     Handler &h) const {
     if (def->isAtom()) {
       auto val = def->getAtomValue(json, alloc);
       return val.Accept(h);
@@ -119,7 +120,6 @@ class ValueAccepter {
     }
   }
 
-
   /*
    * Object
    */
@@ -127,7 +127,8 @@ class ValueAccepter {
   const RJValue *getPointer(const RapidJsonDocument &json,
                             RJMemoryPoolAlloc &alloc) const {
     if (def != nullptr) return def->getValue(json, alloc);
-    if (pp != nullptr && pp->objIsPointerEvaluatable(json)) return pp->getValue(json, alloc);
+    if (pp != nullptr && pp->objIsPointerEvaluatable(json))
+      return pp->getValue(json, alloc);
     return nullptr;
   }
 
@@ -152,6 +153,6 @@ class ValueAccepter {
   }
 };
 
-}
+}  // namespace joda::query
 
-#endif //JODA_VALUEACCEPTER_H
+#endif  // JODA_VALUEACCEPTER_H

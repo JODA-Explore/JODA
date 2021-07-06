@@ -6,12 +6,12 @@
 
 #pragma once
 
-#include "concurrentqueue.h"
-#include <type_traits>
 #include <cerrno>
-#include <memory>
 #include <chrono>
 #include <ctime>
+#include <memory>
+#include <type_traits>
+#include "concurrentqueue.h"
 
 #if defined(_WIN32)
 // Avoid including windows.h in a header; we only need a handful of
@@ -20,11 +20,16 @@
 // I know this is an ugly hack but it still beats polluting the global
 // namespace with thousands of generic names or adding a .cpp for nothing.
 extern "C" {
-	struct _SECURITY_ATTRIBUTES;
-	__declspec(dllimport) void* __stdcall CreateSemaphoreW(_SECURITY_ATTRIBUTES* lpSemaphoreAttributes, long lInitialCount, long lMaximumCount, const wchar_t* lpName);
-	__declspec(dllimport) int __stdcall CloseHandle(void* hObject);
-	__declspec(dllimport) unsigned long __stdcall WaitForSingleObject(void* hHandle, unsigned long dwMilliseconds);
-	__declspec(dllimport) int __stdcall ReleaseSemaphore(void* hSemaphore, long lReleaseCount, long* lpPreviousCount);
+struct _SECURITY_ATTRIBUTES;
+__declspec(dllimport) void *__stdcall CreateSemaphoreW(
+    _SECURITY_ATTRIBUTES *lpSemaphoreAttributes, long lInitialCount,
+    long lMaximumCount, const wchar_t *lpName);
+__declspec(dllimport) int __stdcall CloseHandle(void *hObject);
+__declspec(dllimport) unsigned long __stdcall WaitForSingleObject(
+    void *hHandle, unsigned long dwMilliseconds);
+__declspec(dllimport) int __stdcall ReleaseSemaphore(void *hSemaphore,
+                                                     long lReleaseCount,
+                                                     long *lpPreviousCount);
 }
 #elif defined(__MACH__)
 #include <mach/mach.h>
@@ -32,10 +37,8 @@ extern "C" {
 #include <semaphore.h>
 #endif
 
-namespace moodycamel
-{
-namespace details
-{
+namespace moodycamel {
+namespace details {
 // Code in the mpmc_sema namespace below is an adaptation of Jeff Preshing's
 // portable + lightweight semaphore implementations, originally from
 // https://github.com/preshing/cpp11-on-multicore/blob/master/common/sema.h
@@ -59,110 +62,85 @@ namespace details
 // 3. This notice may not be removed or altered from any source distribution.
 namespace mpmc_sema {
 #if defined(_WIN32)
-class Semaphore
-        {
-        private:
-            void* m_hSema;
+class Semaphore {
+ private:
+  void *m_hSema;
 
-            Semaphore(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
-            Semaphore& operator=(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
+  Semaphore(const Semaphore &other) MOODYCAMEL_DELETE_FUNCTION;
+  Semaphore &operator=(const Semaphore &other) MOODYCAMEL_DELETE_FUNCTION;
 
-        public:
-            Semaphore(int initialCount = 0)
-            {
-                assert(initialCount >= 0);
-                const long maxLong = 0x7fffffff;
-                m_hSema = CreateSemaphoreW(nullptr, initialCount, maxLong, nullptr);
-            }
+ public:
+  Semaphore(int initialCount = 0) {
+    assert(initialCount >= 0);
+    const long maxLong = 0x7fffffff;
+    m_hSema = CreateSemaphoreW(nullptr, initialCount, maxLong, nullptr);
+  }
 
-            ~Semaphore()
-            {
-                CloseHandle(m_hSema);
-            }
+  ~Semaphore() { CloseHandle(m_hSema); }
 
-            void wait()
-            {
-                const unsigned long infinite = 0xffffffff;
-                WaitForSingleObject(m_hSema, infinite);
-            }
+  void wait() {
+    const unsigned long infinite = 0xffffffff;
+    WaitForSingleObject(m_hSema, infinite);
+  }
 
-            bool try_wait()
-            {
-                const unsigned long RC_WAIT_TIMEOUT = 0x00000102;
-                return WaitForSingleObject(m_hSema, 0) != RC_WAIT_TIMEOUT;
-            }
+  bool try_wait() {
+    const unsigned long RC_WAIT_TIMEOUT = 0x00000102;
+    return WaitForSingleObject(m_hSema, 0) != RC_WAIT_TIMEOUT;
+  }
 
-            bool timed_wait(std::uint64_t usecs)
-            {
-                const unsigned long RC_WAIT_TIMEOUT = 0x00000102;
-                return WaitForSingleObject(m_hSema, (unsigned long)(usecs / 1000)) != RC_WAIT_TIMEOUT;
-            }
+  bool timed_wait(std::uint64_t usecs) {
+    const unsigned long RC_WAIT_TIMEOUT = 0x00000102;
+    return WaitForSingleObject(m_hSema, (unsigned long)(usecs / 1000)) !=
+           RC_WAIT_TIMEOUT;
+  }
 
-            void signal(int count = 1)
-            {
-                ReleaseSemaphore(m_hSema, count, nullptr);
-            }
-        };
+  void signal(int count = 1) { ReleaseSemaphore(m_hSema, count, nullptr); }
+};
 #elif defined(__MACH__)
 //---------------------------------------------------------
-        // Semaphore (Apple iOS and OSX)
-        // Can't use POSIX semaphores due to http://lists.apple.com/archives/darwin-kernel/2009/Apr/msg00010.html
-        //---------------------------------------------------------
-        class Semaphore
-        {
-        private:
-            semaphore_t m_sema;
+// Semaphore (Apple iOS and OSX)
+// Can't use POSIX semaphores due to
+// http://lists.apple.com/archives/darwin-kernel/2009/Apr/msg00010.html
+//---------------------------------------------------------
+class Semaphore {
+ private:
+  semaphore_t m_sema;
 
-            Semaphore(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
-            Semaphore& operator=(const Semaphore& other) MOODYCAMEL_DELETE_FUNCTION;
+  Semaphore(const Semaphore &other) MOODYCAMEL_DELETE_FUNCTION;
+  Semaphore &operator=(const Semaphore &other) MOODYCAMEL_DELETE_FUNCTION;
 
-        public:
-            Semaphore(int initialCount = 0)
-            {
-                assert(initialCount >= 0);
-                semaphore_create(mach_task_self(), &m_sema, SYNC_POLICY_FIFO, initialCount);
-            }
+ public:
+  Semaphore(int initialCount = 0) {
+    assert(initialCount >= 0);
+    semaphore_create(mach_task_self(), &m_sema, SYNC_POLICY_FIFO, initialCount);
+  }
 
-            ~Semaphore()
-            {
-                semaphore_destroy(mach_task_self(), m_sema);
-            }
+  ~Semaphore() { semaphore_destroy(mach_task_self(), m_sema); }
 
-            void wait()
-            {
-                semaphore_wait(m_sema);
-            }
+  void wait() { semaphore_wait(m_sema); }
 
-            bool try_wait()
-            {
-                return timed_wait(0);
-            }
+  bool try_wait() { return timed_wait(0); }
 
-            bool timed_wait(std::uint64_t timeout_usecs)
-            {
-                mach_timespec_t ts;
-                ts.tv_sec = static_cast<unsigned int>(timeout_usecs / 1000000);
-                ts.tv_nsec = (timeout_usecs % 1000000) * 1000;
+  bool timed_wait(std::uint64_t timeout_usecs) {
+    mach_timespec_t ts;
+    ts.tv_sec = static_cast<unsigned int>(timeout_usecs / 1000000);
+    ts.tv_nsec = (timeout_usecs % 1000000) * 1000;
 
-                // added in OSX 10.10: https://developer.apple.com/library/prerelease/mac/documentation/General/Reference/APIDiffsMacOSX10_10SeedDiff/modules/Darwin.html
-                kern_return_t rc = semaphore_timedwait(m_sema, ts);
+    // added in OSX 10.10:
+    // https://developer.apple.com/library/prerelease/mac/documentation/General/Reference/APIDiffsMacOSX10_10SeedDiff/modules/Darwin.html
+    kern_return_t rc = semaphore_timedwait(m_sema, ts);
 
-                return rc != KERN_OPERATION_TIMED_OUT && rc != KERN_ABORTED;
-            }
+    return rc != KERN_OPERATION_TIMED_OUT && rc != KERN_ABORTED;
+  }
 
-            void signal()
-            {
-                semaphore_signal(m_sema);
-            }
+  void signal() { semaphore_signal(m_sema); }
 
-            void signal(int count)
-            {
-                while (count-- > 0)
-                {
-                    semaphore_signal(m_sema);
-                }
-            }
-        };
+  void signal(int count) {
+    while (count-- > 0) {
+      semaphore_signal(m_sema);
+    }
+  }
+};
 #elif defined(__unix__)
 
 //---------------------------------------------------------
@@ -181,9 +159,7 @@ class Semaphore {
     sem_init(&m_sema, 0, initialCount);
   }
 
-  ~Semaphore() {
-    sem_destroy(&m_sema);
-  }
+  ~Semaphore() { sem_destroy(&m_sema); }
 
   void wait() {
     // http://stackoverflow.com/questions/2013181/gdb-causes-sem-wait-to-fail-with-eintr-error
@@ -222,9 +198,7 @@ class Semaphore {
     return !(rc == -1 && errno == ETIMEDOUT);
   }
 
-  void signal() {
-    sem_post(&m_sema);
-  }
+  void signal() { sem_post(&m_sema); }
 
   void signal(int count) {
     while (count-- > 0) {
@@ -250,27 +224,27 @@ class LightweightSemaphore {
   bool waitWithPartialSpinning(std::int64_t timeout_usecs = -1) {
     ssize_t oldCount;
     // Is there a better way to set the initial spin count?
-    // If we lower it to 1000, testBenaphore becomes 15x slower on my Core i7-5930K Windows PC,
-    // as threads start hitting the kernel semaphore.
+    // If we lower it to 1000, testBenaphore becomes 15x slower on my Core
+    // i7-5930K Windows PC, as threads start hitting the kernel semaphore.
     int spin = 10000;
     while (--spin >= 0) {
       oldCount = m_count.load(std::memory_order_relaxed);
-      if ((oldCount > 0) && m_count.compare_exchange_strong(oldCount,
-                                                            oldCount - 1,
-                                                            std::memory_order_acquire,
-                                                            std::memory_order_relaxed))
+      if ((oldCount > 0) &&
+          m_count.compare_exchange_strong(oldCount, oldCount - 1,
+                                          std::memory_order_acquire,
+                                          std::memory_order_relaxed))
         return true;
-      std::atomic_signal_fence(std::memory_order_acquire);     // Prevent the compiler from collapsing the loop.
+      std::atomic_signal_fence(
+          std::memory_order_acquire);  // Prevent the compiler from collapsing
+                                       // the loop.
     }
     oldCount = m_count.fetch_sub(1, std::memory_order_acquire);
-    if (oldCount > 0)
-      return true;
+    if (oldCount > 0) return true;
     if (timeout_usecs < 0) {
       m_sema.wait();
       return true;
     }
-    if (m_sema.timed_wait((std::uint64_t) timeout_usecs))
-      return true;
+    if (m_sema.timed_wait((std::uint64_t)timeout_usecs)) return true;
     // At this point, we've timed out waiting for the semaphore, but the
     // count is still decremented indicating we may still be waiting on
     // it. So we have to re-adjust the count, but only if the semaphore
@@ -278,17 +252,16 @@ class LightweightSemaphore {
     // need to release the semaphore too.
     while (true) {
       oldCount = m_count.load(std::memory_order_acquire);
-      if (oldCount >= 0 && m_sema.try_wait())
-        return true;
-      if (oldCount < 0 && m_count.compare_exchange_strong(oldCount,
-                                                          oldCount + 1,
-                                                          std::memory_order_relaxed,
-                                                          std::memory_order_relaxed))
+      if (oldCount >= 0 && m_sema.try_wait()) return true;
+      if (oldCount < 0 && m_count.compare_exchange_strong(
+                              oldCount, oldCount + 1, std::memory_order_relaxed,
+                              std::memory_order_relaxed))
         return false;
     }
   }
 
-  ssize_t waitManyWithPartialSpinning(ssize_t max, std::int64_t timeout_usecs = -1) {
+  ssize_t waitManyWithPartialSpinning(ssize_t max,
+                                      std::int64_t timeout_usecs = -1) {
     assert(max > 0);
     ssize_t oldCount;
     int spin = 10000;
@@ -296,7 +269,9 @@ class LightweightSemaphore {
       oldCount = m_count.load(std::memory_order_relaxed);
       if (oldCount > 0) {
         ssize_t newCount = oldCount > max ? oldCount - max : 0;
-        if (m_count.compare_exchange_strong(oldCount, newCount, std::memory_order_acquire, std::memory_order_relaxed))
+        if (m_count.compare_exchange_strong(oldCount, newCount,
+                                            std::memory_order_acquire,
+                                            std::memory_order_relaxed))
           return oldCount - newCount;
       }
       std::atomic_signal_fence(std::memory_order_acquire);
@@ -305,21 +280,19 @@ class LightweightSemaphore {
     if (oldCount <= 0) {
       if (timeout_usecs < 0)
         m_sema.wait();
-      else if (!m_sema.timed_wait((std::uint64_t) timeout_usecs)) {
+      else if (!m_sema.timed_wait((std::uint64_t)timeout_usecs)) {
         while (true) {
           oldCount = m_count.load(std::memory_order_acquire);
-          if (oldCount >= 0 && m_sema.try_wait())
-            break;
-          if (oldCount < 0 && m_count.compare_exchange_strong(oldCount,
-                                                              oldCount + 1,
-                                                              std::memory_order_relaxed,
-                                                              std::memory_order_relaxed))
+          if (oldCount >= 0 && m_sema.try_wait()) break;
+          if (oldCount < 0 &&
+              m_count.compare_exchange_strong(oldCount, oldCount + 1,
+                                              std::memory_order_relaxed,
+                                              std::memory_order_relaxed))
             return 0;
         }
       }
     }
-    if (max > 1)
-      return 1 + tryWaitMany(max - 1);
+    if (max > 1) return 1 + tryWaitMany(max - 1);
     return 1;
   }
 
@@ -331,15 +304,16 @@ class LightweightSemaphore {
   bool tryWait() {
     ssize_t oldCount = m_count.load(std::memory_order_relaxed);
     while (oldCount > 0) {
-      if (m_count.compare_exchange_weak(oldCount, oldCount - 1, std::memory_order_acquire, std::memory_order_relaxed))
+      if (m_count.compare_exchange_weak(oldCount, oldCount - 1,
+                                        std::memory_order_acquire,
+                                        std::memory_order_relaxed))
         return true;
     }
     return false;
   }
 
   void wait() {
-    if (!tryWait())
-      waitWithPartialSpinning();
+    if (!tryWait()) waitWithPartialSpinning();
   }
 
   bool wait(std::int64_t timeout_usecs) {
@@ -352,7 +326,9 @@ class LightweightSemaphore {
     ssize_t oldCount = m_count.load(std::memory_order_relaxed);
     while (oldCount > 0) {
       ssize_t newCount = oldCount > max ? oldCount - max : 0;
-      if (m_count.compare_exchange_weak(oldCount, newCount, std::memory_order_acquire, std::memory_order_relaxed))
+      if (m_count.compare_exchange_weak(oldCount, newCount,
+                                        std::memory_order_acquire,
+                                        std::memory_order_relaxed))
         return oldCount - newCount;
     }
     return 0;
@@ -378,7 +354,7 @@ class LightweightSemaphore {
     ssize_t oldCount = m_count.fetch_add(count, std::memory_order_release);
     ssize_t toRelease = -oldCount < count ? -oldCount : count;
     if (toRelease > 0) {
-      m_sema.signal((int) toRelease);
+      m_sema.signal((int)toRelease);
     }
   }
 
@@ -387,16 +363,14 @@ class LightweightSemaphore {
     return count > 0 ? count : 0;
   }
 };
-}    // end namespace mpmc_sema
-}	// end namespace details
+}  // end namespace mpmc_sema
+}  // end namespace details
 
-
-// This is a blocking version of the queue. It has an almost identical interface to
-// the normal non-blocking version, with the addition of various wait_dequeue() methods
-// and the removal of producer-specific dequeue methods.
-template<typename T, typename Traits = ConcurrentQueueDefaultTraits>
-class BlockingConcurrentQueue
-{
+// This is a blocking version of the queue. It has an almost identical interface
+// to the normal non-blocking version, with the addition of various
+// wait_dequeue() methods and the removal of producer-specific dequeue methods.
+template <typename T, typename Traits = ConcurrentQueueDefaultTraits>
+class BlockingConcurrentQueue {
  private:
   typedef ::moodycamel::ConcurrentQueue<T, Traits> ConcurrentQueue;
   typedef details::mpmc_sema::LightweightSemaphore LightweightSemaphore;
@@ -410,10 +384,14 @@ class BlockingConcurrentQueue
   typedef typename std::make_signed<size_t>::type ssize_t;
 
   static const size_t BLOCK_SIZE = ConcurrentQueue::BLOCK_SIZE;
-  static const size_t EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD = ConcurrentQueue::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD;
-  static const size_t EXPLICIT_INITIAL_INDEX_SIZE = ConcurrentQueue::EXPLICIT_INITIAL_INDEX_SIZE;
-  static const size_t IMPLICIT_INITIAL_INDEX_SIZE = ConcurrentQueue::IMPLICIT_INITIAL_INDEX_SIZE;
-  static const size_t INITIAL_IMPLICIT_PRODUCER_HASH_SIZE = ConcurrentQueue::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE;
+  static const size_t EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD =
+      ConcurrentQueue::EXPLICIT_BLOCK_EMPTY_COUNTER_THRESHOLD;
+  static const size_t EXPLICIT_INITIAL_INDEX_SIZE =
+      ConcurrentQueue::EXPLICIT_INITIAL_INDEX_SIZE;
+  static const size_t IMPLICIT_INITIAL_INDEX_SIZE =
+      ConcurrentQueue::IMPLICIT_INITIAL_INDEX_SIZE;
+  static const size_t INITIAL_IMPLICIT_PRODUCER_HASH_SIZE =
+      ConcurrentQueue::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE;
   static const std::uint32_t EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE =
       ConcurrentQueue::EXPLICIT_CONSUMER_CONSUMPTION_QUOTA_BEFORE_ROTATE;
   static const size_t MAX_SUBQUEUE_SIZE = ConcurrentQueue::MAX_SUBQUEUE_SIZE;
@@ -422,36 +400,45 @@ class BlockingConcurrentQueue
   // Creates a queue with at least `capacity` element slots; note that the
   // actual number of elements that can be inserted without additional memory
   // allocation depends on the number of producers and the block size (e.g. if
-  // the block size is equal to `capacity`, only a single block will be allocated
-  // up-front, which means only a single producer will be able to enqueue elements
-  // without an extra allocation -- blocks aren't shared between producers).
-  // This method is not thread safe -- it is up to the user to ensure that the
-  // queue is fully constructed before it starts being used by other threads (this
-  // includes making the memory effects of construction visible, possibly with a
-  // memory barrier).
+  // the block size is equal to `capacity`, only a single block will be
+  // allocated up-front, which means only a single producer will be able to
+  // enqueue elements without an extra allocation -- blocks aren't shared
+  // between producers). This method is not thread safe -- it is up to the user
+  // to ensure that the queue is fully constructed before it starts being used
+  // by other threads (this includes making the memory effects of construction
+  // visible, possibly with a memory barrier).
   explicit BlockingConcurrentQueue(size_t capacity = 6 * BLOCK_SIZE)
       : inner(capacity),
-        sema(create<LightweightSemaphore>(), &BlockingConcurrentQueue::template destroy<LightweightSemaphore>) {
-    assert(reinterpret_cast<ConcurrentQueue *>((BlockingConcurrentQueue *) 1) == &((BlockingConcurrentQueue *) 1)->inner
-               && "BlockingConcurrentQueue must have ConcurrentQueue as its first member");
+        sema(create<LightweightSemaphore>(),
+             &BlockingConcurrentQueue::template destroy<LightweightSemaphore>) {
+    assert(reinterpret_cast<ConcurrentQueue *>((BlockingConcurrentQueue *)1) ==
+               &((BlockingConcurrentQueue *)1)->inner &&
+           "BlockingConcurrentQueue must have ConcurrentQueue as its first "
+           "member");
     if (!sema) {
       MOODYCAMEL_THROW(std::bad_alloc());
     }
   }
 
-  BlockingConcurrentQueue(size_t minCapacity, size_t maxExplicitProducers, size_t maxImplicitProducers)
+  BlockingConcurrentQueue(size_t minCapacity, size_t maxExplicitProducers,
+                          size_t maxImplicitProducers)
       : inner(minCapacity, maxExplicitProducers, maxImplicitProducers),
-        sema(create<LightweightSemaphore>(), &BlockingConcurrentQueue::template destroy<LightweightSemaphore>) {
-    assert(reinterpret_cast<ConcurrentQueue *>((BlockingConcurrentQueue *) 1) == &((BlockingConcurrentQueue *) 1)->inner
-               && "BlockingConcurrentQueue must have ConcurrentQueue as its first member");
+        sema(create<LightweightSemaphore>(),
+             &BlockingConcurrentQueue::template destroy<LightweightSemaphore>) {
+    assert(reinterpret_cast<ConcurrentQueue *>((BlockingConcurrentQueue *)1) ==
+               &((BlockingConcurrentQueue *)1)->inner &&
+           "BlockingConcurrentQueue must have ConcurrentQueue as its first "
+           "member");
     if (!sema) {
       MOODYCAMEL_THROW(std::bad_alloc());
     }
   }
 
   // Disable copying and copy assignment
-  BlockingConcurrentQueue(BlockingConcurrentQueue const &) MOODYCAMEL_DELETE_FUNCTION;
-  BlockingConcurrentQueue &operator=(BlockingConcurrentQueue const &) MOODYCAMEL_DELETE_FUNCTION;
+  BlockingConcurrentQueue(BlockingConcurrentQueue const &)
+      MOODYCAMEL_DELETE_FUNCTION;
+  BlockingConcurrentQueue &operator=(BlockingConcurrentQueue const &)
+      MOODYCAMEL_DELETE_FUNCTION;
 
   // Moving is supported, but note that it is *not* a thread-safe operation.
   // Nobody can use the queue while it's being moved, and the memory effects
@@ -460,9 +447,11 @@ class BlockingConcurrentQueue
   // used with the destination queue (i.e. semantically they are moved along
   // with the queue itself).
   BlockingConcurrentQueue(BlockingConcurrentQueue &&other) MOODYCAMEL_NOEXCEPT
-      : inner(std::move(other.inner)), sema(std::move(other.sema)) {}
+      : inner(std::move(other.inner)),
+        sema(std::move(other.sema)) {}
 
-  inline BlockingConcurrentQueue &operator=(BlockingConcurrentQueue &&other) MOODYCAMEL_NOEXCEPT {
+  inline BlockingConcurrentQueue &operator=(BlockingConcurrentQueue &&other)
+      MOODYCAMEL_NOEXCEPT {
     return swap_internal(other);
   }
 
@@ -488,9 +477,10 @@ class BlockingConcurrentQueue
 
  public:
   // Enqueues a single item (by copying it).
-  // Allocates memory if required. Only fails if memory allocation fails (or implicit
-  // production is disabled because Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE is 0,
-  // or Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
+  // Allocates memory if required. Only fails if memory allocation fails (or
+  // implicit production is disabled because
+  // Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE is 0, or
+  // Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
   // Thread-safe.
   inline bool enqueue(T const &item) {
     if ((details::likely)(inner.enqueue(item))) {
@@ -501,9 +491,10 @@ class BlockingConcurrentQueue
   }
 
   // Enqueues a single item (by moving it, if possible).
-  // Allocates memory if required. Only fails if memory allocation fails (or implicit
-  // production is disabled because Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE is 0,
-  // or Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
+  // Allocates memory if required. Only fails if memory allocation fails (or
+  // implicit production is disabled because
+  // Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE is 0, or
+  // Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
   // Thread-safe.
   inline bool enqueue(T &&item) {
     if ((details::likely)(inner.enqueue(std::move(item)))) {
@@ -525,10 +516,10 @@ class BlockingConcurrentQueue
     return false;
   }
 
-  // Enqueues a single item (by moving it, if possible) using an explicit producer token.
-  // Allocates memory if required. Only fails if memory allocation fails (or
-  // Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
-  // Thread-safe.
+  // Enqueues a single item (by moving it, if possible) using an explicit
+  // producer token. Allocates memory if required. Only fails if memory
+  // allocation fails (or Traits::MAX_SUBQUEUE_SIZE has been defined and would
+  // be surpassed). Thread-safe.
   inline bool enqueue(producer_token_t const &token, T &&item) {
     if ((details::likely)(inner.enqueue(token, std::move(item)))) {
       sema->signal();
@@ -539,15 +530,16 @@ class BlockingConcurrentQueue
 
   // Enqueues several items.
   // Allocates memory if required. Only fails if memory allocation fails (or
-  // implicit production is disabled because Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE
-  // is 0, or Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed).
-  // Note: Use std::make_move_iterator if the elements should be moved instead of copied.
-  // Thread-safe.
-  template<typename It>
+  // implicit production is disabled because
+  // Traits::INITIAL_IMPLICIT_PRODUCER_HASH_SIZE is 0, or
+  // Traits::MAX_SUBQUEUE_SIZE has been defined and would be surpassed). Note:
+  // Use std::make_move_iterator if the elements should be moved instead of
+  // copied. Thread-safe.
+  template <typename It>
   inline bool enqueue_bulk(It itemFirst, size_t count) {
-    if ((details::likely)(inner.enqueue_bulk(std::forward<It>(itemFirst), count))) {
-      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)
-      count);
+    if ((details::likely)(
+            inner.enqueue_bulk(std::forward<It>(itemFirst), count))) {
+      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)count);
       return true;
     }
     return false;
@@ -559,11 +551,12 @@ class BlockingConcurrentQueue
   // Note: Use std::make_move_iterator if the elements should be moved
   // instead of copied.
   // Thread-safe.
-  template<typename It>
-  inline bool enqueue_bulk(producer_token_t const &token, It itemFirst, size_t count) {
-    if ((details::likely)(inner.enqueue_bulk(token, std::forward<It>(itemFirst), count))) {
-      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)
-      count);
+  template <typename It>
+  inline bool enqueue_bulk(producer_token_t const &token, It itemFirst,
+                           size_t count) {
+    if ((details::likely)(
+            inner.enqueue_bulk(token, std::forward<It>(itemFirst), count))) {
+      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)count);
       return true;
     }
     return false;
@@ -606,9 +599,9 @@ class BlockingConcurrentQueue
     return false;
   }
 
-  // Enqueues a single item (by moving it, if possible) using an explicit producer token.
-  // Does not allocate memory. Fails if not enough room to enqueue.
-  // Thread-safe.
+  // Enqueues a single item (by moving it, if possible) using an explicit
+  // producer token. Does not allocate memory. Fails if not enough room to
+  // enqueue. Thread-safe.
   inline bool try_enqueue(producer_token_t const &token, T &&item) {
     if (inner.try_enqueue(token, std::move(item))) {
       sema->signal();
@@ -624,11 +617,10 @@ class BlockingConcurrentQueue
   // Note: Use std::make_move_iterator if the elements should be moved
   // instead of copied.
   // Thread-safe.
-  template<typename It>
+  template <typename It>
   inline bool try_enqueue_bulk(It itemFirst, size_t count) {
     if (inner.try_enqueue_bulk(std::forward<It>(itemFirst), count)) {
-      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)
-      count);
+      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)count);
       return true;
     }
     return false;
@@ -639,11 +631,11 @@ class BlockingConcurrentQueue
   // Note: Use std::make_move_iterator if the elements should be moved
   // instead of copied.
   // Thread-safe.
-  template<typename It>
-  inline bool try_enqueue_bulk(producer_token_t const &token, It itemFirst, size_t count) {
+  template <typename It>
+  inline bool try_enqueue_bulk(producer_token_t const &token, It itemFirst,
+                               size_t count) {
     if (inner.try_enqueue_bulk(token, std::forward<It>(itemFirst), count)) {
-      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)
-      count);
+      sema->signal((LightweightSemaphore::ssize_t)(ssize_t)count);
       return true;
     }
     return false;
@@ -653,7 +645,7 @@ class BlockingConcurrentQueue
   // Returns false if all producer streams appeared empty at the time they
   // were checked (so, the queue is likely but not guaranteed to be empty).
   // Never allocates. Thread-safe.
-  template<typename U>
+  template <typename U>
   inline bool try_dequeue(U &item) {
     if (sema->tryWait()) {
       while (!inner.try_dequeue(item)) {
@@ -668,7 +660,7 @@ class BlockingConcurrentQueue
   // Returns false if all producer streams appeared empty at the time they
   // were checked (so, the queue is likely but not guaranteed to be empty).
   // Never allocates. Thread-safe.
-  template<typename U>
+  template <typename U>
   inline bool try_dequeue(consumer_token_t &token, U &item) {
     if (sema->tryWait()) {
       while (!inner.try_dequeue(token, item)) {
@@ -684,29 +676,31 @@ class BlockingConcurrentQueue
   // Returns 0 if all producer streams appeared empty at the time they
   // were checked (so, the queue is likely but not guaranteed to be empty).
   // Never allocates. Thread-safe.
-  template<typename It>
+  template <typename It>
   inline size_t try_dequeue_bulk(It itemFirst, size_t max) {
     size_t count = 0;
-    max = (size_t) sema->tryWaitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max);
+    max =
+        (size_t)sema->tryWaitMany((LightweightSemaphore::ssize_t)(ssize_t)max);
     while (count != max) {
       count += inner.template try_dequeue_bulk<It &>(itemFirst, max - count);
     }
     return count;
   }
 
-  // Attempts to dequeue several elements from the queue using an explicit consumer token.
-  // Returns the number of items actually dequeued.
-  // Returns 0 if all producer streams appeared empty at the time they
-  // were checked (so, the queue is likely but not guaranteed to be empty).
-  // Never allocates. Thread-safe.
-  template<typename It>
-  inline size_t try_dequeue_bulk(consumer_token_t &token, It itemFirst, size_t max) {
+  // Attempts to dequeue several elements from the queue using an explicit
+  // consumer token. Returns the number of items actually dequeued. Returns 0 if
+  // all producer streams appeared empty at the time they were checked (so, the
+  // queue is likely but not guaranteed to be empty). Never allocates.
+  // Thread-safe.
+  template <typename It>
+  inline size_t try_dequeue_bulk(consumer_token_t &token, It itemFirst,
+                                 size_t max) {
     size_t count = 0;
-    max = (size_t) sema->tryWaitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max);
+    max =
+        (size_t)sema->tryWaitMany((LightweightSemaphore::ssize_t)(ssize_t)max);
     while (count != max) {
-      count += inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
+      count +=
+          inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
     }
     return count;
   }
@@ -714,7 +708,7 @@ class BlockingConcurrentQueue
   // Blocks the current thread until there's something to dequeue, then
   // dequeues it.
   // Never allocates. Thread-safe.
-  template<typename U>
+  template <typename U>
   inline void wait_dequeue(U &item) {
     sema->wait();
     while (!inner.try_dequeue(item)) {
@@ -729,7 +723,7 @@ class BlockingConcurrentQueue
   // Using a negative timeout indicates an indefinite timeout,
   // and is thus functionally equivalent to calling wait_dequeue.
   // Never allocates. Thread-safe.
-  template<typename U>
+  template <typename U>
   inline bool wait_dequeue_timed(U &item, std::int64_t timeout_usecs) {
     if (!sema->wait(timeout_usecs)) {
       return false;
@@ -744,15 +738,18 @@ class BlockingConcurrentQueue
   // or the timeout expires. Returns false without setting `item` if the
   // timeout expires, otherwise assigns to `item` and returns true.
   // Never allocates. Thread-safe.
-  template<typename U, typename Rep, typename Period>
-  inline bool wait_dequeue_timed(U &item, std::chrono::duration<Rep, Period> const &timeout) {
-    return wait_dequeue_timed(item, std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
+  template <typename U, typename Rep, typename Period>
+  inline bool wait_dequeue_timed(
+      U &item, std::chrono::duration<Rep, Period> const &timeout) {
+    return wait_dequeue_timed(
+        item,
+        std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
   }
 
   // Blocks the current thread until there's something to dequeue, then
   // dequeues it using an explicit consumer token.
   // Never allocates. Thread-safe.
-  template<typename U>
+  template <typename U>
   inline void wait_dequeue(consumer_token_t &token, U &item) {
     sema->wait();
     while (!inner.try_dequeue(token, item)) {
@@ -767,8 +764,9 @@ class BlockingConcurrentQueue
   // Using a negative timeout indicates an indefinite timeout,
   // and is thus functionally equivalent to calling wait_dequeue.
   // Never allocates. Thread-safe.
-  template<typename U>
-  inline bool wait_dequeue_timed(consumer_token_t &token, U &item, std::int64_t timeout_usecs) {
+  template <typename U>
+  inline bool wait_dequeue_timed(consumer_token_t &token, U &item,
+                                 std::int64_t timeout_usecs) {
     if (!sema->wait(timeout_usecs)) {
       return false;
     }
@@ -782,9 +780,13 @@ class BlockingConcurrentQueue
   // or the timeout expires. Returns false without setting `item` if the
   // timeout expires, otherwise assigns to `item` and returns true.
   // Never allocates. Thread-safe.
-  template<typename U, typename Rep, typename Period>
-  inline bool wait_dequeue_timed(consumer_token_t &token, U &item, std::chrono::duration<Rep, Period> const &timeout) {
-    return wait_dequeue_timed(token, item, std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
+  template <typename U, typename Rep, typename Period>
+  inline bool wait_dequeue_timed(
+      consumer_token_t &token, U &item,
+      std::chrono::duration<Rep, Period> const &timeout) {
+    return wait_dequeue_timed(
+        token, item,
+        std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
   }
 
   // Attempts to dequeue several elements from the queue.
@@ -792,11 +794,10 @@ class BlockingConcurrentQueue
   // always be at least one (this method blocks until the queue
   // is non-empty) and at most max.
   // Never allocates. Thread-safe.
-  template<typename It>
+  template <typename It>
   inline size_t wait_dequeue_bulk(It itemFirst, size_t max) {
     size_t count = 0;
-    max = (size_t) sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max);
+    max = (size_t)sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)max);
     while (count != max) {
       count += inner.template try_dequeue_bulk<It &>(itemFirst, max - count);
     }
@@ -810,11 +811,12 @@ class BlockingConcurrentQueue
   // Using a negative timeout indicates an indefinite timeout,
   // and is thus functionally equivalent to calling wait_dequeue_bulk.
   // Never allocates. Thread-safe.
-  template<typename It>
-  inline size_t wait_dequeue_bulk_timed(It itemFirst, size_t max, std::int64_t timeout_usecs) {
+  template <typename It>
+  inline size_t wait_dequeue_bulk_timed(It itemFirst, size_t max,
+                                        std::int64_t timeout_usecs) {
     size_t count = 0;
-    max = (size_t) sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max, timeout_usecs);
+    max = (size_t)sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)max,
+                                 timeout_usecs);
     while (count != max) {
       count += inner.template try_dequeue_bulk<It &>(itemFirst, max - count);
     }
@@ -826,94 +828,91 @@ class BlockingConcurrentQueue
   // be 0 if the timeout expires while waiting for elements,
   // and at most max.
   // Never allocates. Thread-safe.
-  template<typename It, typename Rep, typename Period>
-  inline size_t wait_dequeue_bulk_timed(It itemFirst, size_t max, std::chrono::duration<Rep, Period> const &timeout) {
-    return wait_dequeue_bulk_timed<It &>(itemFirst,
-                                         max,
-                                         std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
+  template <typename It, typename Rep, typename Period>
+  inline size_t wait_dequeue_bulk_timed(
+      It itemFirst, size_t max,
+      std::chrono::duration<Rep, Period> const &timeout) {
+    return wait_dequeue_bulk_timed<It &>(
+        itemFirst, max,
+        std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
   }
 
-  // Attempts to dequeue several elements from the queue using an explicit consumer token.
-  // Returns the number of items actually dequeued, which will
+  // Attempts to dequeue several elements from the queue using an explicit
+  // consumer token. Returns the number of items actually dequeued, which will
   // always be at least one (this method blocks until the queue
   // is non-empty) and at most max.
   // Never allocates. Thread-safe.
-  template<typename It>
-  inline size_t wait_dequeue_bulk(consumer_token_t &token, It itemFirst, size_t max) {
+  template <typename It>
+  inline size_t wait_dequeue_bulk(consumer_token_t &token, It itemFirst,
+                                  size_t max) {
     size_t count = 0;
-    max = (size_t) sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max);
+    max = (size_t)sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)max);
     while (count != max) {
-      count += inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
+      count +=
+          inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
     }
     return count;
   }
 
-  // Attempts to dequeue several elements from the queue using an explicit consumer token.
-  // Returns the number of items actually dequeued, which can
-  // be 0 if the timeout expires while waiting for elements,
-  // and at most max.
-  // Using a negative timeout indicates an indefinite timeout,
-  // and is thus functionally equivalent to calling wait_dequeue_bulk.
-  // Never allocates. Thread-safe.
-  template<typename It>
-  inline size_t wait_dequeue_bulk_timed(consumer_token_t &token, It itemFirst, size_t max, std::int64_t timeout_usecs) {
-    size_t count = 0;
-    max = (size_t) sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)
-    max, timeout_usecs);
-    while (count != max) {
-      count += inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
-    }
-    return count;
-  }
-
-  // Attempts to dequeue several elements from the queue using an explicit consumer token.
-  // Returns the number of items actually dequeued, which can
-  // be 0 if the timeout expires while waiting for elements,
-  // and at most max.
-  // Never allocates. Thread-safe.
-  template<typename It, typename Rep, typename Period>
-  inline size_t wait_dequeue_bulk_timed(consumer_token_t &token,
-                                        It itemFirst,
-                                        size_t max,
-                                        std::chrono::duration<Rep, Period> const &timeout) {
-    return wait_dequeue_bulk_timed<It &>(token,
-                                         itemFirst,
-                                         max,
-                                         std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
-  }
-
-  // Returns an estimate of the total number of elements currently in the queue. This
-  // estimate is only accurate if the queue has completely stabilized before it is called
-  // (i.e. all enqueue and dequeue operations have completed and their memory effects are
-  // visible on the calling thread, and no further operations start while this method is
-  // being called).
+  // Attempts to dequeue several elements from the queue using an explicit
+  // consumer token. Returns the number of items actually dequeued, which can be
+  // 0 if the timeout expires while waiting for elements, and at most max. Using
+  // a negative timeout indicates an indefinite timeout, and is thus
+  // functionally equivalent to calling wait_dequeue_bulk. Never allocates.
   // Thread-safe.
-  inline size_t size_approx() const {
-    return (size_t) sema->availableApprox();
+  template <typename It>
+  inline size_t wait_dequeue_bulk_timed(consumer_token_t &token, It itemFirst,
+                                        size_t max,
+                                        std::int64_t timeout_usecs) {
+    size_t count = 0;
+    max = (size_t)sema->waitMany((LightweightSemaphore::ssize_t)(ssize_t)max,
+                                 timeout_usecs);
+    while (count != max) {
+      count +=
+          inner.template try_dequeue_bulk<It &>(token, itemFirst, max - count);
+    }
+    return count;
   }
+
+  // Attempts to dequeue several elements from the queue using an explicit
+  // consumer token. Returns the number of items actually dequeued, which can be
+  // 0 if the timeout expires while waiting for elements, and at most max. Never
+  // allocates. Thread-safe.
+  template <typename It, typename Rep, typename Period>
+  inline size_t wait_dequeue_bulk_timed(
+      consumer_token_t &token, It itemFirst, size_t max,
+      std::chrono::duration<Rep, Period> const &timeout) {
+    return wait_dequeue_bulk_timed<It &>(
+        token, itemFirst, max,
+        std::chrono::duration_cast<std::chrono::microseconds>(timeout).count());
+  }
+
+  // Returns an estimate of the total number of elements currently in the queue.
+  // This estimate is only accurate if the queue has completely stabilized
+  // before it is called (i.e. all enqueue and dequeue operations have completed
+  // and their memory effects are visible on the calling thread, and no further
+  // operations start while this method is being called). Thread-safe.
+  inline size_t size_approx() const { return (size_t)sema->availableApprox(); }
 
   // Returns true if the underlying atomic variables used by
   // the queue are lock-free (they should be on most platforms).
   // Thread-safe.
-  static bool is_lock_free() {
-    return ConcurrentQueue::is_lock_free();
-  }
+  static bool is_lock_free() { return ConcurrentQueue::is_lock_free(); }
 
  private:
-  template<typename U>
+  template <typename U>
   static inline U *create() {
     auto p = (Traits::malloc)(sizeof(U));
-    return p != nullptr ? new(p) U : nullptr;
+    return p != nullptr ? new (p) U : nullptr;
   }
 
-  template<typename U, typename A1>
+  template <typename U, typename A1>
   static inline U *create(A1 &&a1) {
     auto p = (Traits::malloc)(sizeof(U));
-    return p != nullptr ? new(p) U(std::forward<A1>(a1)) : nullptr;
+    return p != nullptr ? new (p) U(std::forward<A1>(a1)) : nullptr;
   }
 
-  template<typename U>
+  template <typename U>
   static inline void destroy(U *p) {
     if (p != nullptr) {
       p->~U();
@@ -926,11 +925,10 @@ class BlockingConcurrentQueue
   std::unique_ptr<LightweightSemaphore, void (*)(LightweightSemaphore *)> sema;
 };
 
-
-template<typename T, typename Traits>
-inline void swap(BlockingConcurrentQueue<T, Traits>& a, BlockingConcurrentQueue<T, Traits>& b) MOODYCAMEL_NOEXCEPT
-{
-	a.swap(b);
+template <typename T, typename Traits>
+inline void swap(BlockingConcurrentQueue<T, Traits> &a,
+                 BlockingConcurrentQueue<T, Traits> &b) MOODYCAMEL_NOEXCEPT {
+  a.swap(b);
 }
 
-}	// end namespace moodycamel
+}  // end namespace moodycamel

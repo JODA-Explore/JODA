@@ -5,17 +5,17 @@
 #ifndef JODA_VIEWSTRUCTURE_H
 #define JODA_VIEWSTRUCTURE_H
 
+#include <joda/misc/RJFwd.h>
 #include <string>
 #include <unordered_map>
 
 class VirtualObject;
 
 class ViewStructure {
-
  public:
   /*
-  * Generic
-  */
+   * Generic
+   */
  public:
   size_t estimateSize() const;
 
@@ -35,6 +35,7 @@ class ViewStructure {
   ID getOrAdd(const KEY &key);
   ID getOrAdd(KEY &&key);
   const KEY *getKey(const ID &id) const;
+
  private:
   ID curr = 0;
   typedef std::unordered_map<KEY, ID> KEY_ID_M_T;
@@ -42,7 +43,6 @@ class ViewStructure {
 
   KEY_ID_M_T key_id;
   ID_KEY_M_T id_key;
-
 
   /*
    * Object member storage
@@ -53,14 +53,14 @@ class ViewStructure {
   void addMember(size_t i, ViewStructure::ID, const VirtualObject *val);
 
   struct ObjectMember {
-    ObjectMember() : key(0), val(nullptr), obj(nullptr) {};
+    ObjectMember() : key(0), val(nullptr), obj(nullptr){};
     ObjectMember(const ObjectMember &o) = delete;
     ObjectMember &operator=(const ObjectMember &o) = delete;
     ObjectMember(ObjectMember &&o) = default;
     ObjectMember &operator=(ObjectMember &&o) = default;
 
     ObjectMember(ID id, const RJValue *val);
-    ObjectMember(ID id, const VirtualObject *val);
+    ObjectMember(ID key, const VirtualObject *obj);
     ViewStructure::ID key;
     const RJValue *val;
     const VirtualObject *obj;
@@ -70,9 +70,10 @@ class ViewStructure {
   typedef MemberVector::const_iterator MemberIterator;
 
   MemberIterator beginMember() const;
+
  private:
-  MemberVector members;
+  MemberVector members{};
   size_t docCount;
 };
 
-#endif //JODA_VIEWSTRUCTURE_H
+#endif  // JODA_VIEWSTRUCTURE_H

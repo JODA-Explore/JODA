@@ -2,85 +2,100 @@
 // Created by Nico on 03/03/2020.
 //
 
+#include "JodaSourceRequest.h"
+#include <joda/misc/MemoryUtility.h>
 #include <joda/network/JodaServer.h>
 #include <joda/storage/collection/StorageCollection.h>
-#include <joda/misc/MemoryUtility.h>
-#include "JodaSourceRequest.h"
 
-void joda::network::apiv2::JodaSourceRequest::registerEndpoint(const std::string &prefix, httplib::Server &server) {
+void joda::network::apiv2::JodaSourceRequest::registerEndpoint(
+    const std::string& prefix, httplib::Server& server) {
   auto fullEndpoint = prefix + endpoint;
-  server.Get(fullEndpoint.c_str(), [fullEndpoint](const httplib::Request &req, httplib::Response &res) {
+  server.Get(fullEndpoint.c_str(), [fullEndpoint](const httplib::Request& req,
+                                                  httplib::Response& res) {
     try {
-      JodaServer::logExecutionTime(fullEndpoint, [&]() { sendSources(req, res); });
-    } catch (JodaAPIException &e) {
+      JodaServer::logExecutionTime(fullEndpoint,
+                                   [&]() { sendSources(req, res); });
+    } catch (JodaAPIException& e) {
       JodaServer::handleError(e, res);
     }
   });
 
-  server.Post(fullEndpoint.c_str(), [fullEndpoint](const httplib::Request &req, httplib::Response &res) {
+  server.Post(fullEndpoint.c_str(), [fullEndpoint](const httplib::Request& req,
+                                                   httplib::Response& res) {
     try {
-      JodaServer::logExecutionTime(fullEndpoint, [&]() { sendSources(req, res); });
-    } catch (JodaAPIException &e) {
+      JodaServer::logExecutionTime(fullEndpoint,
+                                   [&]() { sendSources(req, res); });
+    } catch (JodaAPIException& e) {
       JodaServer::handleError(e, res);
     }
   });
 
-  server.Get((prefix + temp_endpoint).c_str(), [fullEndpoint](const httplib::Request &req, httplib::Response &res) {
-    try {
-      JodaServer::logExecutionTime(fullEndpoint, [&]() { sendTemporaries(req, res); });
-    } catch (JodaAPIException &e) {
-      JodaServer::handleError(e, res);
-    }
-  });
+  server.Get(
+      (prefix + temp_endpoint).c_str(),
+      [fullEndpoint](const httplib::Request& req, httplib::Response& res) {
+        try {
+          JodaServer::logExecutionTime(fullEndpoint,
+                                       [&]() { sendTemporaries(req, res); });
+        } catch (JodaAPIException& e) {
+          JodaServer::handleError(e, res);
+        }
+      });
 
-  server.Post((prefix + temp_endpoint).c_str(), [fullEndpoint](const httplib::Request &req, httplib::Response &res) {
-    try {
-      JodaServer::logExecutionTime(fullEndpoint, [&]() { sendTemporaries(req, res); });
-    } catch (JodaAPIException &e) {
-      JodaServer::handleError(e, res);
-    }
-  });
+  server.Post(
+      (prefix + temp_endpoint).c_str(),
+      [fullEndpoint](const httplib::Request& req, httplib::Response& res) {
+        try {
+          JodaServer::logExecutionTime(fullEndpoint,
+                                       [&]() { sendTemporaries(req, res); });
+        } catch (JodaAPIException& e) {
+          JodaServer::handleError(e, res);
+        }
+      });
 }
 
-void joda::network::apiv2::JodaSourceRequest::sendSources(const httplib::Request &req, httplib::Response &res) {
+void joda::network::apiv2::JodaSourceRequest::sendSources(
+    const httplib::Request& /*req*/, httplib::Response& res) {
   res.set_header("charset", "utf-8");
-  res.set_chunked_content_provider("application/json",[](uint64_t offset_,
-                                      httplib::DataSink& out) {
-    out.write("[", 1);
-    auto storages = StorageCollection::getInstance().getStorages();
-    for (int i = 0; i < storages.size(); ++i) {
-      auto str = storageToJSON(*storages[i]);
-      out.write(str.c_str(), str.size());
-      if (i != storages.size() - 1) {
-        out.write(",", 1);
-      }
-    }
-    out.write("]", 1);
-    out.done();
-    return true;
-  });
+  res.set_chunked_content_provider(
+      "application/json", [](uint64_t offset_, httplib::DataSink& out) {
+        out.write("[", 1);
+        auto storages = StorageCollection::getInstance().getStorages();
+        for (size_t i = 0; i < storages.size(); ++i) {
+          auto str = storageToJSON(*storages[i]);
+          out.write(str.c_str(), str.size());
+          if (i != storages.size() - 1) {
+            out.write(",", 1);
+          }
+        }
+        out.write("]", 1);
+        out.done();
+        return true;
+      });
 }
 
-void joda::network::apiv2::JodaSourceRequest::sendTemporaries(const httplib::Request &req, httplib::Response &res) {
+void joda::network::apiv2::JodaSourceRequest::sendTemporaries(
+    const httplib::Request& /*req*/, httplib::Response& res) {
   res.set_header("charset", "utf-8");
-  res.set_chunked_content_provider("application/json",[](uint64_t offset_,
-                                      httplib::DataSink& out) {
-    out.write("[", 1);
-    auto storages = StorageCollection::getInstance().getTemporaryIDStorages();
-    for (int i = 0; i < storages.size(); ++i) {
-      auto str = storageToJSON(*storages[i].second, storages[i].first);
-      out.write(str.c_str(), str.size());
-      if (i != storages.size() - 1) {
-        out.write(",", 1);
-      }
-    }
-    out.write("]", 1);
-    out.done();
-    return true;
-  });
+  res.set_chunked_content_provider(
+      "application/json", [](uint64_t offset_, httplib::DataSink& out) {
+        out.write("[", 1);
+        auto storages =
+            StorageCollection::getInstance().getTemporaryIDStorages();
+        for (size_t i = 0; i < storages.size(); ++i) {
+          auto str = storageToJSON(*storages[i].second, storages[i].first);
+          out.write(str.c_str(), str.size());
+          if (i != storages.size() - 1) {
+            out.write(",", 1);
+          }
+        }
+        out.write("]", 1);
+        out.done();
+        return true;
+      });
 }
 
-std::string joda::network::apiv2::JodaSourceRequest::storageToJSON(const JSONStorage &storage, unsigned long id) {
+std::string joda::network::apiv2::JodaSourceRequest::storageToJSON(
+    const JSONStorage& storage, unsigned long id) {
   std::string ret = "{";
   if (id >= JODA_STORE_VALID_ID_START) {
     ret += R"("id":)" + std::to_string(id) + ",";
@@ -90,7 +105,9 @@ std::string joda::network::apiv2::JodaSourceRequest::storageToJSON(const JSONSto
   ret += R"("documents":)" + std::to_string(storage.size()) + ",";
   ret += R"("container":)" + std::to_string(storage.contSize()) + ",";
   ret += R"("memory":)" + std::to_string(storage.estimatedSize()) + ",";
-  ret += R"("memory-str":")" +  MemoryUtility::MemorySize(storage.estimatedSize()).getHumanReadable() + "\"";
+  ret += R"("memory-str":")" +
+         MemoryUtility::MemorySize(storage.estimatedSize()).getHumanReadable() +
+         "\"";
   ret += "}";
   return ret;
 }

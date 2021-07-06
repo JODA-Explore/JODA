@@ -8,6 +8,6 @@
 #include "ComparePredicate.h"
 #include "EqualizePredicate.h"
 #include "NegatePredicate.h"
-#include "ValToPredicate.h"
 #include "OrPredicate.h"
-#endif //JODA_PREDFWD_H
+#include "ValToPredicate.h"
+#endif  // JODA_PREDFWD_H

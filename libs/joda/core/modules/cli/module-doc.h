@@ -2,5 +2,6 @@
 
 /**
  * @namespace joda::cli
- * In this namespace all functionality related to the commandline interface is collected
+ * In this namespace all functionality related to the commandline interface is
+ * collected
  */

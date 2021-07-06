@@ -14,7 +14,7 @@ namespace joda::network::apiv2 {
  */
 class API {
  public:
-   /**
+  /**
    * Numerical representation of the API version
    */
   static constexpr size_t VERSION = 2;
@@ -29,22 +29,24 @@ class API {
    * @param prefix a prefix to prepend to each http endpoint
    * @param server the server to register the endpoints at
    */
-  static void registerEndpoint(const std::string &prefix, httplib::Server &server);
+  static void registerEndpoint(const std::string &prefix,
+                               httplib::Server &server);
 };
 
 /**
-* Exception describing API version mismatches.
-*/
+ * Exception describing API version mismatches.
+ */
 class JodaAPIVersionException : public JodaAPIException {
  public:
   JodaAPIVersionException() : JodaAPIException("Missing 'API' parameter") {}
 
-  explicit JodaAPIVersionException(unsigned int got) : JodaAPIException(
-      "Expected version " + std::to_string(API::VERSION) + " but got " + std::to_string(got)) {}
+  explicit JodaAPIVersionException(unsigned int got)
+      : JodaAPIException("Expected version " + std::to_string(API::VERSION) +
+                         " but got " + std::to_string(got)) {}
 
-  explicit JodaAPIVersionException(const std::string &what) : JodaAPIException("'API' parameter invalid: " + what) {}
-
+  explicit JodaAPIVersionException(const std::string &what)
+      : JodaAPIException("'API' parameter invalid: " + what) {}
 };
 
-}
-#endif //JODA_API_H
+}  // namespace joda::network::apiv2
+#endif  // JODA_API_H

@@ -6,23 +6,27 @@
 #define JODA_JSONSTREAMPARSER_H
 
 #include <joda/concurrency/IOThreadPool.h>
-#include <joda/parser/ParserFlags.h>
+#include <joda/config/config.h>
 #include <joda/container/ContainerFlags.h>
 #include <joda/container/JSONContainer.h>
-#include <joda/config/config.h>
+#include <joda/parser/ParserFlags.h>
+#include <rapidjson/error/en.h>
+
 #include "ContainerScheduler/DefaultContainerScheduler.h"
 
 namespace joda::docparsing {
 /**
  * A parser which takes streams containing one or more documents.
  * The stream is read and each document is parsed until the stream ends.
- * @tparam Scheduler The document scheduler to use for clustering documents into containers
+ * @tparam Scheduler The document scheduler to use for clustering documents into
+ * containers
  */
-template<class Scheduler = DefaultContainerScheduler<false>>
-class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonContainerQueue, size_t> {
+template <class Scheduler = DefaultContainerScheduler<false>>
+class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue,
+                                              JsonContainerQueue, size_t> {
  public:
-  JSONStreamParser(IQueue *iqueue, OQueue *oqueue, size_t sourceSize) : IWorkerThread(iqueue, oqueue, sourceSize),
-                                                                        sourceSize(this->conf) {
+  JSONStreamParser(IQueue *iqueue, OQueue *oqueue, size_t sourceSize)
+      : IWorkerThread(iqueue, oqueue, sourceSize), sourceSize(this->conf) {
     oqueue->registerProducer();
     DLOG(INFO) << "Started JSONStreamParser";
   };
@@ -35,6 +39,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
   static const size_t recommendedThreads() {
     return config::storageRetrievalThreads;
   };
+
  protected:
   void work() override {
     auto tok = IQueue::ctok_t(iqueue->queue);
@@ -44,7 +49,7 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
     while (shouldRun) {
       if (!iqueue->isFinished()) {
         IPayload stream;
-        iqueue->retrieve(stream);
+        iqueue->retrieve(tok, stream);
         if (stream.first == nullptr) {
           LOG(WARNING) << "Got empty stream origin";
           continue;
@@ -68,15 +73,20 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
         while (*stream.second) {
           std::unique_ptr<RJDocument> doc;
           typename Scheduler::ContainerIdentifier cont;
-          if (std::is_same<Scheduler, joda::docparsing::DefaultContainerScheduler<false>>::value
-              || std::is_same<Scheduler, joda::docparsing::DefaultContainerScheduler<true>>::value) {
+          if (std::is_same<
+                  Scheduler,
+                  joda::docparsing::DefaultContainerScheduler<false>>::value ||
+              std::is_same<
+                  Scheduler,
+                  joda::docparsing::DefaultContainerScheduler<true>>::value) {
             doc = std::move(sched.getNewDoc(0));
             doc->ParseStream<rapidjson::kParseStopWhenDoneFlag>(isw);
             if (doc->HasParseError()) {
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
-              LOG(WARNING) << std::string(rapidjson::GetParseError_En(doc->GetParseError())) <<
-                           " from stream " << stream.first->getStreamName() << " : " << begin << "-"
-                           << isw.Tell();
+                LOG(WARNING) << std::string(rapidjson::GetParseError_En(
+                                    doc->GetParseError()))
+                             << " from stream " << stream.first->getStreamName()
+                             << " : " << begin << "-" << isw.Tell();
 
               continue;
             }
@@ -85,9 +95,10 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
             tmpDoc->ParseStream<rapidjson::kParseStopWhenDoneFlag>(isw);
             if (doc->HasParseError()) {
               if (doc->GetParseError() != rapidjson::kParseErrorDocumentEmpty)
-              LOG(WARNING) << std::string(rapidjson::GetParseError_En(doc->GetParseError())) <<
-                           " from stream " << stream.first->getStreamName() << " : " << begin << "-"
-                           << isw.Tell();
+                LOG(WARNING) << std::string(rapidjson::GetParseError_En(
+                                    doc->GetParseError()))
+                             << " from stream " << stream.first->getStreamName()
+                             << " : " << begin << "-" << isw.Tell();
 
               continue;
             }
@@ -114,9 +125,9 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
           orig->setIndex(index);
           index++;
 
-          sched.scheduleDocument(cont, std::move(doc), std::move(orig), end - begin);
+          sched.scheduleDocument(cont, std::move(doc), std::move(orig),
+                                 end - begin);
           begin = end + 1;
-
         }
         if (stream.second->bad()) {
           LOG(ERROR) << "Error streaming: " << strerror(errno);
@@ -132,6 +143,6 @@ class JSONStreamParser : public IWorkerThread<JsonTextStreamParserQueue, JsonCon
  private:
   size_t sourceSize;
 };
-}
+}  // namespace joda::docparsing
 
-#endif //JODA_JSONSTREAMPARSER_H
+#endif  // JODA_JSONSTREAMPARSER_H

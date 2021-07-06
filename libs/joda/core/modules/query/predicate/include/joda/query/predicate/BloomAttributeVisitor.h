@@ -6,12 +6,12 @@
 #define JODA_ATTRIBUTEVISITOR_H
 
 #include "AndPredicate.h"
-#include "PredicateVisitor.h"
 #include "ComparePredicate.h"
 #include "EqualizePredicate.h"
 #include "NegatePredicate.h"
 #include "OrPredicate.h"
 #include "Predicate.h"
+#include "PredicateVisitor.h"
 namespace joda::query {
 /**
  * Visitor extracting required JSON pointers for usage in Bloom filter
@@ -35,6 +35,6 @@ class BloomAttributeVisitor : public joda::query::PredicateVisitor {
   bool valid = true;
   std::vector<std::string> attributes;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_ATTRIBUTEVISITOR_H

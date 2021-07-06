@@ -27,6 +27,6 @@ class NullProvider : public joda::query::IValueProvider {
   std::string getName() const override;
   IValueType getReturnType() const override;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_NULLPROVIDER_H

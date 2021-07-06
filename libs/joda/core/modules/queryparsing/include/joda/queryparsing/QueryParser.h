@@ -55,5 +55,5 @@ class QueryParser {
  protected:
   std::unique_ptr<tao::pegtl::parse_error> lastError;
 };
-}
+}  // namespace joda::queryparsing
 #endif  // JODA_QUERYPARSER_H

@@ -32,6 +32,6 @@ class ArraySizeProvider : public joda::query::IValueProvider {
   CREATE_FACTORY(ArraySizeProvider)
  protected:
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_ARRAYSIZEPROVIDER_H

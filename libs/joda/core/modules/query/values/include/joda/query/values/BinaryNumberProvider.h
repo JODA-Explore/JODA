@@ -14,15 +14,18 @@
 namespace joda::query {
 /**
  * Template class used for all binary mathamatical functions.
- * The template argument has to be a struct with the following attributes/functions.
+ * The template argument has to be a struct with the following
+ * attributes/functions.
  * @code{.cpp}
  * struct <StructName> {
  *  static constexpr auto name = "<Name>";
  *  static constexpr auto op = "<OperationSymbol>";
  *  static constexpr IValueType retType = <IValueType returntype>;
- *  inline static RJValue calculate(double lhs, double rhs, RJMemoryPoolAlloc &alloc) { return <result>; };
- *  inline static RJValue calculate(u_int64_t lhs, u_int64_t rhs, RJMemoryPoolAlloc &alloc) {  return <result>;  };
- *  inline static RJValue calculate(int64_t lhs, int64_t rhs, RJMemoryPoolAlloc &alloc) {  return <result>; };
+ *  inline static RJValue calculate(double lhs, double rhs, RJMemoryPoolAlloc
+ * &alloc) { return <result>; }; inline static RJValue calculate(u_int64_t lhs,
+ * u_int64_t rhs, RJMemoryPoolAlloc &alloc) {  return <result>;  }; inline
+ * static RJValue calculate(int64_t lhs, int64_t rhs, RJMemoryPoolAlloc &alloc)
+ * {  return <result>; };
  * };
  * @endcode
  */
@@ -38,7 +41,9 @@ class BinaryNumberProvider : public joda::query::IValueProvider {
     DCHECK(isAtom()) << "Only atom ReturnTypes allowed";
   };
 
-  joda::query::IValueType getReturnType() const override { return Calc::retType; }
+  joda::query::IValueType getReturnType() const override {
+    return Calc::retType;
+  }
 
   std::string getName() const override {
     if (opMode) {
@@ -317,7 +322,6 @@ struct BinaryAtan2CalculationFunction {
 
 typedef BinaryNumberProvider<BinaryAtan2CalculationFunction> Atan2Provider;
 
-
 template class BinaryNumberProvider<BinarySumCalculationFunction>;
 
 template class BinaryNumberProvider<BinarySubCalculationFunction>;
@@ -332,5 +336,5 @@ template class BinaryNumberProvider<BinaryPowCalculationFunction>;
 
 template class BinaryNumberProvider<BinaryAtan2CalculationFunction>;
 
-}
+}  // namespace joda::query
 #endif  // JODA_BINARYNUMBERPROVIDER_H

@@ -5,20 +5,19 @@
 #ifndef JODA_DOCUMENTCOSTHANDLER_H
 #define JODA_DOCUMENTCOSTHANDLER_H
 #include <glob.h>
-#include <cstdint>
 #include <joda/misc/RJFwd.h>
-#include <rapidjson/rapidjson.h>
 #include <rapidjson/encodings.h>
+#include <rapidjson/rapidjson.h>
+#include <cstdint>
 #include <vector>
 
 class DocumentCostHandler {
   typedef rapidjson::UTF8<>::Ch Ch;
+
  public:
   DocumentCostHandler() {}
 
-  bool Default() {
-    return true;
-  };
+  bool Default() { return true; };
 
   bool Null() {
     theoreticalCost += sizeof(RJValue);
@@ -66,9 +65,7 @@ class DocumentCostHandler {
     return true;
   };
 
-  bool StartObject() {
-    return true;
-  };
+  bool StartObject() { return true; };
 
   bool Key(const Ch *str, rapidjson::SizeType len, bool copy) {
     return String(str, len, copy);
@@ -80,9 +77,7 @@ class DocumentCostHandler {
     return true;
   };
 
-  bool StartArray() {
-    return true;
-  };
+  bool StartArray() { return true; };
 
   bool EndArray(rapidjson::SizeType len) {
     theoreticalCost += sizeof(RJValue);
@@ -98,29 +93,28 @@ class DocumentCostHandler {
   void checkValue(const RJValue &doc) {
     switch (doc.GetType()) {
       case rapidjson::kObjectType: {
-        cost += sizeof(RJValue::Member) * (doc.MemberCapacity() - doc.MemberCount());
+        cost += sizeof(RJValue::Member) *
+                (doc.MemberCapacity() - doc.MemberCount());
         for (const auto &item : doc.GetObject()) {
           checkValue(item.name);
           checkValue(item.value);
         }
-      }
-        break;
+      } break;
       case rapidjson::kArrayType: {
         cost += sizeof(RJValue) * (doc.Capacity() - doc.Size());
         for (const auto &item : doc.GetArray()) {
           checkValue(item);
         }
-      }
-        break;
+      } break;
       case rapidjson::kStringType: {
         cost += sizeof(RJValue);
         auto len = doc.GetStringLength();
         if (!isShortString(doc)) {
           cost += sizeof(RJValue::Ch) * len;
         }
-      }
-        break;
-      default:cost += sizeof(RJValue);
+      } break;
+      default:
+        cost += sizeof(RJValue);
     }
   }
 
@@ -133,21 +127,19 @@ class DocumentCostHandler {
     }
   }
 
-  size_t getCost() const {
-    return cost;
-  }
+  size_t getCost() const { return cost; }
 
-  size_t getTheoreticalCost() const {
-    return theoreticalCost;
-  }
+  size_t getTheoreticalCost() const { return theoreticalCost; }
 
  private:
   size_t cost = 0;
   size_t theoreticalCost = 0;
 
-   // Checks against the rules in https://rapidjson.org/structrapidjson_1_1_generic_value_1_1_short_string.html
+  // Checks against the rules in
+  // https://rapidjson.org/structrapidjson_1_1_generic_value_1_1_short_string.html
   bool canBeShortString(size_t len) const {
-    if (RAPIDJSON_64BIT == 0 || RAPIDJSON_48BITPOINTER_OPTIMIZATION == 1) return len <= 13;
+    if (RAPIDJSON_64BIT == 0 || RAPIDJSON_48BITPOINTER_OPTIMIZATION == 1)
+      return len <= 13;
     return len <= 21;
   }
 
@@ -156,4 +148,4 @@ class DocumentCostHandler {
   }
 };
 
-#endif //JODA_DOCUMENTCOSTHANDLER_H
+#endif  // JODA_DOCUMENTCOSTHANDLER_H

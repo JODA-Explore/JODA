@@ -48,6 +48,6 @@ class ValToPredicate : public joda::query::Predicate {
  protected:
   std::unique_ptr<IValueProvider> val;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_VALTOPREDICATE_H

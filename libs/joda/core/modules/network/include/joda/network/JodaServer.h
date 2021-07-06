@@ -5,10 +5,10 @@
 #ifndef JODA_JODASERVER_H
 #define JODA_JODASERVER_H
 
+#include <glog/logging.h>
 #include <httplib.h>
 #include <joda/misc/RJFwd.h>
 #include <joda/misc/Timer.h>
-#include <glog/logging.h>
 
 namespace joda::network {
 
@@ -17,22 +17,24 @@ namespace joda::network {
  */
 class JodaAPIException : public std::runtime_error {
  public:
- /**
-  * Initializes an exception in the JODA network API with a description
-  * @param what the description of the exception
-  */
-  explicit JodaAPIException(const std::string &what) : std::runtime_error("API Error: " + what) {};
+  /**
+   * Initializes an exception in the JODA network API with a description
+   * @param what the description of the exception
+   */
+  explicit JodaAPIException(const std::string &what)
+      : std::runtime_error("API Error: " + what){};
 };
 
 /**
- * JodaServer is responsible for initializing and starting a HTTP server providing netwok functionality to JODA
+ * JodaServer is responsible for initializing and starting a HTTP server
+ * providing netwok functionality to JODA
  */
 class JodaServer {
  public:
- /**
-  * The prefix is used to specify where the JODA api endpoint should be.
-  * "http://<host>:<port><prefix><...>"
-  */
+  /**
+   * The prefix is used to specify where the JODA api endpoint should be.
+   * "http://<host>:<port><prefix><...>"
+   */
   static constexpr auto prefix = "/api";
 
   /**
@@ -51,7 +53,8 @@ class JodaServer {
 
   /**
    * Helper function for the API to use.
-   * It uses the error message contained in a JodaAPIException to send a http response containing the error message.
+   * It uses the error message contained in a JodaAPIException to send a http
+   * response containing the error message.
    * @param e the exception to extract the error message from
    * @param res the response over which the error will be reported to the client
    */
@@ -59,7 +62,8 @@ class JodaServer {
 
   /**
    * Helper function for the API to use.
-   * It serializes a JSON document and sends it over a http response to the client.
+   * It serializes a JSON document and sends it over a http response to the
+   * client.
    * @param doc the document to send to the client
    * @param res the response over which the document will be sent to the client
    */
@@ -68,10 +72,11 @@ class JodaServer {
   /**
    * Helper function for the API to use.
    * It executes a function, times it's execution and logs this time.
-   * @param endpoint a string describing which API endpoint the function comes from
+   * @param endpoint a string describing which API endpoint the function comes
+   * from
    * @param f function to execute and time
    */
-  template<class F>
+  template <class F>
   static void logExecutionTime(const std::string &endpoint, F f) {
     Timer timer;
     f();
@@ -85,7 +90,6 @@ class JodaServer {
   static std::string printParameters(const httplib::Params &p);
 
   static void favicon(const httplib::Request &req, httplib::Response &res);
-
 };
 
 /**
@@ -93,8 +97,8 @@ class JodaServer {
  */
 class JodaMissingParameterException : public JodaAPIException {
  public:
-  explicit JodaMissingParameterException(const std::string &param) : JodaAPIException(
-      "Missing '" + param + "' parameter") {}
+  explicit JodaMissingParameterException(const std::string &param)
+      : JodaAPIException("Missing '" + param + "' parameter") {}
 };
 
 /**
@@ -102,10 +106,11 @@ class JodaMissingParameterException : public JodaAPIException {
  */
 class JodaInvalidParameterException : public JodaAPIException {
  public:
-  JodaInvalidParameterException(const std::string &param, const std::string &what) : JodaAPIException(
-      "Invalid '" + param + "' parameter: " + what) {}
+  JodaInvalidParameterException(const std::string &param,
+                                const std::string &what)
+      : JodaAPIException("Invalid '" + param + "' parameter: " + what) {}
 };
 
-}
+}  // namespace joda::network
 
-#endif //JODA_JODASERVER_H
+#endif  // JODA_JODASERVER_H

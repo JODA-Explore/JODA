@@ -5,13 +5,12 @@
 #ifndef JODA_ANDPREDICATE_H
 #define JODA_ANDPREDICATE_H
 
-
 #include "Predicate.h"
 namespace joda::query {
 /**
  * Combines the result of two subpredicates by using the logical AND operation
  */
- class AndPredicate : public Predicate {
+class AndPredicate : public Predicate {
  public:
   explicit AndPredicate(std::unique_ptr<Predicate> p1,
                         std::unique_ptr<Predicate> p2);
@@ -37,8 +36,6 @@ namespace joda::query {
  protected:
   std::unique_ptr<Predicate> p1, p2;
 };
-}
-
-
+}  // namespace joda::query
 
 #endif  // JODA_ANDPREDICATE_H

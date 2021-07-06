@@ -5,8 +5,8 @@
 #ifndef JODA_NEGATEPREDICATE_H
 #define JODA_NEGATEPREDICATE_H
 
-#include "Predicate.h"
 #include "AndPredicate.h"
+#include "Predicate.h"
 
 namespace joda::query {
 /**
@@ -18,10 +18,10 @@ class NegatePredicate : public joda::query::Predicate {
   bool check(const RapidJsonDocument &val) override;
   bool isCompatible(Predicate *other) override;
   virtual std::string getType() override;
-  void accept(struct PredicateVisitor &v) override;
+  void accept(class PredicateVisitor &v) override;
 
   void setPredicate(std::unique_ptr<Predicate> pred);
-  void subAccept(struct PredicateVisitor &v);
+  void subAccept(class PredicateVisitor &v);
   const static std::string type;
 
   friend class CNFPredicateVisitor;
@@ -32,6 +32,6 @@ class NegatePredicate : public joda::query::Predicate {
  protected:
   std::unique_ptr<Predicate> pred;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_NEGATEPREDICATE_H

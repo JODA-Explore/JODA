@@ -5,8 +5,8 @@
 #ifndef JODA_ORPREDICATE_H
 #define JODA_ORPREDICATE_H
 
-#include "Predicate.h"
 #include "AndPredicate.h"
+#include "Predicate.h"
 
 namespace joda::query {
 /**
@@ -19,10 +19,10 @@ class OrPredicate : public joda::query::Predicate {
   bool check(const RapidJsonDocument &val) override;
   bool isCompatible(Predicate *other) override;
   virtual std::string getType() override;
-  void accept(struct PredicateVisitor &v) override;
+  void accept(class PredicateVisitor &v) override;
 
   const static std::string type;
-  void subAccept(struct PredicateVisitor &v, bool lhs);
+  void subAccept(class PredicateVisitor &v, bool lhs);
 
   friend class CNFPredicateVisitor;
   friend class CNFtoListPredicateVisitor;
@@ -31,6 +31,6 @@ class OrPredicate : public joda::query::Predicate {
  protected:
   std::unique_ptr<Predicate> p1, p2;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_ORPREDICATE_H

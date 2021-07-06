@@ -5,9 +5,9 @@
 #ifndef JODA_VIRTUALOBJECT_H
 #define JODA_VIRTUALOBJECT_H
 
-#include <string>
-#include <joda/misc/RJFwd.h>
 #include <glog/logging.h>
+#include <joda/misc/RJFwd.h>
+#include <string>
 #include "ViewStructure.h"
 
 class VirtualObject {
@@ -34,16 +34,18 @@ class VirtualObject {
   size_t start_ = 0, end_ = 0, size_ = 0;
   ViewStructure *struc = nullptr;
 
-  template<typename F>
+  template <typename F>
   auto iterateMemberRetAll(F &&lambda) const {
-    std::vector<typename std::result_of<F(const ViewStructure::ObjectMember &)>::type> ret;
+    std::vector<
+        typename std::result_of<F(const ViewStructure::ObjectMember &)>::type>
+        ret;
     iterateMember([&ret, &lambda](const ViewStructure::ObjectMember &o) {
       ret.emplace_back(lambda(o));
     });
     return ret;
   }
 
-  template<typename Ret, typename F>
+  template <typename Ret, typename F>
   auto iterateMemberRetOne(F &&lambda, Ret &&init) const {
     Ret ret = init;
     iterateMember([&ret, &lambda](const ViewStructure::ObjectMember &o) {
@@ -52,7 +54,7 @@ class VirtualObject {
     return ret;
   }
 
-  template<typename F>
+  template <typename F>
   void iterateMember(F &&lambda) const {
     auto it = struc->beginMember();
     it += start_;
@@ -68,40 +70,39 @@ class VirtualObject {
   /*
    * Accepter
    */
-  template<typename Handler>
+  template <typename Handler>
   bool Accept(Handler &handler) const {
-    if (RAPIDJSON_UNLIKELY(!handler.StartObject()))
-      return false;
+    if (RAPIDJSON_UNLIKELY(!handler.StartObject())) return false;
 
-    if (!iterateMemberRetOne<bool>([this, &handler](const ViewStructure::ObjectMember &member, bool &prev) {
-      if (!prev) return false;
-      auto name = struc->getKey(member.key);
-      DCHECK(name != nullptr);
-      if (RAPIDJSON_UNLIKELY(!handler.Key(name->c_str(),
-                                          name->size(),
-                                          true)))
-        return false;
+    if (!iterateMemberRetOne<bool>(
+            [this, &handler](const ViewStructure::ObjectMember &member,
+                             bool &prev) {
+              if (!prev) return false;
+              auto name = struc->getKey(member.key);
+              DCHECK(name != nullptr);
+              if (RAPIDJSON_UNLIKELY(
+                      !handler.Key(name->c_str(), name->size(), true)))
+                return false;
 
-      if (member.val != nullptr) {
-        if (RAPIDJSON_UNLIKELY(!member.val->Accept(handler)))
-          return false;
-      } else {
-        if(member.obj == nullptr){
-          if (RAPIDJSON_UNLIKELY(!RJValue().Accept(handler)))
-            return false;
-        }else{
-          if (RAPIDJSON_UNLIKELY(!member.obj->Accept(handler)))
-            return false;
-        }
-
-      }
-      return true;
-    }, true))
+              if (member.val != nullptr) {
+                if (RAPIDJSON_UNLIKELY(!member.val->Accept(handler)))
+                  return false;
+              } else {
+                if (member.obj == nullptr) {
+                  if (RAPIDJSON_UNLIKELY(!RJValue().Accept(handler)))
+                    return false;
+                } else {
+                  if (RAPIDJSON_UNLIKELY(!member.obj->Accept(handler)))
+                    return false;
+                }
+              }
+              return true;
+            },
+            true))
       return false;
 
     return handler.EndObject(size_);
   }
-
 };
 
-#endif //JODA_VIRTUALOBJECT_H
+#endif  // JODA_VIRTUALOBJECT_H

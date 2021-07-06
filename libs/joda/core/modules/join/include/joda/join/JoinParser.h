@@ -10,10 +10,11 @@
 #include "joda/storage/JSONStorage.h"
 
 /**
- * This parser is responsible for parsing temporary join-files for the FileJoinManager
+ * This parser is responsible for parsing temporary join-files for the
+ * FileJoinManager
  */
 class JoinParser {
-  public:
+ public:
   /**
    * Parses the joined files and creates RapidJsonDocuments and JSONContainers.
    * These container are then put into the correct JSONStorage.
@@ -21,7 +22,6 @@ class JoinParser {
    * @param storage The storage to receive the JSONContainers
    */
   void parse(const FileJoinManager &jm, std::shared_ptr<JSONStorage> &storage);
-
 };
 
-#endif //JODA_JOINPARSER_H
+#endif  // JODA_JOINPARSER_H

@@ -8,15 +8,13 @@
 #include "../states/States.h"
 
 namespace joda::queryparsing::grammar {
-template<>
+template <>
 struct deleteAction<deleteIdent> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    deleteState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, deleteState &state) {
     state.deleteVar = in.string();
   }
 };
-}
+}  // namespace joda::queryparsing::grammar
 
-#endif //JODA_DELETE_ACTIONS_H
+#endif  // JODA_DELETE_ACTIONS_H

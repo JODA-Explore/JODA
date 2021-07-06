@@ -6,11 +6,13 @@
 namespace joda::query {
 class CountAggregator : public IAggregator {
  public:
-  CountAggregator(const std::string &toPointer, std::vector<std::unique_ptr<IValueProvider>> &&params);
+  CountAggregator(const std::string &toPointer,
+                  std::vector<std::unique_ptr<IValueProvider>> &&params);
   void merge(IAggregator *other) override;
   RJValue terminate(RJMemoryPoolAlloc &alloc) override;
   std::unique_ptr<IAggregator> duplicate() const override;
-  void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
+  void accumulate(const RapidJsonDocument &json,
+                  RJMemoryPoolAlloc &alloc) override;
   const std::string getName() const override;
 
   static constexpr auto getName_() { return "COUNT"; }
@@ -18,6 +20,6 @@ class CountAggregator : public IAggregator {
  protected:
   ulong count = 0;
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_COUNTAGGREGATOR_H
+#endif  // JODA_COUNTAGGREGATOR_H

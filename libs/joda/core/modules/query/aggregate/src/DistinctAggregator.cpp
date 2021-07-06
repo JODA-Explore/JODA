@@ -3,12 +3,11 @@
 //
 
 #include "../include/joda/query/aggregation/DistinctAggregator.h"
-#include <rapidjson/fwd.h>
 #include <rapidjson/document.h>
+#include <rapidjson/fwd.h>
 
-
-void joda::query::DistinctAggregator::merge(IAggregator *other) {
-  auto *o = dynamic_cast<joda::query::DistinctAggregator *>(other);
+void joda::query::DistinctAggregator::merge(IAggregator* other) {
+  auto* o = dynamic_cast<joda::query::DistinctAggregator*>(other);
   assert(o != nullptr);
   assert(getName() == o->getName());
   assert(toPointer == o->toPointer);
@@ -17,19 +16,18 @@ void joda::query::DistinctAggregator::merge(IAggregator *other) {
   hasTrue |= o->hasTrue;
   hasFalse |= o->hasFalse;
 }
-RJValue joda::query::DistinctAggregator::terminate(RJMemoryPoolAlloc &alloc) {
-
+RJValue joda::query::DistinctAggregator::terminate(RJMemoryPoolAlloc& alloc) {
   RJValue val;
   val.SetArray();
   if (stringEnabled && !strSet.empty()) {
-    for (auto &&str : strSet) {
+    for (auto&& str : strSet) {
       RJValue strVal;
       strVal.SetString(str.c_str(), alloc);
       val.PushBack(std::move(strVal), alloc);
     }
   }
   if (numEnabled && !numSet.empty()) {
-    for (auto &&num : numSet) {
+    for (auto&& num : numSet) {
       RJValue numVal;
       numVal.SetDouble(num);
       val.PushBack(std::move(numVal), alloc);
@@ -48,35 +46,43 @@ RJValue joda::query::DistinctAggregator::terminate(RJMemoryPoolAlloc &alloc) {
     }
   }
   return val;
-
 }
-std::unique_ptr<joda::query::IAggregator> joda::query::DistinctAggregator::duplicate() const {
-  return std::make_unique<joda::query::DistinctAggregator>(toPointer, duplicateParameters(), stringEnabled, boolEnabled, numEnabled);
+std::unique_ptr<joda::query::IAggregator>
+joda::query::DistinctAggregator::duplicate() const {
+  return std::make_unique<joda::query::DistinctAggregator>(
+      toPointer, duplicateParameters(), stringEnabled, boolEnabled, numEnabled);
 }
 
-joda::query::DistinctAggregator::DistinctAggregator(const std::string &toPointer,
-                                                    std::vector<std::unique_ptr<IValueProvider>> &&params,
-                                                    bool stringEnabled,
-                                                    bool boolEnabled,
-                                                    bool numEnabled) : IAggregator(toPointer,std::move(params)), stringEnabled(stringEnabled), boolEnabled(boolEnabled), numEnabled(numEnabled) {
+joda::query::DistinctAggregator::DistinctAggregator(
+    const std::string& toPointer,
+    std::vector<std::unique_ptr<IValueProvider>>&& params, bool stringEnabled,
+    bool boolEnabled, bool numEnabled)
+    : IAggregator(toPointer, std::move(params)),
+      stringEnabled(stringEnabled),
+      boolEnabled(boolEnabled),
+      numEnabled(numEnabled) {
   checkParamSize(1);
 }
 
-void joda::query::DistinctAggregator::accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
+void joda::query::DistinctAggregator::accumulate(const RapidJsonDocument& json,
+                                                 RJMemoryPoolAlloc& alloc) {
   const RJValue* val;
   RJValue val_;
-  if(params[0]->isAtom()){
-    val_ = params[0]->getAtomValue(json,alloc);
+  if (params[0]->isAtom()) {
+    val_ = params[0]->getAtomValue(json, alloc);
     val = &val_;
-  }else{
-    val = params[0]->getValue(json,alloc);
+  } else {
+    val = params[0]->getValue(json, alloc);
   }
   if (val != nullptr) {
     if (stringEnabled && val->IsString()) {
       strSet.insert(val->GetString());
     } else if (boolEnabled && val->IsBool()) {
-      if (val->GetBool()) hasTrue = true;
-      else hasFalse = true;
+      if (val->GetBool()) {
+        hasTrue = true;
+      } else {
+        hasFalse = true;
+      }
     } else if (numEnabled && val->IsNumber()) {
       numSet.insert(val->GetDouble());
     }
@@ -86,5 +92,3 @@ void joda::query::DistinctAggregator::accumulate(const RapidJsonDocument &json, 
 const std::string joda::query::DistinctAggregator::getName() const {
   return getName_();
 }
-
-

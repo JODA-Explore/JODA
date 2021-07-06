@@ -33,6 +33,6 @@ class ListAttributesProvider : public joda::query::IValueProvider {
   void recursiveAdd(const std::string &prefix, RJValue &arr, const RJValue &obj,
                     RJMemoryPoolAlloc &alloc) const;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_LISTATTRIBUTESPROVIDER_H

@@ -13,7 +13,8 @@ namespace joda::query {
  * ISARRAY()/ISNUMBER()/... checks if the value is of given type
  * There is one implementation for each IValueType
  *
- * Special case is IV_ANY, as this will be the EXISTS() function, which only checks if a given value exists at all.
+ * Special case is IV_ANY, as this will be the EXISTS() function, which only
+ * checks if a given value exists at all.
  */
 template <joda::query::IValueType T>
 class IsXBoolProvider : public joda::query::IValueProvider {
@@ -54,6 +55,6 @@ class IsXBoolProvider : public joda::query::IValueProvider {
   bool cons = false;
   bool consRes = false;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_ISXBOOLPROVIDER_H

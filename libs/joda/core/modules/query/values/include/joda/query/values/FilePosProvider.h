@@ -11,7 +11,8 @@
 
 namespace joda::query {
 /**
- * FILEPOSSTART()/FILEPOSEND() retrieves the file positions from document origins
+ * FILEPOSSTART()/FILEPOSEND() retrieves the file positions from document
+ * origins
  */
 template <bool start>
 class FilePosProvider : public joda::query::IValueProvider {
@@ -60,6 +61,6 @@ class FilePosProvider : public joda::query::IValueProvider {
 
  protected:
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_FILEPOSPROVIDER_H

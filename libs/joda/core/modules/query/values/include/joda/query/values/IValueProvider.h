@@ -311,6 +311,6 @@ class IValueProvider {
 
   std::vector<std::unique_ptr<IValueProvider>> params;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_IVALUEPROVIDER_H

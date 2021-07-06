@@ -7,5 +7,6 @@
 
 /**
  * @namespace joda::network::apiv2
- * The apiv2 namespace provides all classes required for the network API version 2
+ * The apiv2 namespace provides all classes required for the network API version
+ * 2
  */

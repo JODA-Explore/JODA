@@ -13,8 +13,7 @@
 #include <rapidjson/fwd.h>
 
 #include "IValueProvider.h"
-namespace joda::query{
-
+namespace joda::query {
 
 /**
  * Provides constant typed values like ints, doubles, strings, and Booleans
@@ -97,5 +96,5 @@ inline std::string AtomProvider<T>::getName() const {
   return toString();
 };
 
-}
+}  // namespace joda::query
 #endif  // JODA_ATOMPROVIDER_H

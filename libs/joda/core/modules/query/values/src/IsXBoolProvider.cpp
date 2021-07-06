@@ -1,42 +1,49 @@
 #include "../include/joda/query/values/IsXBoolProvider.h"
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_Null>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_Null>::getName()
+    const {
   return "ISNULL";
 }
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_Bool>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_Bool>::getName()
+    const {
   return "ISBOOL";
 }
 
-template<>
+template <>
 std::string joda::query::IsXBoolProvider<joda::query::IV_Any>::getName() const {
   return "EXISTS";
 }
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_Object>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_Object>::getName()
+    const {
   return "ISOBJECT";
 }
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_Array>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_Array>::getName()
+    const {
   return "ISARRAY";
 }
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_Number>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_Number>::getName()
+    const {
   return "ISNUMBER";
 }
 
-template<>
-std::string joda::query::IsXBoolProvider<joda::query::IV_String>::getName() const {
+template <>
+std::string joda::query::IsXBoolProvider<joda::query::IV_String>::getName()
+    const {
   return "ISSTRING";
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Null>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Null>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -45,7 +52,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Null>::getAtomValue(const R
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -63,8 +70,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Null>::getAtomValue(const R
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Bool>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Bool>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -73,7 +81,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Bool>::getAtomValue(const R
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -91,8 +99,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Bool>::getAtomValue(const R
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Any>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Any>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -101,7 +110,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Any>::getAtomValue(const Ra
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -119,8 +128,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Any>::getAtomValue(const Ra
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Object>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Object>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -129,7 +139,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Object>::getAtomValue(const
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -147,8 +157,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Object>::getAtomValue(const
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Array>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Array>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -157,7 +168,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Array>::getAtomValue(const 
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -175,8 +186,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Array>::getAtomValue(const 
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_Number>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_Number>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -185,7 +197,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Number>::getAtomValue(const
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 
@@ -203,8 +215,9 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_Number>::getAtomValue(const
   return val;
 }
 
-template<>
-RJValue joda::query::IsXBoolProvider<joda::query::IV_String>::getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const {
+template <>
+RJValue joda::query::IsXBoolProvider<joda::query::IV_String>::getAtomValue(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& /*alloc*/) const {
   assert(isAtom() && "Did not check for atom before calling");
   if (cons) {
     RJValue val;
@@ -213,7 +226,7 @@ RJValue joda::query::IsXBoolProvider<joda::query::IV_String>::getAtomValue(const
   }
 
   RJValue val;
-  RJValue const *ptrVal;
+  RJValue const* ptrVal;
   RJValue ptrValunref;
   RJMemoryPoolAlloc tmpalloc;
 

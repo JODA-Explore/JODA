@@ -5,30 +5,31 @@
 #ifndef JODA_QUERYCACHE_H
 #define JODA_QUERYCACHE_H
 
-#include <unordered_map>
 #include <joda/document/RapidJsonDocument.h>
 #include <joda/query/predicate/Predicate.h>
+#include <unordered_map>
 #include "../../../src/cache/CacheEntry.h"
 
 /**
- * This class is responsible for managing a cache for previously exectuted queries.
+ * This class is responsible for managing a cache for previously exectuted
+ * queries.
  */
 class QueryCache {
-
-
  public:
   /**
    * Returns the cached DOC_IDs for the given predicate
    * @param pred The predicated in internal representation
    * @return A set of DOC_IDs stored by a previous query execution
    */
-  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(const std::shared_ptr<joda::query::Predicate> &pred);
+  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
+      const std::shared_ptr<joda::query::Predicate> &pred);
   /**
    * Returns the cached DOC_IDs for the given predicate
    * @param predStr The predicated in string representation
    * @return A set of DOC_IDs stored by a previous query execution
    */
-  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(const std::string &predStr);
+  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
+      const std::string &predStr);
   /**
    * Checks if the given predicate is stored in the cache
    * @param pred Predicate to check for
@@ -60,9 +61,7 @@ class QueryCache {
   void reset();
 
  protected:
-
   std::unordered_map<std::string, std::unique_ptr<CacheEntry>> queryMap;
-
 };
 
-#endif //JODA_QUERYCACHE_H
+#endif  // JODA_QUERYCACHE_H

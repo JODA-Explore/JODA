@@ -1,43 +1,42 @@
 
 #include <gtest/gtest.h>
+#include <joda/document/view/VirtualObject.h>
 #include <joda/misc/RJFwd.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
-#include <joda/document/view/VirtualObject.h>
 
 /*
  * ViewTest
  */
 class VirtualObjectTest : public ::testing::Test {
  public:
-
  protected:
  protected:
-  virtual void SetUp() {
-  }
+  virtual void SetUp() {}
 
-  static RJDocument parseDoc(const std::string &str) {
+  static RJDocument parseDoc(const std::string& str) {
     RJDocument doc;
     doc.Parse(str);
-    if (doc.HasParseError()) throw (std::runtime_error("Document has parse error"));
+    if (doc.HasParseError())
+      throw(std::runtime_error("Document has parse error"));
     return doc;
   }
 
-  static std::string stringify(const RJDocument &doc) {
+  static std::string stringify(const RJDocument& doc) {
     rapidjson::StringBuffer buff;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buff);
     doc.Accept(writer);
     return buff.GetString();
   }
 
-  static std::string stringify(const RJValue &doc) {
+  static std::string stringify(const RJValue& doc) {
     rapidjson::StringBuffer buff;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buff);
     doc.Accept(writer);
     return buff.GetString();
   }
 
-  std::string stringify(VirtualObject &obj) {
+  std::string stringify(VirtualObject& obj) {
     rapidjson::StringBuffer buff;
     rapidjson::Writer<rapidjson::StringBuffer> writer(buff);
     obj.Accept(writer);
@@ -45,7 +44,6 @@ class VirtualObjectTest : public ::testing::Test {
   }
 
   ViewStructure struc;
-
 };
 
 TEST_F(VirtualObjectTest, EmptyObject) {

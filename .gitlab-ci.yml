@@ -12,6 +12,7 @@ stages:
   - test
   - deploy
   - deploycontainer
+  - benchmarking
 
 
 ###################################################################################
@@ -155,6 +156,8 @@ test:
     paths:
       - build/coverage
     expire_in: 24h
+    reports:
+      cobertura: build/coverage/coverage.xml
   coverage: '/^.*? lines: (\d*%|\d*\.\d*%)/'
 
 
@@ -195,12 +198,11 @@ package_ubuntu_focal:
     - build
     - binaries
     - debian
-  only:
-    - tags
   script:
     - mkdir -p deb
     - cd deb
     - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make -j$(nproc)
     - cpack --verbose -G DEB -C Release
     - mv *.deb ../.
 
@@ -223,6 +225,7 @@ package_debian_buster:
     - mkdir -p deb
     - cd deb
     - cmake -DCMAKE_BUILD_TYPE=Release ..
+    - make -j$(nproc)
     - cpack --verbose -G DEB -C Release
     - mv *.deb ../.
   artifacts:
@@ -251,3 +254,27 @@ appcontainer:
     - docker push $CI_DOCKER_REGISTRY_URL/joda:latest
     - docker tag joda:latest $CI_DOCKER_REGISTRY_URL/joda:$CI_COMMIT_REF_NAME
     - docker push $CI_DOCKER_REGISTRY_URL/joda:$CI_COMMIT_REF_NAME
+
+###################################################################################
+############  Benchmarking                     ########################
+###################################################################################
+benchmark:
+  image: ubuntu:20.04
+  stage: benchmarking
+  tags:
+    - benchmark
+  when: manual
+  dependencies:
+    - package_ubuntu_focal
+  script:
+    - dpkg -i *.deb || true
+    - apt update && apt-get -f -y install
+    - cd benchmarking
+    - ./run.sh
+    - ls -lah runs
+    - mv runs ../runs
+  artifacts:
+      name: Runs
+      paths:
+        - "runs/"
+      expire_in: 48h

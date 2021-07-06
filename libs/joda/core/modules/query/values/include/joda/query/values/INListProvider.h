@@ -35,6 +35,6 @@ class INListProvider : public joda::query::IValueProvider {
 
  protected:
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_INLISTPROVIDER_H

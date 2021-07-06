@@ -1,0 +1,3 @@
+LOAD twitter FROM FILES "/data/twitter/810m_multiple" LINESEPARATED
+LOAD reddit FROM FILE "/data/reddit/2013/RC_2013-01.json" LINESEPARATED SAMPLE 0.1
+LOAD nobench FROM FILE "/data/nobench/data/data1.json" LINESEPARATED

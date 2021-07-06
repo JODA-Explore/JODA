@@ -1,0 +1,21 @@
+version: '3'
+services:
+  joda:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    container_name: joda
+    restart: always
+    ports:
+      - "5632:5632"
+    volumes:
+      - ..:/workspace:cached
+    image: joda:latest
+    command: /bin/sh -c "while sleep 1000; do :; done"  
+  joda-web:
+    container_name: joda-web
+    restart: always
+    ports:
+      - "8080:8080"
+    image: nicotin/joda-web:latest
+    command: "http://joda:5632"

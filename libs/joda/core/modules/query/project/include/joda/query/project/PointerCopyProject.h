@@ -19,12 +19,14 @@ class PointerCopyProject : public joda::query::IProjector {
   static const std::string allCopy;
   std::string toString() override;
   std::vector<std::string> getMaterializeAttributes() const override;
+
  protected:
-  RJValue getVal(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
+  RJValue getVal(const RapidJsonDocument &json,
+                 RJMemoryPoolAlloc &alloc) override;
   RJPointer from;
   std::string from_str;
   bool copyAll = false;
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_POINTERCOPYPROJECT_H
+#endif  // JODA_POINTERCOPYPROJECT_H

@@ -18,19 +18,16 @@ class IThreadUser {
   virtual void forceThreads(size_t threads) = 0;
   virtual size_t getUsedThreads() const = 0;
 
-  virtual size_t getMaxThreads() const {
-    return maxThreads;
-  }
+  virtual size_t getMaxThreads() const { return maxThreads; }
 
   virtual void setMaxThreads(size_t maxThreads) {
     IThreadUser::maxThreads = maxThreads;
   }
 
   virtual size_t recommendedThreads() const = 0;
+
  protected:
-
   size_t maxThreads;
-
 };
 
-#endif //JODA_ITHREADUSER_H
+#endif  // JODA_ITHREADUSER_H

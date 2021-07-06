@@ -4,13 +4,13 @@
 
 #include <gtest/gtest.h>
 #include <joda/query/aggregation/AttributeStatAggregator.h>
+#include <joda/query/aggregation/CountAggregator.h>
 #include <joda/query/aggregation/DistinctAggregator.h>
 #include <joda/query/aggregation/NumberAggregator.h>
-#include <joda/queryparsing/QueryParser.h>
 #include <joda/query/values/PointerProvider.h>
-#include <joda/query/aggregation/CountAggregator.h>
+#include <joda/queryparsing/QueryParser.h>
 
-template<typename T>
+template <typename T>
 class AggregatorParsingTest : public testing::Test {
  public:
   std::unique_ptr<T> referenceAgg;
@@ -23,18 +23,15 @@ class AggregatorParsingTest : public testing::Test {
   }
 
   void TearDown() override { referenceAgg = nullptr; }
-
 };
 
 using AggregatorTypes = testing::Types<
-    joda::query::AttributeStatAggregator,
-    joda::query::DistinctAggregator,
+    joda::query::AttributeStatAggregator, joda::query::DistinctAggregator,
     joda::query::CountAggregator,
     joda::query::NumberAggregator<joda::query::MinAggregatorFunc>,
     joda::query::NumberAggregator<joda::query::MaxAggregatorFunc>,
     joda::query::NumberAggregator<joda::query::SumAggregatorFunc>,
-    joda::query::NumberAggregator<joda::query::AverageAggregatorFunc>
->;
+    joda::query::NumberAggregator<joda::query::AverageAggregatorFunc>>;
 
 TYPED_TEST_CASE(AggregatorParsingTest, AggregatorTypes);
 
@@ -48,13 +45,14 @@ TYPED_TEST(AggregatorParsingTest, Parses) {
   if (q == nullptr) {
     EXPECT_FALSE(true) << qp.getLastError();
   } else {
-    auto &aggs = q->getAggregators();
+    auto& aggs = q->getAggregators();
     EXPECT_EQ(aggs.size(), 1);
     EXPECT_TRUE(aggs.front() != nullptr);
     EXPECT_STRCASEEQ(name.c_str(), aggs.front()->getName().c_str());
-    EXPECT_STRCASEEQ(this->referenceAgg->toString().c_str(), aggs.front()->toString().c_str());
+    EXPECT_STRCASEEQ(this->referenceAgg->toString().c_str(),
+                     aggs.front()->toString().c_str());
 
-    auto *ptr = dynamic_cast<TypeParam *>(aggs.front().get());
+    auto* ptr = dynamic_cast<TypeParam*>(aggs.front().get());
     EXPECT_TRUE(ptr != nullptr);
   }
 }

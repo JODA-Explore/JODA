@@ -5,12 +5,14 @@
 #ifndef JODA_RJATTRIBUTEREADER_H
 #define JODA_RJATTRIBUTEREADER_H
 
-#include <string>
-#include <vector>
 #include <rapidjson/reader.h>
 #include <set>
+#include <string>
+#include <vector>
 
-class RJAttributeReader : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, RJAttributeReader> {
+class RJAttributeReader
+    : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>,
+                                          RJAttributeReader> {
  public:
   RJAttributeReader();
   bool Default();
@@ -32,9 +34,7 @@ class RJAttributeReader : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>,
   void clear();
 
  private:
-
   std::set<std::string> attributes;
-
 };
 
-#endif //JODA_RJATTRIBUTEREADER_H
+#endif  // JODA_RJATTRIBUTEREADER_H

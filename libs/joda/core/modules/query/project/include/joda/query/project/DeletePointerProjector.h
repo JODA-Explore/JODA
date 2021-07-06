@@ -12,11 +12,14 @@ class DeletePointerProjector : public IProjector {
   DeletePointerProjector(const std::string &to);
   ~DeletePointerProjector() override = default;
   std::string getType() override;
-  void project(const RapidJsonDocument &json, RJDocument &newDoc, bool view = false) override;
+  void project(const RapidJsonDocument &json, RJDocument &newDoc,
+               bool view = false) override;
   std::string toString() override;
   std::vector<std::string> getMaterializeAttributes() const override;
+
  protected:
-  RJValue getVal(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
+  RJValue getVal(const RapidJsonDocument &json,
+                 RJMemoryPoolAlloc &alloc) override;
 };
-}
-#endif //JODA_DELETEPOINTERPROJECTOR_H
+}  // namespace joda::query
+#endif  // JODA_DELETEPOINTERPROJECTOR_H

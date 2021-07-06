@@ -3,47 +3,46 @@
 //
 
 #include "../include/joda/misc/Timer.h"
-#include <string>
 #include <glog/logging.h>
 #include <iomanip>
+#include <string>
 
-Timer::Timer(){
-    start();
-};
+Timer::Timer() { start(); };
 
 void Timer::start() {
 #ifdef JODA_TIMING_ENABLED
-    startTime = now();
+  startTime = now();
 #endif
 }
 
 std::chrono::time_point<std::chrono::system_clock> Timer::now() {
-    return  std::chrono::high_resolution_clock::now();
+  return std::chrono::high_resolution_clock::now();
 }
 
 void Timer::stop() {
 #ifdef JODA_TIMING_ENABLED
-    endTime = now();
+  endTime = now();
 #endif
 }
 
 double Timer::durationSeconds() {
 #ifndef JODA_TIMING_ENABLED
-    return 0;
+  return 0;
 #endif
-    std::chrono::duration<double> diff = endTime-startTime;
-    return diff.count();
+  std::chrono::duration<double> diff = endTime - startTime;
+  return diff.count();
 }
 
-void Timer::log(const std::string &what, const std::string &part) {
+void Timer::log(const std::string& what, const std::string& part) {
 #ifdef JODA_TIMING_ENABLED
-    std::string duration = "s";
-    double diff = durationSeconds();
-    if(diff < 0.1){
-        duration = "ms";
-        diff *= 1000;
-    }
-  LOG(INFO) << '[' << part << "] " << what << " took " << diff << ' ' << duration;
+  std::string duration = "s";
+  double diff = durationSeconds();
+  if (diff < 0.1) {
+    duration = "ms";
+    diff *= 1000;
+  }
+  LOG(INFO) << '[' << part << "] " << what << " took " << diff << ' '
+            << duration;
 #endif
 }
 
@@ -52,11 +51,15 @@ std::string Timer::toString() {
   return "";
 #endif
   return std::to_string(
-      (double) std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime).count() / 1000.0);
+      static_cast<double>(std::chrono::duration_cast<std::chrono::milliseconds>(
+                              endTime - startTime)
+                              .count()) /
+      1000.0);
 }
 
 std::string Timer::toHumanDuration() const {
-  auto input_ms = std::chrono::duration_cast<std::chrono::milliseconds>(endTime - startTime);
+  auto input_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+      endTime - startTime);
   auto h = std::chrono::duration_cast<std::chrono::hours>(input_ms);
   input_ms -= h;
   auto m = std::chrono::duration_cast<std::chrono::minutes>(input_ms);
@@ -73,18 +76,24 @@ std::string Timer::toHumanDuration() const {
   std::stringstream ss;
   ss.fill('0');
 
-  if (hc) {
+  if (hc != 0) {
     ss << hc << 'h';
   }
-  if (hc || mc) {
-    if (hc) { ss << std::setw(2); }
+  if ((hc != 0) || (mc != 0)) {
+    if (hc != 0) {
+      ss << std::setw(2);
+    }
     ss << mc << 'm';
   }
-  if (hc || mc || sc) {
-    if (hc || mc) { ss << std::setw(2); }
+  if ((hc != 0) || (mc != 0) || (sc != 0)) {
+    if ((hc != 0) || (mc != 0)) {
+      ss << std::setw(2);
+    }
     ss << sc << 's';
   }
-  if (hc || mc || sc) { ss << std::setw(2); }
+  if ((hc != 0) || (mc != 0) || (sc != 0)) {
+    ss << std::setw(2);
+  }
   ss << msc << "ms";
 
   return ss.str();

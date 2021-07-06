@@ -5,12 +5,12 @@
 #ifndef JODA_TOSTRINGVISITOR_H
 #define JODA_TOSTRINGVISITOR_H
 
-#include "PredicateVisitor.h"
 #include "AndPredicate.h"
 #include "ComparePredicate.h"
 #include "EqualizePredicate.h"
 #include "NegatePredicate.h"
 #include "OrPredicate.h"
+#include "PredicateVisitor.h"
 
 namespace joda::query {
 /**
@@ -42,6 +42,6 @@ class ToStringVisitor : public joda::query::PredicateVisitor {
  private:
   std::string str = "";
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_TOSTRINGVISITOR_H

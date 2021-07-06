@@ -7,65 +7,65 @@
 #include "../grammar/Grammar.h"
 #include "../states/States.h"
 
-#include <joda/query/aggregation/DistinctAggregator.h>
 #include <joda/query/aggregation/AttributeStatAggregator.h>
 #include <joda/query/aggregation/CollectAggregator.h>
-#include <joda/query/aggregation/NumberAggregator.h>
-#include <joda/query/aggregation/GroupAggregator.h>
 #include <joda/query/aggregation/CountAggregator.h>
+#include <joda/query/aggregation/DistinctAggregator.h>
+#include <joda/query/aggregation/GroupAggregator.h>
+#include <joda/query/aggregation/NumberAggregator.h>
 
 namespace joda::queryparsing::grammar {
 
-template<>
+template <>
 struct aggExpAction<aggKW_DISTINCT> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = DISTINCT;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_ATTSTAT> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = ATTSTAT;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_AVG> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = AVG;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_COUNT> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = COUNT;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_SUM> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = SUM;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_MIN> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = MIN;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_COLLECT> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = COLLECT;
   }
 };
-template<>
+template <>
 struct aggExpAction<aggKW_MAX> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
@@ -73,19 +73,17 @@ struct aggExpAction<aggKW_MAX> {
   }
 };
 
-template<>
+template <>
 struct aggExpAction<aggToPointer> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    aggState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, aggState &state) {
     assert(state.toPointer.empty());
     std::string pointer = in.string();
     state.toPointer = pointer.substr(1, pointer.size() - 2);
   }
 };
 
-template<>
+template <>
 struct aggExpAction<aggByExpr> {
   static void apply0(aggState &state) {
     DCHECK(!state.valprov.empty());
@@ -98,55 +96,69 @@ struct aggExpAction<aggByExpr> {
   }
 };
 
-template<>
+template <>
 struct aggExpAction<aggAsIdent> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    aggState &state) {
+  template <typename Input>
+  static void apply(const Input &in, aggState &state) {
     DCHECK(state.groupAs.empty());
     std::string as = in.string();
     state.groupAs = as;
   }
 };
 
-template<>
+template <>
 struct aggExpAction<aggSingleExp> {
-  template<typename Input>
-  static void apply(const Input &in,aggState &state) {
+  template <typename Input>
+  static void apply(const Input &in, aggState &state) {
     assert(state.aggfun != NOAGG);
     std::unique_ptr<joda::query::IAggregator> agg = nullptr;
-    try{
+    try {
       switch (state.aggfun) {
-
-        case NOAGG: assert(false);
+        case NOAGG:
+          assert(false);
           break;
-        case AVG:agg = std::make_unique<joda::query::AverageAggregator>(state.toPointer, std::move(state.valprov));
+        case AVG:
+          agg = std::make_unique<joda::query::AverageAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case COUNT:agg = std::make_unique<joda::query::CountAggregator>(state.toPointer, std::move(state.valprov));
+        case COUNT:
+          agg = std::make_unique<joda::query::CountAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case SUM:agg = std::make_unique<joda::query::SumAggregator>(state.toPointer, std::move(state.valprov));
+        case SUM:
+          agg = std::make_unique<joda::query::SumAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case ATTSTAT:agg = std::make_unique<joda::query::AttributeStatAggregator>(state.toPointer, std::move(state.valprov));
+        case ATTSTAT:
+          agg = std::make_unique<joda::query::AttributeStatAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case DISTINCT:agg = std::make_unique<joda::query::DistinctAggregator>(state.toPointer, std::move(state.valprov));
+        case DISTINCT:
+          agg = std::make_unique<joda::query::DistinctAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case MIN:agg = std::make_unique<joda::query::MinAggregator>(state.toPointer, std::move(state.valprov));
+        case MIN:
+          agg = std::make_unique<joda::query::MinAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case MAX:agg = std::make_unique<joda::query::MaxAggregator>(state.toPointer, std::move(state.valprov));
+        case MAX:
+          agg = std::make_unique<joda::query::MaxAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
-        case COLLECT:agg = std::make_unique<joda::query::CollectAggregator>(state.toPointer, std::move(state.valprov));
+        case COLLECT:
+          agg = std::make_unique<joda::query::CollectAggregator>(
+              state.toPointer, std::move(state.valprov));
           break;
       }
     } catch (joda::query::WrongParameterException &e) {
       throw tao::pegtl::parse_error(e.what(), in);
     }
     DCHECK(agg != nullptr);
-    if (state.groupedByValue == nullptr) { //Normal aggregation
+    if (state.groupedByValue == nullptr) {  // Normal aggregation
       state.aggs.push_back(std::move(agg));
-    } else { //Group by aggregation
-      auto groupAgg = std::make_unique<joda::query::GroupAggregator>(state.toPointer,
-                                                                     std::move(state.groupedByValue),
-                                                                     std::move(agg));
+    } else {  // Group by aggregation
+      auto groupAgg = std::make_unique<joda::query::GroupAggregator>(
+          state.toPointer, std::move(state.groupedByValue), std::move(agg));
       if (!state.groupAs.empty()) {
         groupAgg->setGroupAs(state.groupAs);
         state.groupAs.clear();
@@ -163,5 +175,5 @@ struct aggExpAction<aggSingleExp> {
     assert(state.aggfun == NOAGG);
   }
 };
-}
-#endif //JODA_AGG_ACTIONS_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_AGG_ACTIONS_H

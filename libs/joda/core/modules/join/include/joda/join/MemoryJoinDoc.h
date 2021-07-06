@@ -5,10 +5,9 @@
 #ifndef JODA_MEMORYJOINDOC_H
 #define JODA_MEMORYJOINDOC_H
 
-
-#include <mutex>
-#include <rapidjson/document.h>
 #include <rapidjson/allocators.h>
+#include <rapidjson/document.h>
+#include <mutex>
 #include "joda/misc/RJFwd.h"
 
 /**
@@ -46,18 +45,18 @@ class MemoryJoinDoc {
    * Copies the internal document into a RJDocument
    * @param val THe document to copy into
    */
-  void deepCopyInto(RJDocument &val);
+  void deepCopyInto(RJDocument& val);
   /**
    * Returns the memory size of the internal document.
    * @return the memory size of the internal document.
    */
   size_t getMemSize();
+
  protected:
   MemoryJoinDoc();
   RJMemoryPoolAlloc alloc;
   RJDocument doc;
   std::mutex mut;
-
 };
 
-#endif //JODA_MEMORYJOINDOC_H
+#endif  // JODA_MEMORYJOINDOC_H

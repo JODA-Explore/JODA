@@ -19,12 +19,12 @@
  */
 struct QueryThreadConfig {
   std::shared_ptr<joda::query::Query> q;
+  Benchmark *bench;
   std::vector<std::unique_ptr<IQueryExecutor>> executors;
   std::vector<std::unique_ptr<joda::query::IAggregator>> aggregators;
+  std::shared_ptr<JoinManager> joinManager;
   joda::query::AggregatorQueue::queue_t *aggQueue{};
   std::string tmpdir;
-  std::shared_ptr<JoinManager> joinManager;
-  Benchmark *bench;
 
   QueryThreadConfig() = default;
 
@@ -96,10 +96,8 @@ class QueryThread
   bool hasAggregators() const;
 
  protected:
-
   bool hasToProject() const;
   bool canCreateView() const;
-
 
   /*
    * Functions
@@ -129,7 +127,7 @@ class QueryThread
    * The results are stored in the aggregator classed within the config objects
    * @param docs The documents to aggregate
    */
-  void aggregate(const std::vector<RapidJsonDocument> &docs) const ;
+  void aggregate(const std::vector<RapidJsonDocument> &docs) const;
 
   /**
    * Aggregates all documents within the container.
@@ -152,7 +150,6 @@ class QueryThread
   RecurringTimer copy_timer;
   RecurringTimer serialize_timer;
   RecurringTimer sample_view_cost_timer;
-
 };
 
 #endif  // JODA_QUERYTHREAD_H

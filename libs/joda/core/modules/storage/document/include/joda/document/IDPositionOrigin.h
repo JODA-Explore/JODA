@@ -41,9 +41,9 @@ class IDPositionOrigin : public IOrigin {
 
  protected:
   FILEID id;
-  long start;
-  long end;
-  int index;
+  long start{};
+  long end{};
+  int index{};
 };
 
 #endif  // JODA_IDPOSITIONORIGIN_H

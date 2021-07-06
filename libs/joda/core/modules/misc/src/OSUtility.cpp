@@ -14,9 +14,10 @@
 
 void OSUtility::initKernel() {
 #ifdef __linux__
-  struct utsname unameData;
+  struct utsname unameData {};
   uname(&unameData);
-  OSUtility::kernel = std::string(unameData.sysname) + " - " + unameData.release;
+  OSUtility::kernel =
+      std::string(unameData.sysname) + " - " + unameData.release;
 
 #elif _WIN32
   OSUtility::kernel = "Windows";
@@ -27,10 +28,10 @@ void OSUtility::initKernel() {
 
 void OSUtility::initOS() {
 #ifdef __linux__
-  FILE *fp;
+  FILE* fp;
   char buffer[50] = " ";
   fp = popen("lsb_release -ds", "r");
-  if (fp != NULL) {
+  if (fp != nullptr) {
     fgets(buffer, 50, fp);
     pclose(fp);
   }
@@ -44,16 +45,19 @@ void OSUtility::initOS() {
 #endif
 }
 
-const std::string &OSUtility::getOS() {
-  if (os.empty()) initOS();
+const std::string& OSUtility::getOS() {
+  if (os.empty()) {
+    initOS();
+  }
   return os;
 }
 
-const std::string &OSUtility::getKernel() {
-  if (kernel.empty()) initKernel();
+const std::string& OSUtility::getKernel() {
+  if (kernel.empty()) {
+    initKernel();
+  }
   return kernel;
 }
 
 std::string OSUtility::os{};
 std::string OSUtility::kernel{};
-

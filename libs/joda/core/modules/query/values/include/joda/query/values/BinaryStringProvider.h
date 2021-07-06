@@ -18,7 +18,8 @@ namespace joda::query {
  * struct <StructName> {
  *  static constexpr auto name = "<Name>";
  *  static constexpr IValueType retType = <IValueType returntype>;
- *  inline static RJValue calculate(std::string &&lhs, std::string &&rhs, * RJMemoryPoolAlloc &alloc) { return <result>; };
+ *  inline static RJValue calculate(std::string &&lhs, std::string &&rhs, *
+ * RJMemoryPoolAlloc &alloc) { return <result>; };
  * };
  * @endcode
  */
@@ -33,7 +34,9 @@ class BinaryStringProvider : public joda::query::IValueProvider {
     DCHECK(isAtom()) << "Only atom ReturnTypes allowed";
   };
 
-  joda::query::IValueType getReturnType() const override { return Calc::retType; }
+  joda::query::IValueType getReturnType() const override {
+    return Calc::retType;
+  }
 
   std::string getName() const override { return Calc::name; };
 
@@ -140,7 +143,6 @@ struct BinaryFINDSTRCalculationFunction {
 
 typedef BinaryStringProvider<BinaryFINDSTRCalculationFunction> FINDSTRProvider;
 
-
 template class BinaryStringProvider<BinarySCONTAINSCalculationFunction>;
 
 template class BinaryStringProvider<BinarySTARTSWITHCalculationFunction>;
@@ -148,5 +150,5 @@ template class BinaryStringProvider<BinarySTARTSWITHCalculationFunction>;
 template class BinaryStringProvider<BinaryConcatCalculationFunction>;
 
 template class BinaryStringProvider<BinaryFINDSTRCalculationFunction>;
-}
+}  // namespace joda::query
 #endif  // JODA_BINARYSTRINGPROVIDER_H

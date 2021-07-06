@@ -1,7 +1,9 @@
 // For format details, see https://aka.ms/vscode-remote/devcontainer.json or the definition README at
 {
   "name": "JODA Devcontainer",
-  "dockerFile": "Dockerfile",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "joda",
+  "workspaceFolder": "/workspace",
   // The optional 'runArgs' property can be used to specify additional runtime arguments.
   "runArgs": [
     // Uncomment the line if you will use a ptrace-based debugger like C++, Go, and Rust.
@@ -24,7 +26,7 @@
   // "postCreateCommand": "uname -a",
 
 	// Uncomment the next line if you want to publish any ports.
-	 "appPort": [5632],
+	 "appPort": ["5632:5632"],
 
 	// Uncomment the next line to run commands after the container is created.
 	// "postCreateCommand": "uname -a",

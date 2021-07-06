@@ -7,19 +7,18 @@
 #include "IThreadUser.h"
 
 class ThreadQueueUser : public IThreadUser {
-
  public:
   size_t getQueueRead() {
     queueReadDelta = queueRead;
     return queueRead;
   }
 
-  size_t getQueueWritten()  {
+  size_t getQueueWritten() {
     queueWrittenDelta = queueWritten;
     return queueWritten;
   }
 
-  size_t getQueueReadDelta()  {
+  size_t getQueueReadDelta() {
     auto i = queueRead - queueReadDelta;
     queueReadDelta = queueRead;
     return i;
@@ -39,9 +38,9 @@ class ThreadQueueUser : public IThreadUser {
   size_t queueWritten{};
   size_t queueWrittenDelta{};
 
-  virtual void addStatistics(size_t read,size_t written){
-    queueRead+=read;
-    queueWritten+=written;
+  virtual void addStatistics(size_t read, size_t written) {
+    queueRead += read;
+    queueWritten += written;
   }
 };
-#endif //JODA_THREADQUEUEUSER_H
+#endif  // JODA_THREADQUEUEUSER_H

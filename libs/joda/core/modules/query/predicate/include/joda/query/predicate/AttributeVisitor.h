@@ -5,8 +5,8 @@
 #ifndef PJDB_ATTRIBUTEVISITOR_H
 #define PJDB_ATTRIBUTEVISITOR_H
 
-#include "PredicateVisitor.h"
 #include "AndPredicate.h"
+#include "PredicateVisitor.h"
 namespace joda::query {
 class AttributeVisitor : public PredicateVisitor {
  public:
@@ -21,6 +21,6 @@ class AttributeVisitor : public PredicateVisitor {
  protected:
   std::vector<std::string> attributes;
 };
-}
+}  // namespace joda::query
 
-#endif //PJDB_ATTRIBUTEVISITOR_H
+#endif  // PJDB_ATTRIBUTEVISITOR_H

@@ -5,12 +5,14 @@
 #ifndef JODA_RJPATHSREADER_H
 #define JODA_RJPATHSREADER_H
 
+#include <rapidjson/reader.h>
 #include <string>
 #include <vector>
-#include <rapidjson/reader.h>
 #define JODA_DEFAULT_PATH_DEPTH 50
 
-class BloomAttributeHandler : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>, BloomAttributeHandler> {
+class BloomAttributeHandler
+    : public rapidjson::BaseReaderHandler<rapidjson::UTF8<>,
+                                          BloomAttributeHandler> {
  public:
   BloomAttributeHandler();
   bool Default();
@@ -43,4 +45,4 @@ class BloomAttributeHandler : public rapidjson::BaseReaderHandler<rapidjson::UTF
   void popStack();
 };
 
-#endif //JODA_RJPATHSREADER_H
+#endif  // JODA_RJPATHSREADER_H

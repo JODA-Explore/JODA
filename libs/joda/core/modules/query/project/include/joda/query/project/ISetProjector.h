@@ -31,7 +31,8 @@ class ISetProjector {
    * in
    */
   virtual void project(const RapidJsonDocument &json,
-                       std::vector<std::unique_ptr<RJDocument>> &newDocs, bool view = false) = 0;
+                       std::vector<std::unique_ptr<RJDocument>> &newDocs,
+                       bool view = false) = 0;
 
   /**
    * Returns the destination pointer string
@@ -43,7 +44,7 @@ class ISetProjector {
    * Returns the destination pointer
    * @return
    */
-  RJPointer getRawToPointer() const {return ptr;}
+  RJPointer getRawToPointer() const { return ptr; }
 
   /**
    * Returns a string representing the transformation function
@@ -63,6 +64,7 @@ class ISetProjector {
    * @return
    */
   virtual std::vector<std::string> getAttributes() const = 0;
+
  protected:
   RJPointer ptr;
   std::string ptr_str;
@@ -72,7 +74,7 @@ class ISetProjector {
     auto origDocs = newDocs.size();
     newDocs.reserve(origDocs * times);
     // Duplicate existing documents |VAL|-1 times
-    for (int i = 0; i < times - 1; ++i) {
+    for (auto i = 0; i < times - 1; ++i) {
       for (size_t j = 0; j < origDocs; ++j) {
         assert(j < newDocs.size() && j >= 0 && "Stay in range of array");
         auto doc = std::make_unique<RJDocument>(&newDocs[j]->GetAllocator());
@@ -93,5 +95,5 @@ class ISetProjector {
     }
   }
 };
-}
+}  // namespace joda::query
 #endif  // JODA_ISetPROJECTOR_H

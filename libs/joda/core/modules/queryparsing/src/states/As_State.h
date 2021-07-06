@@ -6,29 +6,25 @@
 #define JODA_AS_STATE_H
 
 #include <glog/logging.h>
-#include <joda/query/values/IValueProvider.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
+#include <joda/query/values/IValueProvider.h>
 #include "Query_State.h"
 namespace joda::queryparsing::grammar {
 
-enum projFun {
-  NOPROJ,
-  arrFlatProj,
-  valProvProj,
-  allCopyProj
-};
+enum projFun { NOPROJ, arrFlatProj, valProvProj, allCopyProj };
 
 struct asState {
-  template<typename Input>
+  template <typename Input>
   inline asState(const Input &in, queryState &qs) {
     fun = NOPROJ;
   }
 
-  template<typename Input>
+  template <typename Input>
   inline void success(const Input &in, queryState &qs) {
-    if (setprojs.empty() && projs.size() == 1 && projs.front()->toString() == "*")
-      return; //If AS is only "*", then do not pass on projections
+    if (setprojs.empty() && projs.size() == 1 &&
+        projs.front()->toString() == "*")
+      return;  // If AS is only "*", then do not pass on projections
     for (auto &proj : projs) {
       qs.q->addProjection(std::move(proj));
     }
@@ -54,5 +50,5 @@ struct asState {
   std::vector<std::unique_ptr<joda::query::IProjector>> projs;
   std::vector<std::unique_ptr<joda::query::ISetProjector>> setprojs;
 };
-}
-#endif //JODA_AS_STATE_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_AS_STATE_H

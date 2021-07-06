@@ -9,19 +9,22 @@
 namespace joda::query {
 class CollectAggregator : public IAggregator {
  public:
-  CollectAggregator(const std::string& toPointer, std::vector<std::unique_ptr<IValueProvider>>&& params);
+  CollectAggregator(const std::string &toPointer,
+                    std::vector<std::unique_ptr<IValueProvider>> &&params);
 
   void merge(IAggregator *other) override;
   RJValue terminate(RJMemoryPoolAlloc &alloc) override;
   std::unique_ptr<IAggregator> duplicate() const override;
-  void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
+  void accumulate(const RapidJsonDocument &json,
+                  RJMemoryPoolAlloc &alloc) override;
   const std::string getName() const override;
 
   static constexpr auto getName_() { return "COLLECT"; }
+
  protected:
-  std::unique_ptr< RJValue> list;
+  std::unique_ptr<RJValue> list;
   std::unique_ptr<RJMemoryPoolAlloc> alloc;
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_COLLECTAGGREGATOR_H
+#endif  // JODA_COLLECTAGGREGATOR_H

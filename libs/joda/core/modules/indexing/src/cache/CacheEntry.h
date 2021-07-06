@@ -5,19 +5,22 @@
 #ifndef JODA_CACHEENTRY_H
 #define JODA_CACHEENTRY_H
 
-#include <unordered_set>
 #include <joda/document/RapidJsonDocument.h>
-#include <joda/query/predicate/PredicateVisitor.h>
 #include <joda/query/predicate/Predicate.h>
+#include <joda/query/predicate/PredicateVisitor.h>
+#include <unordered_set>
 
 /**
- * One Cache entry, containing the result documents and the predicate responsible for them
+ * One Cache entry, containing the result documents and the predicate
+ * responsible for them
  */
 class CacheEntry {
  public:
   typedef std::vector<bool> CacheIndex;
-  CacheEntry(std::shared_ptr<const CacheIndex> docs, const std::shared_ptr<joda::query::Predicate> &predicate);
-  CacheEntry(std::shared_ptr<const CacheIndex> &&docs, const std::shared_ptr<joda::query::Predicate> &predicate);
+  CacheEntry(std::shared_ptr<const CacheIndex> docs,
+             std::shared_ptr<joda::query::Predicate> predicate);
+  CacheEntry(std::shared_ptr<const CacheIndex> &&docs,
+             std::shared_ptr<joda::query::Predicate> predicate);
 
   /**
    * Executes the given PredicateVisitor on the stored predicate
@@ -42,4 +45,4 @@ class CacheEntry {
   std::shared_ptr<joda::query::Predicate> predicate;
 };
 
-#endif //JODA_CACHEENTRY_H
+#endif  // JODA_CACHEENTRY_H

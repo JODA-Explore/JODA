@@ -6,14 +6,18 @@
 #define JODA_DEFAULTEXECUTOR_H
 
 #include "IQueryExecutor.h"
-class DefaultExecutor : public IQueryExecutor{
+class DefaultExecutor : public IQueryExecutor {
  public:
   explicit DefaultExecutor();
-  unsigned long estimatedWork(const joda::query::Query &q, JSONContainer &cont) override;
-  std::shared_ptr<const DocIndex> execute(const joda::query::Query &q, JSONContainer &cont) override;
+  unsigned long estimatedWork(const joda::query::Query &q,
+                              JSONContainer &cont) override;
+  std::shared_ptr<const DocIndex> execute(const joda::query::Query &q,
+                                          JSONContainer &cont) override;
   std::string getName() const override;
-  void alwaysAfterSelect(const joda::query::Query &q, std::shared_ptr<const DocIndex> &sel, JSONContainer &cont) override;
+  void alwaysAfterSelect(const joda::query::Query &q,
+                         std::shared_ptr<const DocIndex> &sel,
+                         JSONContainer &cont) override;
   std::unique_ptr<IQueryExecutor> duplicate() override;
 };
 
-#endif //JODA_DEFAULTEXECUTOR_H
+#endif  // JODA_DEFAULTEXECUTOR_H

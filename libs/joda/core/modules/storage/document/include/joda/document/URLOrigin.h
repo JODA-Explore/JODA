@@ -25,7 +25,6 @@ class URLOrigin : public IDPositionOrigin {
   std::string getStreamName() const override;
 
  protected:
-
 };
 
-#endif //JODA_URLORIGIN_H
+#endif  // JODA_URLORIGIN_H

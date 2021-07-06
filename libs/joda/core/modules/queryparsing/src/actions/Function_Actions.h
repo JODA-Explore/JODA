@@ -6,39 +6,34 @@
 #define JODA_FUNCTION_ACTIONS_H
 namespace joda::queryparsing::grammar {
 
-template<>
+template <>
 struct functionAction<pointer> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    functionState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, functionState &state) {
     std::string pointer = in.string();
-    auto para = std::make_unique<joda::query::PointerProvider>(pointer.substr(1, pointer.size() - 2));
+    auto para = std::make_unique<joda::query::PointerProvider>(
+        pointer.substr(1, pointer.size() - 2));
     if (state.atom == NO_ATOM) {
       state.atom = ATOM_POINTER;
     }
     state.params.push_back(std::move(para));
   }
 };
-template<>
+template <>
 struct functionAction<floatNumber> {
-  template<typename Input>
-  static bool apply(const Input &in,
-                    functionState &state) {
+  template <typename Input>
+  static bool apply(const Input &in, functionState &state) {
     std::string str = in.string();
-
-    char *end;
-    auto s = str.c_str();
 
     std::unique_ptr<joda::query::IValueProvider> ival;
 
-      try {
-        double i = std::stod(str);
-        ival = std::move(std::make_unique<joda::query::DoubleProvider>(i));
-      } catch (std::exception &e) {
-        LOG(ERROR) << "Could not parse number, out of range?";
-        return false;
-      }
+    try {
+      double i = std::stod(str);
+      ival = std::make_unique<joda::query::DoubleProvider>(i);
+    } catch (std::exception &e) {
+      LOG(ERROR) << "Could not parse number, out of range?";
+      return false;
+    }
 
     if (ival == nullptr) return false;
 
@@ -51,34 +46,31 @@ struct functionAction<floatNumber> {
   }
 };
 
-template<>
+template <>
 struct functionAction<intNumber> {
-  template<typename Input>
-  static bool apply(const Input &in,
-                    functionState &state) {
-
+  template <typename Input>
+  static bool apply(const Input &in, functionState &state) {
     std::string str = in.string();
-
-    char *end;
-    auto s = str.c_str();
 
     std::unique_ptr<joda::query::IValueProvider> ival;
 
     try {
       int64_t i = std::stol(str);
-      ival = std::move(std::make_unique<joda::query::Int64Provider>(i));
-    } catch (std::exception &e) {}
+      ival = std::make_unique<joda::query::Int64Provider>(i);
+    } catch (std::exception &e) {
+    }
 
     if (ival == nullptr) {
       try {
         u_int64_t i = std::stoul(str);
-        ival = std::move(std::make_unique<joda::query::UInt64Provider>(i));
-      } catch (std::exception &e) {}
+        ival = std::make_unique<joda::query::UInt64Provider>(i);
+      } catch (std::exception &e) {
+      }
     }
     if (ival == nullptr) {
       try {
         double i = std::stod(str);
-        ival = std::move(std::make_unique<joda::query::DoubleProvider>(i));
+        ival = std::make_unique<joda::query::DoubleProvider>(i);
       } catch (std::exception &e) {
         LOG(ERROR) << "Could not parse number, out of range?";
         return false;
@@ -96,24 +88,25 @@ struct functionAction<intNumber> {
   }
 };
 
-template<>
+template <>
 struct functionAction<stringAtom> {
-
-  static inline std::string unescape(const std::string& s)
-  {
+  static inline std::string unescape(const std::string &s) {
     std::string res;
     std::string::const_iterator it = s.begin();
-    while (it != s.end())
-    {
+    while (it != s.end()) {
       char c = *it++;
-      if (c == '\\' && it != s.end())
-      {
+      if (c == '\\' && it != s.end()) {
         switch (*it++) {
-          case '\\': c = '\\'; break;
-          case '"': c = '"'; break;
+          case '\\':
+            c = '\\';
+            break;
+          case '"':
+            c = '"';
+            break;
             // all other escapes
           default:
-            // invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...
+            // invalid escape sequence - skip it. alternatively you can copy it
+            // as is, throw an exception...
             continue;
         }
       }
@@ -122,12 +115,10 @@ struct functionAction<stringAtom> {
 
     return res;
   }
-  template<typename Input>
-  static void apply(const Input &in,
-                    functionState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, functionState &state) {
     std::string str = in.string();
-    //Unescape string
+    // Unescape string
     auto unescaped = unescape(str.substr(1, str.size() - 2));
     auto para = std::make_unique<joda::query::StringProvider>(unescaped);
     if (state.atom == NO_ATOM) {
@@ -136,16 +127,16 @@ struct functionAction<stringAtom> {
     state.params.push_back(std::move(para));
   }
 };
-template<>
+template <>
 struct functionAction<boolAtom> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    functionState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, functionState &state) {
     std::string b = in.string();
     bool bo{};
-    if (b == "true") bo = true;
-    else if (b == "false") bo = false;
+    if (b == "true")
+      bo = true;
+    else if (b == "false")
+      bo = false;
     else
       assert(false && "Did not change bool parsing");
     auto para = std::make_unique<joda::query::BoolProvider>(bo);
@@ -156,12 +147,10 @@ struct functionAction<boolAtom> {
   }
 };
 
-template<>
+template <>
 struct functionAction<nullAtom> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    functionState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, functionState &state) {
     auto para = std::make_unique<joda::query::NullProvider>();
     if (state.atom == NO_ATOM) {
       state.atom = ATOM_NULL;
@@ -170,5 +159,5 @@ struct functionAction<nullAtom> {
   }
 };
 
-}
-#endif //JODA_FUNCTION_ACTIONS_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_FUNCTION_ACTIONS_H

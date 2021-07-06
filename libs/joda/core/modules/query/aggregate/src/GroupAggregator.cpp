@@ -2,34 +2,37 @@
 // Created by Nico on 21/05/2019.
 //
 
+#include <utility>
+
 #include "joda/query/aggregation/GroupAggregator.h"
 
-joda::query::GroupAggregator::GroupAggregator(const std::string &toPointer,
-                                              std::unique_ptr<IValueProvider> &&groupBy,
-                                              std::unique_ptr<IAggregator> &&agg, std::string groupAs)
-    : IAggregator(toPointer, {}), groupBy(std::move(groupBy)), protoAgg(std::move(agg)), groupAs(groupAs) {
+joda::query::GroupAggregator::GroupAggregator(
+    const std::string& toPointer, std::unique_ptr<IValueProvider>&& groupBy,
+    std::unique_ptr<IAggregator>&& agg, std::string groupAs)
+    : IAggregator(toPointer, {}),
+      groupBy(std::move(groupBy)),
+      protoAgg(std::move(agg)),
+      groupAs(std::move(groupAs)) {}
 
-}
-
-void joda::query::GroupAggregator::merge(IAggregator *other) {
-  auto *o = dynamic_cast<joda::query::GroupAggregator *>(other);
+void joda::query::GroupAggregator::merge(IAggregator* other) {
+  auto* o = dynamic_cast<joda::query::GroupAggregator*>(other);
   assert(o != nullptr);
   assert(getName() == o->getName());
   assert(toPointer == o->toPointer);
-  for (auto &stringAgg : o->stringGroups) {
+  for (auto& stringAgg : o->stringGroups) {
     auto iterator = stringGroups.find(stringAgg.first);
-    if (iterator != stringGroups.end()) { // Aggregator already exists
+    if (iterator != stringGroups.end()) {  // Aggregator already exists
       iterator->second->merge(stringAgg.second.get());
-    } else { //Aggregator does not yet exist
+    } else {  // Aggregator does not yet exist
       stringGroups[stringAgg.first] = std::move(stringAgg.second);
     }
   }
 
-  for (auto &numAgg : o->numGroups) {
+  for (auto& numAgg : o->numGroups) {
     auto iterator = numGroups.find(numAgg.first);
-    if (iterator != numGroups.end()) { // Aggregator already exists
+    if (iterator != numGroups.end()) {  // Aggregator already exists
       iterator->second->merge(numAgg.second.get());
-    } else { //Aggregator does not yet exist
+    } else {  // Aggregator does not yet exist
       numGroups[numAgg.first] = std::move(numAgg.second);
     }
   }
@@ -48,11 +51,12 @@ void joda::query::GroupAggregator::merge(IAggregator *other) {
       falseAgg = std::move(o->falseAgg);
     }
   }
-
 }
 
-std::unique_ptr<joda::query::IAggregator> joda::query::GroupAggregator::duplicate() const {
-  return std::make_unique<joda::query::GroupAggregator>(toPointer, groupBy->duplicate(), protoAgg->duplicate(), groupAs);
+std::unique_ptr<joda::query::IAggregator>
+joda::query::GroupAggregator::duplicate() const {
+  return std::make_unique<joda::query::GroupAggregator>(
+      toPointer, groupBy->duplicate(), protoAgg->duplicate(), groupAs);
 }
 
 const std::string joda::query::GroupAggregator::getName() const {
@@ -61,33 +65,38 @@ const std::string joda::query::GroupAggregator::getName() const {
 
 std::string joda::query::GroupAggregator::toString() const {
   std::string asStr;
-  if (!groupAs.empty()) asStr += "AS " + groupAs + " ";
-  return "'" + toPointer + "':" + getName() + "(" + protoAgg->getParameterStringRepresentation() + ") " + asStr + "BY "
-      + groupBy->toString();
+  if (!groupAs.empty()) {
+    asStr += "AS " + groupAs + " ";
+  }
+  return "'" + toPointer + "':" + getName() + "(" +
+         protoAgg->getParameterStringRepresentation() + ") " + asStr + "BY " +
+         groupBy->toString();
 }
 
 const std::string joda::query::GroupAggregator::getGroupName() const {
-  if (!groupAs.empty()) return groupAs;
-  return protoAgg->getName() + "(" + protoAgg->getParameterStringRepresentation() + ")";
+  if (!groupAs.empty()) {
+    return groupAs;
+  }
+  return protoAgg->getName() + "(" +
+         protoAgg->getParameterStringRepresentation() + ")";
 }
 
 const std::string joda::query::GroupAggregator::getValueName() const {
   return "group";
 }
 
-RJValue joda::query::GroupAggregator::terminate(RJMemoryPoolAlloc &alloc) {
-
+RJValue joda::query::GroupAggregator::terminate(RJMemoryPoolAlloc& alloc) {
   RJValue val;
   val.SetArray();
 
-  for (auto &&str : stringGroups) {
+  for (auto&& str : stringGroups) {
     RJValue obj(rapidjson::kObjectType);
     obj.AddMember({getValueName(), alloc}, {str.first.c_str(), alloc}, alloc);
     obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
     obj.AddMember({getGroupName(), alloc}, str.second->terminate(alloc), alloc);
     val.PushBack(obj, alloc);
   }
-  for (auto &&num : numGroups) {
+  for (auto&& num : numGroups) {
     RJValue obj(rapidjson::kObjectType);
     obj.AddMember({getValueName(), alloc}, RJValue(num.first), alloc);
     obj.AddMember({"groupedBy", alloc}, {groupBy->toString(), alloc}, alloc);
@@ -111,8 +120,9 @@ RJValue joda::query::GroupAggregator::terminate(RJMemoryPoolAlloc &alloc) {
   return val;
 }
 
-void joda::query::GroupAggregator::accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
-  const RJValue *val;
+void joda::query::GroupAggregator::accumulate(const RapidJsonDocument& json,
+                                              RJMemoryPoolAlloc& alloc) {
+  const RJValue* val;
   RJValue val_;
   if (groupBy->isAtom()) {
     val_ = groupBy->getAtomValue(json, alloc);
@@ -147,18 +157,22 @@ void joda::query::GroupAggregator::accumulate(const RapidJsonDocument &json, RJM
 
     if (val->IsBool()) {
       if (val->IsTrue()) {
-        if (trueAgg == nullptr) trueAgg = protoAgg->duplicate();
+        if (trueAgg == nullptr) {
+          trueAgg = protoAgg->duplicate();
+        }
         trueAgg->accumulate(json, alloc);
       } else {
         DCHECK(val->IsFalse());
-        if (falseAgg == nullptr) falseAgg = protoAgg->duplicate();
+        if (falseAgg == nullptr) {
+          falseAgg = protoAgg->duplicate();
+        }
         falseAgg->accumulate(json, alloc);
       }
     }
   }
 }
 
-void joda::query::GroupAggregator::setGroupAs(const std::string &groupAs) {
+void joda::query::GroupAggregator::setGroupAs(const std::string& groupAs) {
   GroupAggregator::groupAs = groupAs;
 }
 
@@ -167,5 +181,3 @@ std::vector<std::string> joda::query::GroupAggregator::getAttributes() const {
   groupBy->getAttributes(attributes);
   return attributes;
 }
-
-

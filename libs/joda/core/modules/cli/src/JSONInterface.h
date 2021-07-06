@@ -5,10 +5,10 @@
 #ifndef JODA_JSONINTERFACE_H
 #define JODA_JSONINTERFACE_H
 
-#include "CursesFWD.h"
 #include <joda/misc/RJFwd.h>
-#include <memory>
 #include <joda/storage/JSONStorage.h>
+#include <memory>
+#include "CursesFWD.h"
 
 namespace joda::cli {
 /**
@@ -18,25 +18,25 @@ class JSONInterface {
  public:
   /**
    * Initializes the ncurses windows
-  */
+   */
   explicit JSONInterface();
 
   /**
    * Deconstructs the ncurses windows
-  */
+   */
   virtual ~JSONInterface();
 
-/**
- * Displays a single JSON document from a JSONStorage.
- * @param store The storage which contains the JSON to display
- * @param index the position of the document
- */
-  void showJSON(const std::shared_ptr<JSONStorage> &store, size_t index);
- private:
+  /**
+   * Displays a single JSON document from a JSONStorage.
+   * @param store The storage which contains the JSON to display
+   * @param index the position of the document
+   */
+  void showJSON(const std::shared_ptr<JSONStorage>& store, size_t index);
 
+ private:
   void browse();
-  WINDOW* jsonwin;
-  WINDOW* bg;
+  WINDOW* jsonwin{};
+  WINDOW* bg{};
 
   int y = 0;
   int maxX = 0;
@@ -45,9 +45,9 @@ class JSONInterface {
   void createWindows();
   void refreshAll();
   void destroyWindows();
-  void destroyWindow(WINDOW *local_win);
+  void destroyWindow(WINDOW* local_win);
   static std::wstring getWString(std::string& str);
 };
-}
+}  // namespace joda::cli
 
-#endif //JODA_JSONINTERFACE_H
+#endif  // JODA_JSONINTERFACE_H

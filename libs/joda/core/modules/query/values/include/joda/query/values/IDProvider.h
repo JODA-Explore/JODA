@@ -29,6 +29,6 @@ class IDProvider : public joda::query::IValueProvider {
 
   CREATE_FACTORY(IDProvider)
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_IDPROVIDER_H

@@ -8,12 +8,11 @@
 #include <joda/container/ContainerFlags.h>
 #include <joda/container/JSONContainer.h>
 
+#include <joda/container/ContainerFlags.h>
+#include <joda/container/JSONContainer.h>
 #include <future>
 #include <mutex>
 #include <unordered_map>
-#include <future>
-#include <joda/container/JSONContainer.h>
-#include <joda/container/ContainerFlags.h>
 class QueryPlan;
 
 /**
@@ -26,7 +25,7 @@ class JSONStorage {
  public:
   virtual ~JSONStorage();
   void preparePurge();
-  explicit JSONStorage(const std::string &query_string);
+  explicit JSONStorage(std::string query_string);
   /**
    * Consumes documents from the given queue and inserts them into the
    * JSONStorage
@@ -67,7 +66,6 @@ class JSONStorage {
    * @param queue the queue through which the containers are sent
    */
   void getDocumentsQueue(JsonContainerRefQueue::queue_t *queue);
-
 
   /**
    * Returns the number of documents in the collection
@@ -147,8 +145,9 @@ class JSONStorage {
    * @param start The (inclusive) end index of the documents to accept
    * @return a list of boolean values, one for each checked document.
    */
-  template<class Handler>
-  std::vector<bool> AcceptDocuments(Handler &handler, unsigned long start = 0, unsigned long end = ULONG_MAX) {
+  template <class Handler>
+  std::vector<bool> AcceptDocuments(Handler &handler, unsigned long start = 0,
+                                    unsigned long end = ULONG_MAX) {
     std::lock_guard<std::mutex> lock(documentMutex);
     std::vector<bool> ret;
     if (docCount == 0) return ret;
@@ -159,7 +158,7 @@ class JSONStorage {
     auto it = container.begin();
 
     unsigned long skippedSize = 0;
-    //Browse container until designated is reached
+    // Browse container until designated is reached
     while (start >= (*it)->size() + skippedSize) {
       skippedSize += (*it)->size();
       it++;
@@ -168,10 +167,11 @@ class JSONStorage {
 
     while (ret.size() < count) {
       size_t contStart = start - skippedSize;
-      contStart = std::max(contStart, (size_t) 0);
+      contStart = std::max(contStart, (size_t)0);
       unsigned long contEnd = contStart + count - ret.size() - 1;
       if (it == container.end()) {
-        DCHECK(false) << "If all Container contributed to the raws, this should not be possible";
+        DCHECK(false) << "If all Container contributed to the raws, this "
+                         "should not be possible";
         return ret;
       }
 
@@ -183,7 +183,6 @@ class JSONStorage {
       } else {
         DLOG(INFO) << "Skipping empty container";
       }
-
     }
     return ret;
   }
@@ -200,7 +199,6 @@ class JSONStorage {
   unsigned long getLastUsed() const;
 
  protected:
-
   friend QueryPlan;
   const std::vector<std::unique_ptr<JSONContainer>> &getContainer() const;
 

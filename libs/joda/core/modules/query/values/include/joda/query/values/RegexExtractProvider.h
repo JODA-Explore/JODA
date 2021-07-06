@@ -32,6 +32,6 @@ class RegexExtractProvider : public joda::query::IValueProvider {
  private:
   std::regex regex;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_REGEXEXTRACTPROVIDER_H

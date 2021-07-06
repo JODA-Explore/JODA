@@ -27,6 +27,6 @@ class TypeProvider : public joda::query::IValueProvider {
 
   CREATE_FACTORY(TypeProvider)
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_TYPEPROVIDER_H

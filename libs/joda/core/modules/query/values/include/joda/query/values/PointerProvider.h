@@ -10,7 +10,6 @@
 #include <variant>
 #include "IValueProvider.h"
 
-
 namespace joda::query {
 /**
  * '<JSON Pointer>', a pointer to a specific value in a document
@@ -46,25 +45,25 @@ class PointerProvider : public joda::query::IValueProvider {
    *  @param json the document to check
    *  @param alloc the allocator to use for allocation operations
    */
-  std::variant<const RJValue,
-               std::optional<const RJValue *>,
-               const VirtualObject *> getPointerIfExists(const RapidJsonDocument &json,
-                                                         RJMemoryPoolAlloc &alloc) const;
+  std::variant<const RJValue, std::optional<const RJValue *>,
+               const VirtualObject *>
+  getPointerIfExists(const RapidJsonDocument &json,
+                     RJMemoryPoolAlloc &alloc) const;
+
  protected:
   RJPointer pointer;
   std::string ptrStr;
 
  public:
-  template<class Handler>
-  bool Accept(const RapidJsonDocument &json,
-              RJMemoryPoolAlloc &alloc, Handler &h) const {
+  template <class Handler>
+  bool Accept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
+              Handler &h) const {
     if (json.isView()) {
       auto &v = json.getView();
       DCHECK(v != nullptr);
       if (ptrStr.empty()) {
         return v->Accept(h);
       } else {
-
         v->setPrefix(ptrStr);
         auto res = v->Accept(h);
         v->setPrefix("");
@@ -74,15 +73,15 @@ class PointerProvider : public joda::query::IValueProvider {
       auto ptr = json.Get(pointer);
       if (ptr != nullptr) {
         return ptr->Accept(h);
-      } else h.Null();
+      } else
+        h.Null();
       return true;
     }
   }
 
   bool objIsPointerEvaluatable(const RapidJsonDocument &json) const;
   const VirtualObject *getVO(const RapidJsonDocument &json) const;
-
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_POINTERPROVIDER_H

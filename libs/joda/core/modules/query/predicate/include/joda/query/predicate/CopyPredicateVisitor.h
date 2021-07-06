@@ -5,13 +5,13 @@
 #ifndef JODA_COPYPREDICATEVISITOR_H
 #define JODA_COPYPREDICATEVISITOR_H
 
-#include "PredicateVisitor.h"
 #include "AndPredicate.h"
 #include "ComparePredicate.h"
 #include "EqualizePredicate.h"
 #include "NegatePredicate.h"
 #include "OrPredicate.h"
 #include "Predicate.h"
+#include "PredicateVisitor.h"
 
 namespace joda::query {
 /**
@@ -35,6 +35,6 @@ class CopyPredicateVisitor : public joda::query::PredicateVisitor {
  private:
   std::unique_ptr<Predicate> pred;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_COPYPREDICATEVISITOR_H

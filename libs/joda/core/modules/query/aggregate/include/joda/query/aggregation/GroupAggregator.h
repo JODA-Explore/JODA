@@ -5,8 +5,9 @@
 #ifndef JODA_GROUPAGGREGATOR_H
 #define JODA_GROUPAGGREGATOR_H
 
-#include "IAggregator.h"
 #include <unordered_map>
+
+#include "IAggregator.h"
 
 namespace joda::query {
 class GroupAggregator : public IAggregator {
@@ -27,19 +28,23 @@ class GroupAggregator : public IAggregator {
 
   RJValue terminate(RJMemoryPoolAlloc &alloc) override;
 
-  void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override;
+  void accumulate(const RapidJsonDocument &json,
+                  RJMemoryPoolAlloc &alloc) override;
   std::vector<std::string> getAttributes() const override;
   void setGroupAs(const std::string &groupAs);
+
  protected:
-  const std::unique_ptr<IAggregator> protoAgg;
   const std::unique_ptr<IValueProvider> groupBy;
+  const std::unique_ptr<IAggregator> protoAgg;
 
   /*
    * Groups
    */
-  typedef std::unordered_map<std::string, std::unique_ptr<IAggregator>> StringAggregators;
+  typedef std::unordered_map<std::string, std::unique_ptr<IAggregator>>
+      StringAggregators;
   StringAggregators stringGroups;
-  typedef std::unordered_map<double, std::unique_ptr<IAggregator>> NumAggregators;
+  typedef std::unordered_map<double, std::unique_ptr<IAggregator>>
+      NumAggregators;
   NumAggregators numGroups;
   std::unique_ptr<IAggregator> trueAgg = nullptr;
   std::unique_ptr<IAggregator> falseAgg = nullptr;
@@ -48,6 +53,6 @@ class GroupAggregator : public IAggregator {
   const std::string getValueName() const;
   std::string groupAs;
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_GROUPAGGREGATOR_H
+#endif  // JODA_GROUPAGGREGATOR_H

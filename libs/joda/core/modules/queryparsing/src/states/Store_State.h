@@ -5,18 +5,18 @@
 #ifndef JODA_STORE_STATE_H
 #define JODA_STORE_STATE_H
 
-#include "Query_State.h"
 #include <joda/storage/collection/StorageCollection.h>
+#include "Query_State.h"
 namespace joda::queryparsing::grammar {
 struct storeState {
-  template<typename Input>
-  inline storeState(const Input &in, queryState &qs) {
-  }
+  template <typename Input>
+  inline storeState(const Input &in, queryState &qs) {}
 
-  template<typename Input>
+  template <typename Input>
   inline void success(const Input &in, queryState &qs) {
-    //Set LoadJoinManager
-    qs.q->setStoreJoinManager(StorageCollection::getInstance().getOrStartJoin(std::move(groupvalprov)));
+    // Set LoadJoinManager
+    qs.q->setStoreJoinManager(StorageCollection::getInstance().getOrStartJoin(
+        std::move(groupvalprov)));
     qs.q->setExportDestination(std::move(exportDest));
   }
 
@@ -34,5 +34,5 @@ struct storeState {
   std::unique_ptr<joda::query::IValueProvider> groupvalprov;
   std::unique_ptr<IExportDestination> exportDest;
 };
-}
-#endif //JODA_STORE_STATE_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_STORE_STATE_H

@@ -2,20 +2,21 @@
 // Created by Nico on 20/03/2019.
 //
 
-#include <joda/storage/collection/StorageCollection.h>
 #include "../include/joda/export/StorageExport.h"
+#include <joda/storage/collection/StorageCollection.h>
 
-void StorageExport::consumeContainer(JsonContainerQueue::queue_t &queue) {
+#include <utility>
+
+void StorageExport::consumeContainer(JsonContainerQueue::queue_t& queue) {
   store->insertDocumentsQueue(&queue);
 }
 
-const std::string StorageExport::getTimerName() {
-  return "Store";
-}
+const std::string StorageExport::getTimerName() { return "Store"; }
 
-StorageExport::StorageExport(const std::shared_ptr<JSONStorage> &store) : store(store) {}
+StorageExport::StorageExport(std::shared_ptr<JSONStorage> store)
+    : store(std::move(store)) {}
 
-void StorageExport::exportContainer(std::unique_ptr<JSONContainer> &&cont) {
+void StorageExport::exportContainer(std::unique_ptr<JSONContainer>&& cont) {
   store->insertDocuments(std::move(cont));
 }
 
@@ -31,10 +32,8 @@ const std::string StorageExport::toQueryString() {
   return "STORE " + getStorageName();
 }
 
-std::string StorageExport::getStorageName() const {
-  return store->getName();
-}
+std::string StorageExport::getStorageName() const { return store->getName(); }
 
-const std::shared_ptr<JSONStorage> &StorageExport::getStore() const {
+const std::shared_ptr<JSONStorage>& StorageExport::getStore() const {
   return store;
 }

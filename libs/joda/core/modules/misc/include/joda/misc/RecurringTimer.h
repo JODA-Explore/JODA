@@ -8,8 +8,9 @@
 #include <chrono>
 #include <string>
 /**
- * An cumulative timer that can be started and stopped multiple times and summs up each runtime.
- */ 
+ * An cumulative timer that can be started and stopped multiple times and summs
+ * up each runtime.
+ */
 class RecurringTimer {
  public:
   /**
@@ -39,7 +40,7 @@ class RecurringTimer {
  protected:
   std::chrono::time_point<std::chrono::system_clock> now();
   std::chrono::time_point<std::chrono::system_clock> startTime;
-  std::chrono::duration<long long,std::micro> totalDur{};
+  std::chrono::duration<long long, std::micro> totalDur{};
 };
 
-#endif //JODA_RECURRINGTIMER_H
+#endif  // JODA_RECURRINGTIMER_H

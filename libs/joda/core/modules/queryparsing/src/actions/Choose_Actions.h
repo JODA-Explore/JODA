@@ -15,41 +15,44 @@
 
 namespace joda::queryparsing::grammar {
 
-template<>
+template <>
 struct chooseExpAction<pointer> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     if (state.valProv.first == nullptr) {
       std::string pointer = in.string();
-      state.valProv.first = std::move(std::make_unique<joda::query::PointerProvider>(pointer.substr(1, pointer.size() - 2)));
+      state.valProv.first = std::make_unique<joda::query::PointerProvider>(
+          pointer.substr(1, pointer.size() - 2));
       return;
     }
     if (state.valProv.second == nullptr) {
       std::string pointer = in.string();
-      state.valProv.second = std::move(std::make_unique<joda::query::PointerProvider>(pointer.substr(1, pointer.size() - 2)));
+      state.valProv.second = std::make_unique<joda::query::PointerProvider>(
+          pointer.substr(1, pointer.size() - 2));
       return;
     }
     assert(false);
   }
 };
-template<>
+template <>
 struct chooseExpAction<stringAtom> {
-  static inline std::string unescape(const std::string& s)
-  {
+  static inline std::string unescape(const std::string &s) {
     std::string res;
     std::string::const_iterator it = s.begin();
-    while (it != s.end())
-    {
+    while (it != s.end()) {
       char c = *it++;
-      if (c == '\\' && it != s.end())
-      {
+      if (c == '\\' && it != s.end()) {
         switch (*it++) {
-          case '\\': c = '\\'; break;
-          case '"': c = '"'; break;
+          case '\\':
+            c = '\\';
+            break;
+          case '"':
+            c = '"';
+            break;
             // all other escapes
           default:
-            // invalid escape sequence - skip it. alternatively you can copy it as is, throw an exception...
+            // invalid escape sequence - skip it. alternatively you can copy it
+            // as is, throw an exception...
             continue;
         }
       }
@@ -58,57 +61,55 @@ struct chooseExpAction<stringAtom> {
 
     return res;
   }
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
-    //Unescape string
+    // Unescape string
     auto unescaped = unescape(str.substr(1, str.size() - 2));
 
     if (state.valProv.first == nullptr) {
-      state.valProv.first = std::move(std::make_unique<joda::query::StringProvider>(unescaped));
+      state.valProv.first =
+          std::make_unique<joda::query::StringProvider>(unescaped);
       return;
     }
     if (state.valProv.second == nullptr) {
-      state.valProv.second = std::move(std::make_unique<joda::query::StringProvider>(unescaped));
+      state.valProv.second =
+          std::make_unique<joda::query::StringProvider>(unescaped);
       return;
     }
     assert(false);
   }
 };
-template<>
+template <>
 struct chooseExpAction<boolAtom> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
     bool b = str == "true";
-    if (!b) { //Not "true"
+    if (!b) {  // Not "true"
       b = str == "false";
-      if (!b) assert(false);//Also not false => Error
-      else b = false; //Is "False" so b = false
+      if (!b)
+        assert(false);  // Also not false => Error
+      else
+        b = false;  // Is "False" so b = false
     }
 
     if (state.valProv.first == nullptr) {
-      state.valProv.first = std::move(std::make_unique<joda::query::BoolProvider>(b));
+      state.valProv.first = std::make_unique<joda::query::BoolProvider>(b);
       return;
     }
     if (state.valProv.second == nullptr) {
-      state.valProv.second = std::move(std::make_unique<joda::query::BoolProvider>(b));
+      state.valProv.second = std::make_unique<joda::query::BoolProvider>(b);
       return;
     }
     assert(false);
   }
 };
-template<>
+template <>
 struct chooseExpAction<numberAtom> {
-  template<typename Input>
-  static bool apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static bool apply(const Input &in, chooseState &state) {
     std::string str = in.string();
-
-    char *end;
-    auto s = str.c_str();
 
     std::unique_ptr<joda::query::IValueProvider> ival;
 
@@ -117,7 +118,7 @@ struct chooseExpAction<numberAtom> {
 
     try {
       int64_t i = std::stol(str);
-      ival = std::move(std::make_unique<joda::query::Int64Provider>(i));
+      ival = std::make_unique<joda::query::Int64Provider>(i);
     } catch (std::out_of_range &e) {
       try_unisgned = true;
     } catch (std::exception &e) {
@@ -127,7 +128,7 @@ struct chooseExpAction<numberAtom> {
     if (try_unisgned) {
       try {
         u_int64_t i = std::stoul(str);
-        ival = std::move(std::make_unique<joda::query::UInt64Provider>(i));
+        ival = std::make_unique<joda::query::UInt64Provider>(i);
       } catch (std::exception &e) {
         try_double = true;
       }
@@ -135,7 +136,7 @@ struct chooseExpAction<numberAtom> {
 
     try {
       double i = std::stod(str);
-      ival = std::move(std::make_unique<joda::query::DoubleProvider>(i));
+      ival = std::make_unique<joda::query::DoubleProvider>(i);
     } catch (std::exception &e) {
       return false;
     }
@@ -153,11 +154,10 @@ struct chooseExpAction<numberAtom> {
     return false;
   }
 };
-template<>
+template <>
 struct chooseExpAction<gt> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
 
     if (str.size() == 1) {
@@ -172,11 +172,10 @@ struct chooseExpAction<gt> {
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<lt> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
 
     if (str.size() == 1) {
@@ -191,11 +190,10 @@ struct chooseExpAction<lt> {
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<equal> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
 
     assert(str.size() == 2);
@@ -211,59 +209,57 @@ struct chooseExpAction<equal> {
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<compareExp> {
-  template<typename Input>
-  static bool apply(const Input &in,
-                    chooseState &state) {
-    if (state.valProv.first == nullptr){
+  template <typename Input>
+  static bool apply(const Input &in, chooseState &state) {
+    if (state.valProv.first == nullptr) {
       assert(false && "There has to be at least one value");
-      return false; //May not happen that
+      return false;  // May not happen that
     }
 
     std::unique_ptr<joda::query::Predicate> pred = nullptr;
     try {
-      if (state.valProv.second == nullptr) {//Only one value => ValToPredicate
+      if (state.valProv.second == nullptr) {  // Only one value =>
+                                              // ValToPredicate
         assert(state.comp == NONE && "If not 'NONE' something went wrong");
-        pred = std::make_unique<joda::query::ValToPredicate>(std::move(state.valProv.first));
+        pred = std::make_unique<joda::query::ValToPredicate>(
+            std::move(state.valProv.first));
       } else {
         try {
           switch (state.comp) {
             case GT:
-              pred = std::make_unique<joda::query::ComparePredicate>(std::move(state.valProv.first),
-                                                                     std::move(state.valProv.second),
-                                                                     true,
-                                                                     false);
+              pred = std::make_unique<joda::query::ComparePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), true, false);
               break;
             case GTE:
-              pred = std::make_unique<joda::query::ComparePredicate>(std::move(state.valProv.first),
-                                                                     std::move(state.valProv.second),
-                                                                     true,
-                                                                     true);
+              pred = std::make_unique<joda::query::ComparePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), true, true);
               break;
             case LT:
-              pred = std::make_unique<joda::query::ComparePredicate>(std::move(state.valProv.first),
-                                                                     std::move(state.valProv.second),
-                                                                     false,
-                                                                     false);
+              pred = std::make_unique<joda::query::ComparePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), false, false);
               break;
             case LTE:
-              pred = std::make_unique<joda::query::ComparePredicate>(std::move(state.valProv.first),
-                                                                     std::move(state.valProv.second),
-                                                                     false,
-                                                                     true);
+              pred = std::make_unique<joda::query::ComparePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), false, true);
               break;
             case EQU:
-              pred = std::make_unique<joda::query::EqualizePredicate>(std::move(state.valProv.first),
-                                                                      std::move(state.valProv.second),
-                                                                      true);
+              pred = std::make_unique<joda::query::EqualizePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), true);
               break;
             case NEQU:
-              pred = std::make_unique<joda::query::EqualizePredicate>(std::move(state.valProv.first),
-                                                                      std::move(state.valProv.second),
-                                                                      false);
+              pred = std::make_unique<joda::query::EqualizePredicate>(
+                  std::move(state.valProv.first),
+                  std::move(state.valProv.second), false);
               break;
-            case NONE:assert(false && "May not happen");
+            case NONE:
+              assert(false && "May not happen");
               return false;
               break;
           }
@@ -272,9 +268,11 @@ struct chooseExpAction<compareExp> {
           state.valProv.second = nullptr;
 
         } catch (const joda::query::NotComparableException &e) {
-          throw tao::pegtl::parse_error("These values cannot be compared. ", in);
+          throw tao::pegtl::parse_error("These values cannot be compared. ",
+                                        in);
         } catch (const joda::query::NotEqualizableException &e) {
-          throw tao::pegtl::parse_error("These values cannot be compared for (un)equality.", in);
+          throw tao::pegtl::parse_error(
+              "These values cannot be compared for (un)equality.", in);
         };
       }
     } catch (const joda::query::WrongParameterException &e) {
@@ -287,31 +285,30 @@ struct chooseExpAction<compareExp> {
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<unaryExp> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
-
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     std::string str = in.string();
 
-    auto it = std::find_if(str.begin(), str.end(), std::not1(std::ptr_fun(::isspace)));
+    auto it = std::find_if(str.begin(), str.end(),
+                           std::not1(std::ptr_fun(::isspace)));
     if (it != str.end()) {
-      if (*it == '!') { //SHould it be negated?
-        //Negate last Pred
+      if (*it == '!') {  // SHould it be negated?
+        // Negate last Pred
         assert(state.preds.top().second.back() != nullptr);
-        auto tmp = std::make_unique<joda::query::NegatePredicate>(std::move(state.preds.top().second.back()));
+        auto tmp = std::make_unique<joda::query::NegatePredicate>(
+            std::move(state.preds.top().second.back()));
         state.preds.top().second.back() = std::move(tmp);
       }
     }
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<andExp> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     assert(!state.preds.empty());
     assert(state.preds.top().first == AND);
     auto pair = std::move(state.preds.top());
@@ -323,20 +320,21 @@ struct chooseExpAction<andExp> {
         if (tmpPtr == nullptr)
           tmpPtr = std::move(pair.second[i]);
         else {
-          auto andPtr = std::make_unique<joda::query::AndPredicate>(std::move(pair.second[i]), std::move(tmpPtr));
+          auto andPtr = std::make_unique<joda::query::AndPredicate>(
+              std::move(pair.second[i]), std::move(tmpPtr));
           tmpPtr = std::move(andPtr);
         }
       }
-    } else tmpPtr = std::move(pair.second.front());
+    } else
+      tmpPtr = std::move(pair.second.front());
     assert(!state.preds.empty());
     state.preds.top().second.push_back(std::move(tmpPtr));
   }
 };
-template<>
+template <>
 struct chooseExpAction<orExp> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
     assert(!state.preds.empty());
     assert(state.preds.top().first == OR);
     auto pair = std::move(state.preds.top());
@@ -348,48 +346,46 @@ struct chooseExpAction<orExp> {
         if (tmpPtr == nullptr)
           tmpPtr = std::move(pair.second[i]);
         else {
-          auto andPtr = std::make_unique<joda::query::OrPredicate>(std::move(pair.second[i]), std::move(tmpPtr));
+          auto andPtr = std::make_unique<joda::query::OrPredicate>(
+              std::move(pair.second[i]), std::move(tmpPtr));
           tmpPtr = std::move(andPtr);
         }
       }
-    } else tmpPtr = std::move(pair.second.front());
+    } else
+      tmpPtr = std::move(pair.second.front());
     assert(!state.preds.empty());
     state.preds.top().second.push_back(std::move(tmpPtr));
   }
 };
 
-template<>
+template <>
 struct chooseExpAction<qexp> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
-
-  }
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {}
 };
-template<>
+template <>
 struct chooseExpAction<andStart> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
-    state.preds.emplace(std::make_pair(AND, std::vector<std::unique_ptr<joda::query::Predicate>>()));
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
+    state.preds.emplace(std::make_pair(
+        AND, std::vector<std::unique_ptr<joda::query::Predicate>>()));
   }
 };
-template<>
+template <>
 struct chooseExpAction<orStart> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
-    state.preds.emplace(std::make_pair(OR, std::vector<std::unique_ptr<joda::query::Predicate>>()));
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
+    state.preds.emplace(std::make_pair(
+        OR, std::vector<std::unique_ptr<joda::query::Predicate>>()));
   }
 };
-template<>
+template <>
 struct chooseExpAction<expStart> {
-  template<typename Input>
-  static void apply(const Input &in,
-                    chooseState &state) {
-
-    state.preds.emplace(std::make_pair(BASE, std::vector<std::unique_ptr<joda::query::Predicate>>()));
+  template <typename Input>
+  static void apply(const Input &in, chooseState &state) {
+    state.preds.emplace(std::make_pair(
+        BASE, std::vector<std::unique_ptr<joda::query::Predicate>>()));
   }
 };
-}
-#endif //JODA_CHOOSE_ACTIONS_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_CHOOSE_ACTIONS_H

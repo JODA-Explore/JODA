@@ -21,19 +21,19 @@ enum Source_Value {
 };
 
 struct loadState {
-  template<typename Input>
-  inline loadState(const Input &in, queryState &qs) {
-  }
+  template <typename Input>
+  inline loadState(const Input &in, queryState &qs) {}
 
-  template<typename Input>
+  template <typename Input>
   inline void success(const Input &in, queryState &qs) {
     assert(sampleNum > 0 && sampleNum <= 1 && "Sample num has to be in (0,1)");
     qs.q->setLoad(loadVar);
     for (auto &&source : sources) {
       qs.q->addImportSource(std::move(source));
     }
-    //Set LoadJoinManager
-    qs.q->setLoadJoinManager(StorageCollection::getInstance().getOrStartJoin(std::move(groupvalprov)));
+    // Set LoadJoinManager
+    qs.q->setLoadJoinManager(StorageCollection::getInstance().getOrStartJoin(
+        std::move(groupvalprov)));
   }
 
   inline bool putValProv(std::unique_ptr<joda::query::IValueProvider> &&val) {
@@ -55,5 +55,5 @@ struct loadState {
   bool lineSeperated = JODA_DEFAULT_LINE_SEPERATED;
   std::vector<std::unique_ptr<docparsing::IImportSource>> sources;
 };
-}
-#endif //JODA_LOAD_STATE_H
+}  // namespace joda::queryparsing::grammar
+#endif  // JODA_LOAD_STATE_H

@@ -51,7 +51,6 @@ class Predicate {
 };
 
 typedef std::shared_ptr<Predicate> PredType;
-}
-
+}  // namespace joda::query
 
 #endif  // JODA_PREDICATE_H

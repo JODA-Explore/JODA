@@ -18,7 +18,7 @@ elseif(CMAKE_COMPILER_IS_GNUCXX)
     SET(COVERAGE_DIR ${PROJECT_BINARY_DIR}/coverage)
 
     SET(PEPARE_COV "mkdir -p ${COVERAGE_DIR}")
-    SET(HTML_COV_CMD "${GCOVR_EXECUTABLE} -r ${PROJECT_SOURCE_DIR} --exclude-unreachable-branches -d -j 4 -e extern/ -s --html -o ${COVERAGE_DIR}/coverage.html --html-details --gcov-executable ${GCOV_EXECUTABLE} ${PROJECT_BINARY_DIR}/libs ${PROJECT_BINARY_DIR}/apps ${PROJECT_BINARY_DIR}/test")
+    SET(COV_CMD "${GCOVR_EXECUTABLE} -r ${PROJECT_SOURCE_DIR} --exclude-unreachable-branches -d -j 4 -e extern/ -s  --html-details ${COVERAGE_DIR}/coverage.html --xml ${COVERAGE_DIR}/coverage.xml --gcov-executable ${GCOV_EXECUTABLE} ${PROJECT_BINARY_DIR}/libs ${PROJECT_BINARY_DIR}/apps ${PROJECT_BINARY_DIR}/test")
 
     configure_file( "${CMAKE_SOURCE_DIR}/test/coverage.sh.in"
             "${CMAKE_BINARY_DIR}/test/coverage.sh"

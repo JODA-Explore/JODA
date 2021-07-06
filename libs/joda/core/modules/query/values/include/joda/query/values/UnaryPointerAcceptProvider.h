@@ -21,46 +21,39 @@ namespace joda::query {
  * }
  */
 
-template<class Calc>
+template <class Calc>
 class UnaryPointerAcceptProvider : public IValueProvider {
  public:
-
-  explicit UnaryPointerAcceptProvider(std::vector<std::unique_ptr<IValueProvider>>
-                                      &&parameters)
-      :
-      IValueProvider(std::move(parameters)) {
+  explicit UnaryPointerAcceptProvider(
+      std::vector<std::unique_ptr<IValueProvider>> &&parameters)
+      : IValueProvider(std::move(parameters)) {
     checkParamSize(1);
     if (!Calc::acceptAll) checkParamType(0, Calc::inType);
     DCHECK(isAtom()) << "Only atom ReturnTypes allowed";
     accepter = ValueAccepter(params.front());
   }
 
-  IValueType getReturnType() const override {
-    return Calc::retType;
-  }
+  IValueType getReturnType() const override { return Calc::retType; }
 
-  std::string getName() const override {
-    return Calc::name;
-  };
+  std::string getName() const override { return Calc::name; };
 
-  std::string toString() const override {
-    return IValueProvider::toString();
-  }
+  std::string toString() const override { return IValueProvider::toString(); }
 
   std::unique_ptr<IValueProvider> duplicate() const override {
-    return std::make_unique<UnaryPointerAcceptProvider<Calc>>(duplicateParameters());
+    return std::make_unique<UnaryPointerAcceptProvider<Calc>>(
+        duplicateParameters());
   };
 
-  bool isAtom() const override {
-    return true;
-  }
+  bool isAtom() const override { return true; }
 
-  const RJValue *getValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const override {
+  const RJValue *getValue(const RapidJsonDocument &json,
+                          RJMemoryPoolAlloc &alloc) const override {
     DCHECK(!isAtom()) << "Did not check for atom first";
     return nullptr;
   };
 
-  RJValue getAtomValue(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) const override {
+  RJValue getAtomValue(const RapidJsonDocument &json,
+                       RJMemoryPoolAlloc &alloc) const override {
     DCHECK(isAtom()) << "Did not check for atom first";
     if (params.front()->isAtom()) {
       auto v = params.front()->getAtomValue(json, alloc);
@@ -73,17 +66,14 @@ class UnaryPointerAcceptProvider : public IValueProvider {
     return Calc::accept(json, alloc, accepter);
   };
 
-  bool isConst() const override {
-    return params.front()->isConst();
-  }
+  bool isConst() const override { return params.front()->isConst(); }
 
-  void getAttributes(std::vector<std::string> &vec) const override {
-  }
+  void getAttributes(std::vector<std::string> &vec) const override {}
 
   CREATE_FACTORY(UnaryPointerAcceptProvider<Calc>)
 
  private:
   ValueAccepter accepter;
 };
-}
-#endif //JODA_UNARYPOINTERACCEPTPROVIDER_H
+}  // namespace joda::query
+#endif  // JODA_UNARYPOINTERACCEPTPROVIDER_H

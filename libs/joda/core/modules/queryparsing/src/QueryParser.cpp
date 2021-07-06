@@ -12,23 +12,25 @@
 #include <tao/pegtl.hpp>
 #include <tao/pegtl/analyze.hpp>
 #include <tao/pegtl/contrib/tracer.hpp>
+#include "Control.h"
 #include "FunctionWrapper.h"
 #include "actions/Actions.h"
-#include "Control.h"
 
-std::shared_ptr<joda::query::Query>  joda::queryparsing::QueryParser::parse(const std::string &str) {
+std::shared_ptr<joda::query::Query> joda::queryparsing::QueryParser::parse(
+    const std::string& str) {
   std::string tmp;
   tao::pegtl::memory_input<> in(str, str);
   grammar::queryState qs;
   try {
-    if (tao::pegtl::parse<grammar::query, grammar::queryAction, grammar::query_control>(in, qs)) {
+    if (tao::pegtl::parse<grammar::query, grammar::queryAction,
+                          grammar::query_control>(in, qs)) {
       // Check for correct result
       query::StaticEvalVisitor sev;
       qs.q->getPredicate()->accept(sev);
       qs.q->setPredicate(sev.getPred());
       return qs.q;
     }
-  } catch (tao::pegtl::parse_error &e) {
+  } catch (tao::pegtl::parse_error& e) {
     lastError = std::make_unique<tao::pegtl::parse_error>(e);
     LOG(ERROR) << "Error parsing query: " << e.what();
   }
@@ -67,7 +69,9 @@ const std::string joda::queryparsing::QueryParser::getLastErrorColor() const {
   return ss.str();
 }
 
-std::string joda::queryparsing::QueryParser::getFunctionNames() { return grammar::functionKWs::toString(); }
+std::string joda::queryparsing::QueryParser::getFunctionNames() {
+  return grammar::functionKWs::toString();
+}
 
 const size_t joda::queryparsing::QueryParser::checkLanguage() {
   return tao::pegtl::analyze<grammar::query>();

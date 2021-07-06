@@ -5,10 +5,10 @@
 #ifndef JODA_OBJECTITERATOR_H
 #define JODA_OBJECTITERATOR_H
 
-#include <utility>
-#include <string>
-#include <vector>
 #include <joda/misc/RJFwd.h>
+#include <string>
+#include <utility>
+#include <vector>
 #include "ViewCursor.h"
 
 class ObjectIterator {
@@ -22,7 +22,6 @@ class ObjectIterator {
   typedef std::vector<Member> Members;
   Members members;
   ViewCursor *curs;
-
 };
 
-#endif //JODA_OBJECTITERATOR_H
+#endif  // JODA_OBJECTITERATOR_H

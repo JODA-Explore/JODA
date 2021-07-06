@@ -6,7 +6,19 @@
 
 
 ## 0.12.X
-### 0.12.1
+### 0.12.2
+#### Added
+- FINDSTR and SUBSTR functions
+#### Changed
+- Improve ATTSTAT aggregator with additional statistics
+- Improve queryfile handling
+#### Fixed
+- Memory leaks
+- Aggregation step getting stuck if many aggregator functions are used in one query
+- Document position recording when using streams
+- General docker image improvements
+- Many code style warnings 
+- Format codebase in google c++ style convention
 #### Added
 #### Changed
 - Docker build improvements (speedup, multi-stage builds, ...)

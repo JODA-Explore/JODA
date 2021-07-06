@@ -5,10 +5,10 @@
 #ifndef JODA_NUMBERAGGREGATOR_H
 #define JODA_NUMBERAGGREGATOR_H
 
-#include "IAggregator.h"
-#include <unordered_map>
 #include <joda/query/values/IValueProvider.h>
 #include <cmath>
+#include <unordered_map>
+#include "IAggregator.h"
 
 namespace joda::query {
 struct ExampleNumberAggregatorClass {
@@ -25,31 +25,36 @@ struct ExampleNumberAggregatorClass {
 };
 
 /**
- * A class representing all simple single Aggregations of numbers (min/max/count/sum/sub/...)
+ * A class representing all simple single Aggregations of numbers
+ * (min/max/count/sum/sub/...)
  * @tparam T
  */
-template<class T>
+template <class T>
 class NumberAggregator : public IAggregator {
  public:
-
-  NumberAggregator(const std::string &toPointer, std::vector<std::unique_ptr<IValueProvider>> &&params) : IAggregator(
-      toPointer,
-      std::move(params)) {
+  NumberAggregator(const std::string &toPointer,
+                   std::vector<std::unique_ptr<IValueProvider>> &&params)
+      : IAggregator(toPointer, std::move(params)) {
     /*
-    * check size
-   */
-    if (this->params.empty()) throw WrongParameterCountException(params.size(), 1, getName());
+     * check size
+     */
+    if (this->params.empty())
+      throw WrongParameterCountException(params.size(), 1, getName());
     if (this->params.size() == 1) {
       enableArray = false;
     } else if (this->params.size() == 2) {
       checkParamType(1, IV_Bool);
-      if (!this->params[1]->isConst()) throw WrongParameterException("Parameter 1 has to be const bool");
+      if (!this->params[1]->isConst())
+        throw WrongParameterException("Parameter 1 has to be const bool");
       RJMemoryPoolAlloc alloc;
-      enableArray = this->params[1]->getAtomValue(RapidJsonDocument(), alloc).GetBool();
-    } else throw WrongParameterCountException(params.size(), 2, getName());
+      enableArray =
+          this->params[1]->getAtomValue(RapidJsonDocument(), alloc).GetBool();
+    } else
+      throw WrongParameterCountException(params.size(), 2, getName());
 
     auto type = this->params[0]->getReturnType();
-    if (!(type == IV_Any || type == IV_Number || (enableArray && type == IV_Array)))
+    if (!(type == IV_Any || type == IV_Number ||
+          (enableArray && type == IV_Array)))
       throw WrongParameterTypeException(0, IV_Number, getName());
   };
 
@@ -77,10 +82,12 @@ class NumberAggregator : public IAggregator {
   };
 
   std::unique_ptr<IAggregator> duplicate() const override {
-    return std::make_unique<NumberAggregator<T>>(toPointer, duplicateParameters());
+    return std::make_unique<NumberAggregator<T>>(toPointer,
+                                                 duplicateParameters());
   };
 
-  void accumulate(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) override {
+  void accumulate(const RapidJsonDocument &json,
+                  RJMemoryPoolAlloc &alloc) override {
     const RJValue *rjVal;
     RJValue val_;
     if (params[0]->isAtom()) {
@@ -116,9 +123,7 @@ class NumberAggregator : public IAggregator {
 
   static constexpr auto getName_() { return T::name; }
 
-  const std::string getName() const override {
-    return getName_();
-  };
+  const std::string getName() const override { return getName_(); };
 
  protected:
   typename T::AggRep val{};
@@ -135,9 +140,13 @@ struct MinAggregatorFunc {
 
   inline static void aggregateFirst(AggRep &old, double val) { old = val; };
 
-  inline static void aggregateRep(AggRep &old, AggRep &val) { old = std::min(old, val); };
+  inline static void aggregateRep(AggRep &old, AggRep &val) {
+    old = std::min(old, val);
+  };
 
-  inline static void aggregate(AggRep &old, double val) { old = std::min(old, val); };
+  inline static void aggregate(AggRep &old, double val) {
+    old = std::min(old, val);
+  };
 
   inline static double getDouble(AggRep &val) { return val; };
 };
@@ -149,9 +158,13 @@ struct MaxAggregatorFunc {
   static constexpr auto name = "MAX";
   inline static void aggregateFirst(AggRep &old, double val) { old = val; };
 
-  inline static void aggregateRep(AggRep &old, AggRep &val) { old = std::max(old, val); };
+  inline static void aggregateRep(AggRep &old, AggRep &val) {
+    old = std::max(old, val);
+  };
 
-  inline static void aggregate(AggRep &old, double val) { old = std::max(old, val); };
+  inline static void aggregate(AggRep &old, double val) {
+    old = std::max(old, val);
+  };
 
   inline static double getDouble(AggRep &val) { return val; };
 };
@@ -175,7 +188,9 @@ typedef NumberAggregator<SumAggregatorFunc> SumAggregator;
 struct AverageAggregatorFunc {
   typedef std::pair<size_t, double> AggRep;
   static constexpr auto name = "AVG";
-  inline static void aggregateFirst(AggRep &old, double val) { old = {1, val}; };
+  inline static void aggregateFirst(AggRep &old, double val) {
+    old = {1, val};
+  };
 
   inline static void aggregateRep(AggRep &old, AggRep &val) {
     old.first += val.first;
@@ -187,22 +202,19 @@ struct AverageAggregatorFunc {
     old.second += val;
   };
 
-  inline static double getDouble(AggRep &val) { return val.second / val.first; };
+  inline static double getDouble(AggRep &val) {
+    return val.second / val.first;
+  };
 };
 
 typedef NumberAggregator<AverageAggregatorFunc> AverageAggregator;
 
+template class NumberAggregator<MinAggregatorFunc>;
 
-template
-class NumberAggregator<MinAggregatorFunc>;
+template class NumberAggregator<MaxAggregatorFunc>;
 
-template
-class NumberAggregator<MaxAggregatorFunc>;
+template class NumberAggregator<SumAggregatorFunc>;
 
-template
-class NumberAggregator<SumAggregatorFunc>;
-
-template
-class NumberAggregator<AverageAggregatorFunc>;
-}
-#endif //JODA_NUMBERAGGREGATOR_H
+template class NumberAggregator<AverageAggregatorFunc>;
+}  // namespace joda::query
+#endif  // JODA_NUMBERAGGREGATOR_H

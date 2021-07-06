@@ -23,7 +23,6 @@ class IProjector {
 
   virtual ~IProjector() = default;
 
-
   /**
    * Projects a value from a source document into the destination document.
    * This function uses the (overwritten) getVal function to retrieve the value
@@ -32,11 +31,10 @@ class IProjector {
    * @param newDoc the destination document, used to store transformed values in
    * @param flag indicating if projecting from a view
    */
-  virtual void project(const RapidJsonDocument &json,
-                       RJDocument &newDoc, bool view = false) {
+  virtual void project(const RapidJsonDocument &json, RJDocument &newDoc,
+                       bool view = false) {
     auto val = this->getVal(json, newDoc.GetAllocator());
-    if(!val.IsNull())
-      ptr.Set(newDoc, val);
+    if (!val.IsNull()) ptr.Set(newDoc, val);
   }
 
   /**
@@ -48,9 +46,7 @@ class IProjector {
    * Returns the destination pointer
    * @return
    */
-  const RJPointer& getRawToPointer() const {
-    return ptr;
-  }
+  const RJPointer &getRawToPointer() const { return ptr; }
 
   /**
    * Returns a string representing the transformation function
@@ -66,10 +62,12 @@ class IProjector {
   virtual std::string toString() { return "'" + ptr_str + "':"; }
 
   /**
-   * Returns a list of attributes that have to be materialized for this projection to work
+   * Returns a list of attributes that have to be materialized for this
+   * projection to work
    * @return
    */
   virtual std::vector<std::string> getMaterializeAttributes() const = 0;
+
  protected:
   virtual RJValue getVal(const RapidJsonDocument &json,
                          RJMemoryPoolAlloc &alloc) = 0;
@@ -77,5 +75,5 @@ class IProjector {
   RJPointer ptr;
   std::string ptr_str;
 };
-}
+}  // namespace joda::query
 #endif  // JODA_IPROJECTOR_H

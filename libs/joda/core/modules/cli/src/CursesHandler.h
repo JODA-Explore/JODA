@@ -5,20 +5,22 @@
 #ifndef JODA_CURSESHANDLER_H
 #define JODA_CURSESHANDLER_H
 
-#include <cstdint>
-#include <rapidjson/rapidjson.h>
-#include <vector>
 #include <joda/misc/RJFwd.h>
+#include <rapidjson/rapidjson.h>
+
 #include <codecvt>
-#include "CursesFWD.h"
+#include <cstdint>
 #include <locale>
+#include <vector>
+
+#include "CursesFWD.h"
 
 class CursesPrettyHandler {
   typedef RJChar::Ch Ch;
+
  public:
-  CursesPrettyHandler(WINDOW *win, size_t idention = jDefaultIdention) : win(win), colors(has_colors() == TRUE),
-                                                                         identionSize(idention) {
-  }
+  CursesPrettyHandler(WINDOW *win, size_t idention = jDefaultIdention)
+      : identionSize(idention), win(win), colors(has_colors() == TRUE) {}
 
   bool Null() {
     writePrefix();
@@ -31,8 +33,10 @@ class CursesPrettyHandler {
   bool Bool(bool b) {
     writePrefix();
     if (colors) wattron(win, COLOR_PAIR(JODA_JSON_OUTPUT_COLOR_BOOL));
-    if (b) writeWString("true");
-    else writeWString("false");
+    if (b)
+      writeWString("true");
+    else
+      writeWString("false");
     if (colors) wattroff(win, COLOR_PAIR(JODA_JSON_OUTPUT_COLOR_BOOL));
     return true;
   }
@@ -150,12 +154,13 @@ class CursesPrettyHandler {
   }
 
   void writePrefix() {
-    if (!levels.empty()) { // this value is not at root
+    if (!levels.empty()) {  // this value is not at root
       auto &level = levels.back();
 
       if (level.inArray) {
         if (level.valueCount > 0) {
-          writeWString(","); // add comma if it is not the first element in array
+          writeWString(
+              ",");  // add comma if it is not the first element in array
         }
         writeWString("\n");
         writeIndent();
@@ -166,7 +171,8 @@ class CursesPrettyHandler {
           } else {
             writeWString(": ");
           }
-        } else writeWString("\n");
+        } else
+          writeWString("\n");
 
         if (level.valueCount % 2 == 0) writeIndent();
       }
@@ -197,4 +203,4 @@ class CursesPrettyHandler {
   static constexpr size_t jDefaultIdention = 4;
 };
 
-#endif //JODA_CURSESHANDLER_H
+#endif  // JODA_CURSESHANDLER_H

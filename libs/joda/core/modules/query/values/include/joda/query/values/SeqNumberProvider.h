@@ -16,7 +16,7 @@ class SeqNumberProvider : public joda::query::IValueProvider {
  public:
   explicit SeqNumberProvider(
       std::vector<std::unique_ptr<IValueProvider>> &&parameters);
-  explicit SeqNumberProvider(const std::shared_ptr<std::atomic_ulong> &currNum);
+  explicit SeqNumberProvider(std::shared_ptr<std::atomic_ulong> currNum);
   std::unique_ptr<IValueProvider> duplicate() const override;
   bool isConst() const override;
 
@@ -35,6 +35,6 @@ class SeqNumberProvider : public joda::query::IValueProvider {
  private:
   SeqNumberProvider();
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_SEQNUMBERPROVIDER_H

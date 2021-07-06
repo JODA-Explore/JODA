@@ -6,11 +6,11 @@
 #define JODA_CURSESFWD_H
 
 #ifdef JODA_CURSES_SIMPLE_HEADER
-#include <ncurses.h>
 #include <curses.h>
+#include <ncurses.h>
 #else
-#include <ncursesw/ncurses.h>
 #include <ncursesw/curses.h>
+#include <ncursesw/ncurses.h>
 #endif
 
-#endif //JODA_CURSESFWD_H
+#endif  // JODA_CURSESFWD_H

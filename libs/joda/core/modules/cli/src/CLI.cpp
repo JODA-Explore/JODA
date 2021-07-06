@@ -25,24 +25,25 @@ int eoq = 0;
 int escape = 0;
 int quote;
 
-int cmd_startup(void);
-int bind_cr(int, int);
+int cmd_startup();
+int bind_cr(int /*count*/, int /*key*/);
 
-int cmd_startup(void) {
+int cmd_startup() {
   eoq = 0;
   rl_bind_key('\n', bind_cr);
   rl_bind_key('\r', bind_cr);
   return 1;
 }
 
-int bind_cr(int count, int key) {
+int bind_cr(int /*count*/, int /*key*/) {
   int i = rl_end - 1;
   auto string = rl_copy_text(0, rl_end);
   std::string tmpline(string, static_cast<unsigned long>(rl_end));
   free(string);
   while (i >= 0) {
-    DCHECK(i < tmpline.size()) << "i is initialized incorrectly";
-    if (std::isspace(tmpline[i])) {
+    DCHECK(i < static_cast<int>(tmpline.size()))
+        << "i is initialized incorrectly";
+    if (std::isspace(tmpline[i]) != 0) {
       i--;
       continue;
     }
@@ -50,8 +51,9 @@ int bind_cr(int count, int key) {
       printf("\n");
       rl_done = 1;
       return 1;
-    } else
+    } else {
       break;
+    }
   }
   rl_insert_text("\n");
   return 1;
@@ -60,7 +62,7 @@ int bind_cr(int count, int key) {
 }  // namespace cli_funcs
 }  // namespace joda
 
-std::string &joda::cli::CLI::ltrim(std::string &str) {
+std::string& joda::cli::CLI::ltrim(std::string& str) {
   auto it2 = std::find_if(str.begin(), str.end(), [](char ch) {
     return !std::isspace<char>(ch, std::locale::classic());
   });
@@ -68,7 +70,7 @@ std::string &joda::cli::CLI::ltrim(std::string &str) {
   return str;
 }
 
-std::string &joda::cli::CLI::rtrim(std::string &str) {
+std::string& joda::cli::CLI::rtrim(std::string& str) {
   auto it1 = std::find_if(str.rbegin(), str.rend(), [](char ch) {
     return !std::isspace<char>(ch, std::locale::classic());
   });
@@ -77,7 +79,7 @@ std::string &joda::cli::CLI::rtrim(std::string &str) {
 }
 
 void joda::cli::CLI::parseCommand() {
-  char *line;
+  char* line;
 
   if ((line = readline("")) == nullptr) {
     DCHECK(false) << "Error while reading from readline? Buffer too small?";
@@ -94,7 +96,7 @@ void joda::cli::CLI::parseCommand() {
     command = command.substr(0, command.size() - 1);
   }
 
-  for (auto &cmd : getCommands()) {
+  for (auto& cmd : getCommands()) {
     // Command found
     if (command.compare(0, cmd.first.length(), cmd.first) == 0) {
       auto arg = command.substr(cmd.first.length(), command.size());
@@ -109,33 +111,36 @@ void joda::cli::CLI::parseCommand() {
   }
 }
 
-void joda::cli::CLI::start(const std::vector<std::string> &onceQueries) {
-  int query_i = 0;
-  if (isatty(STDIN_FILENO)) {
+void joda::cli::CLI::start(const std::vector<std::string>& onceQueries) {
+  size_t query_i = 0;
+  if (isatty(STDIN_FILENO) != 0) {
     using_history();
     rl_readline_name = "JODA";
     if (config::persistent_history) {
-      if (config::history_file.empty())
+      if (config::history_file.empty()) {
         LOG(WARNING)
             << "Persistent history enabled, but no history file provided.";
-      else {
+      } else {
         DLOG(INFO) << "Reading history file \"" << config::history_file << "\"";
         auto err = read_history(config::history_file.c_str());
         if (err != 0) {
-          if (err == 2)
+          if (err == 2) {
             DLOG(INFO)
                 << "History file does not exist. Will be created on exit.";
-          else
+          } else {
             LOG(ERROR) << "Error " << err << " while reading history file.";
+          }
         } else {
-          if (config::history_size > 0) stifle_history(config::history_size);
+          if (config::history_size > 0) {
+            stifle_history(config::history_size);
+          }
         }
       }
     }
     rl_startup_hook = joda::cli_funcs::cmd_startup;
     rl_attempted_completion_function = CLICompletion::completer;
     std::vector<std::string> cmds;
-    for (const auto &command : getCommands()) {
+    for (const auto& command : getCommands()) {
       cmds.emplace_back(command.first + ";");
     }
     CLICompletion::setCli_commands(cmds);
@@ -150,23 +155,27 @@ void joda::cli::CLI::start(const std::vector<std::string> &onceQueries) {
       query = qp.parse(onceQuery);
       query_i++;
       auto lastQuery = query_i == onceQueries.size();
-      if (lastQuery)
+      if (lastQuery) {
         executeQuery(query, lastQuery);
-      else
+      } else {
         executeNonInteractiveQuery(query, lastQuery);
-      if (lastQuery) execute = false;
+      }
+      if (lastQuery) {
+        execute = false;
+      }
     }
   }
 
-  if (isatty(STDIN_FILENO)) {
+  if (isatty(STDIN_FILENO) != 0) {
     DLOG(INFO) << "Writing history file";
     auto err = write_history(config::history_file.c_str());
-    if (err != 0)
+    if (err != 0) {
       LOG(ERROR) << "Error " << err << " while writing history file.";
+    }
   }
 }
 
-void joda::cli::CLI::print(const std::string &toprint) {
+void joda::cli::CLI::print(const std::string& toprint) {
   std::cout << toprint << std::endl;
 }
 
@@ -184,7 +193,7 @@ void joda::cli::CLI::toggleCache() {
 void joda::cli::CLI::listSources() {
   std::string tmp;
   tmp = "----Data Sources----\n";
-  for (auto &storage : StorageCollection::getInstance().getStorages()) {
+  for (auto& storage : StorageCollection::getInstance().getStorages()) {
     tmp +=
         storage->getName() + " (" + std::to_string(storage->size()) + ", " +
         MemoryUtility::MemorySize(storage->estimatedSize()).getHumanReadable() +
@@ -197,7 +206,7 @@ void joda::cli::CLI::listSources() {
 void joda::cli::CLI::listResults() {
   std::string tmp;
   tmp = "----Results----\n";
-  for (auto &storage :
+  for (auto& storage :
        StorageCollection::getInstance().getTemporaryStorages()) {
     tmp +=
         storage->getName() + " (" + std::to_string(storage->size()) + ", " +
@@ -208,7 +217,7 @@ void joda::cli::CLI::listResults() {
   print(tmp);
 }
 
-void joda::cli::CLI::query(std::string &query) {
+void joda::cli::CLI::query(std::string& query) {
   joda::queryparsing::QueryParser qp;
   auto q = qp.parse(query);
   if (q == nullptr) {
@@ -218,7 +227,7 @@ void joda::cli::CLI::query(std::string &query) {
   }
 }
 void joda::cli::CLI::executeNonInteractiveQuery(
-    std::shared_ptr<query::Query> &query, bool printResult) {
+    std::shared_ptr<query::Query>& query, bool printResult) {
   if (query != nullptr) {
     auto queryName = query->toString();
     bench.addValue("Query", queryName);
@@ -236,7 +245,7 @@ void joda::cli::CLI::executeNonInteractiveQuery(
       if (result != nullptr && printResult) {
         print("-----RESULTS------");
         auto tmp = result->stringify(0, 2);
-        for (auto &&line : tmp) {
+        for (auto&& line : tmp) {
           print(line);
         }
         print("-------END--------");
@@ -253,7 +262,7 @@ void joda::cli::CLI::executeNonInteractiveQuery(
         print("----------------");
       }
 
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       std::cout << e.what() << std::endl;
     }
   }
@@ -286,9 +295,11 @@ std::shared_ptr<JSONStorage> joda::cli::CLI::checkResult(
   return nullptr;
 }
 
-void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
+void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query>& query,
                                   bool printResult) {
-  if (simpleMode) return executeNonInteractiveQuery(query, printResult);
+  if (simpleMode) {
+    return executeNonInteractiveQuery(query, printResult);
+  }
   if (query != nullptr) {
     auto queryName = query->toString();
     bench.addValue("Query", queryName);
@@ -306,7 +317,9 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
       std::string status1;
       std::string status2;
 
-      if (parsing) status2 = "Waiting for parser";
+      if (parsing) {
+        status2 = "Waiting for parser";
+      }
       interface.setStatus2(status2);
       while (resultTaks.wait_for(std::chrono::milliseconds(100)) !=
              std::future_status::ready) {
@@ -325,11 +338,12 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
         if (pb != nullptr) {
           pb->set_progress(stats.evaluatedConts);
         }
-        if (parsing)
+        if (parsing) {
           status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs) +
                     "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
                     "/s)/" + std::to_string(stats.parsedConts) + "(" +
                     std::to_string(static_cast<size_t>(parsedConts_s)) + "/s)";
+        }
         interface.setStatus1(status1);
         if (pb != nullptr) {
           auto str = pb->toString();
@@ -345,11 +359,12 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
       double seconds = static_cast<double>(time_elapsed) / 1000.0;
       double parsedDocs_s = static_cast<double>(stats.parsedDocs) / seconds;
       double parsedConts_s = static_cast<double>(stats.parsedConts) / seconds;
-      if (parsing)
+      if (parsing) {
         status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs) +
                   "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
                   "/s)/" + std::to_string(stats.parsedConts) + "(" +
                   std::to_string(static_cast<size_t>(parsedConts_s)) + "/s)";
+      }
       interface.setStatus1(status1);
       if (pb != nullptr) {
         pb->set_progress(stats.evaluatedConts);
@@ -374,7 +389,7 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
       timer.log("Query", "MAIN");
       bench.addValue(Benchmark::RUNTIME, "Query", timer.durationSeconds());
       bench.finishLine();
-    } catch (const std::exception &e) {
+    } catch (const std::exception& e) {
       std::cout << e.what() << std::endl;
     }
   }
@@ -382,8 +397,8 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query> &query,
 
 joda::cli::CLI::CLI() : bench(config::benchfile) { checkTerminal(); }
 
-void joda::cli::CLI::benchmarkQuery(std::shared_ptr<query::Query> q,
-                                    const std::string &name) {
+void joda::cli::CLI::benchmarkQuery(const std::shared_ptr<query::Query>& q,
+                                    const std::string& /*name*/) {
   QueryPlan plan(q);
   StorageCollection::getInstance().removeStorage(plan.executeQuery(&bench));
   bench.finishLine();
@@ -393,9 +408,9 @@ void joda::cli::CLI::benchmarkQuery(std::shared_ptr<query::Query> q,
 }
 
 void joda::cli::CLI::benchmarkQuery(
-    std::vector<std::shared_ptr<query::Query>> qs, const std::string &name) {
+    std::vector<std::shared_ptr<query::Query>> qs, const std::string& name) {
   auto index = 1;
-  for (auto &&q : qs) {
+  for (auto&& q : qs) {
     bench.addValue("Index", index);
     benchmarkQuery(q, name);
     using namespace std::chrono_literals;
@@ -430,7 +445,7 @@ void joda::cli::CLI::logo() {
   print(str);
 }
 
-std::vector<std::pair<std::string, std::function<void(const std::string &)>>>
+std::vector<std::pair<std::string, std::function<void(const std::string&)>>>
 joda::cli::CLI::getCommands() {
   return {
       {"quit", std::bind(&CLI::quit, this)},
@@ -481,7 +496,7 @@ void joda::cli::CLI::setSimpleMode(bool simpleMode) {
 }
 
 void joda::cli::CLI::checkTerminal() {
-  SCREEN *terminal = newterm(nullptr, nullptr, nullptr);
+  SCREEN* terminal = newterm(nullptr, nullptr, nullptr);
   if (terminal == nullptr) {
     setSimpleMode(true);
   } else {
@@ -494,7 +509,7 @@ void joda::cli::CLI::checkTerminal() {
 
 #ifdef JODA_ENABLE_PROFILING
 
-void joda::cli::CLI::profileStart(const std::string &name) {
+void joda::cli::CLI::profileStart(const std::string& name) {
   if (profileRunning)
     std::cerr << "Profiler already running \n";
   else {

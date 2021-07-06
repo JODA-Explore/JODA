@@ -27,6 +27,6 @@ class FileNameProvider : public joda::query::IValueProvider {
 
   CREATE_FACTORY(FileNameProvider)
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_FILENAMEPROVIDER_H

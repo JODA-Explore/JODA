@@ -8,7 +8,6 @@
 #include <cassert>
 #include <memory>
 
-
 namespace joda::query {
 class AndPredicate;
 
@@ -65,6 +64,6 @@ class PredicateVisitor {
    */
   virtual void visit(ValToPredicate* e) = 0;
 };
-}
+}  // namespace joda::query
 
 #endif  // JODA_PREDICATEVISITOR_H

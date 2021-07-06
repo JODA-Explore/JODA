@@ -2,86 +2,84 @@
 // Created by Nico Schäfer on 4/24/17.
 //
 
+#include "../include/joda/query/Query.h"
 #include <joda/query/predicate/AttributeVisitor.h>
 #include <joda/query/project/PointerCopyProject.h>
-#include "../include/joda/query/Query.h"
 
 #include "../predicate/include/joda/query/predicate/CopyPredicateVisitor.h"
-#include "../predicate/include/joda/query/predicate/ValToPredicate.h"
 #include "../predicate/include/joda/query/predicate/ToStringVisitor.h"
+#include "../predicate/include/joda/query/predicate/ValToPredicate.h"
 
-bool joda::query::Query::check(const RapidJsonDocument &json) const {
-
+bool joda::query::Query::check(const RapidJsonDocument& json) const {
   return pred->check(json);
 }
 
-void joda::query::Query::setPredicate(std::unique_ptr<Predicate> &&predicate) {
+void joda::query::Query::setPredicate(std::unique_ptr<Predicate>&& predicate) {
   pred = std::move(predicate);
 }
 
-std::unique_ptr<joda::query::Predicate> joda::query::Query::getPredicate() const {
+std::unique_ptr<joda::query::Predicate> joda::query::Query::getPredicate()
+    const {
   CopyPredicateVisitor copy;
   pred->accept(copy);
   return copy.getPredicate();
 }
 
-void joda::query::Query::addAggregator(std::unique_ptr<IAggregator> &&agg) {
+void joda::query::Query::addAggregator(std::unique_ptr<IAggregator>&& agg) {
   aggregators.push_back(std::move(agg));
 }
 
-bool joda::query::Query::hasAggregators() {
-  return !aggregators.empty();
-}
+bool joda::query::Query::hasAggregators() { return !aggregators.empty(); }
 
 joda::query::Query::Query() {
   setPredicate(std::make_unique<ValToPredicate>(true));
 }
 
-const std::vector<std::unique_ptr<joda::query::IAggregator>> &joda::query::Query::getAggregators() const {
+const std::vector<std::unique_ptr<joda::query::IAggregator>>&
+joda::query::Query::getAggregators() const {
   return aggregators;
 }
 
-void joda::query::Query::addProjection(std::unique_ptr<IProjector> &&expr) {
+void joda::query::Query::addProjection(std::unique_ptr<IProjector>&& expr) {
   projectors.push_back(std::move(expr));
 }
 
-const std::vector<std::unique_ptr<joda::query::IProjector>> &joda::query::Query::getProjectors() const {
+const std::vector<std::unique_ptr<joda::query::IProjector>>&
+joda::query::Query::getProjectors() const {
   return projectors;
 }
 
-const std::string &joda::query::Query::getLoad() const {
-  return load;
-}
+const std::string& joda::query::Query::getLoad() const { return load; }
 
-void joda::query::Query::setLoad(const std::string &load) {
+void joda::query::Query::setLoad(const std::string& load) {
   joda::query::Query::load = load;
 }
 
-const std::string &joda::query::Query::getDelete() const {
-  return del;
-}
+const std::string& joda::query::Query::getDelete() const { return del; }
 
-void joda::query::Query::setDelete(const std::string &del) {
+void joda::query::Query::setDelete(const std::string& del) {
   joda::query::Query::del = del;
 }
 
 bool joda::query::Query::isDefault() const {
-  //No special query happens
+  // No special query happens
   bool val;
-  return chooseIsConst(val) && val && aggregators.empty() && projectors.empty() && setProjectors.empty()
-      && exportDestination == nullptr;
+  return chooseIsConst(val) && val && aggregators.empty() &&
+         projectors.empty() && setProjectors.empty() &&
+         exportDestination == nullptr;
 }
 
-const std::vector<std::unique_ptr<joda::query::ISetProjector>> &joda::query::Query::getSetProjectors() const {
+const std::vector<std::unique_ptr<joda::query::ISetProjector>>&
+joda::query::Query::getSetProjectors() const {
   return setProjectors;
 }
 
-void joda::query::Query::addProjection(std::unique_ptr<ISetProjector> &&expr) {
+void joda::query::Query::addProjection(std::unique_ptr<ISetProjector>&& expr) {
   setProjectors.push_back(std::move(expr));
 }
 
-bool joda::query::Query::chooseIsConst(bool &val) const {
-  auto *predVal = dynamic_cast<ValToPredicate *> (pred.get());
+bool joda::query::Query::chooseIsConst(bool& val) const {
+  auto* predVal = dynamic_cast<ValToPredicate*>(pred.get());
   if (predVal != nullptr) {
     auto pvTrue = predVal->isConstTrue();
     auto pvFalse = predVal->isConstFalse();
@@ -92,19 +90,18 @@ bool joda::query::Query::chooseIsConst(bool &val) const {
 }
 
 std::string joda::query::Query::toString() const {
-  //LOadVar
+  // LOadVar
   std::string ret = "LOAD " + getLoad();
 
-  //LoadFIle
-  for (const auto &importSource : importSources) {
+  // LoadFIle
+  for (const auto& importSource : importSources) {
     ret += " " + importSource->toQueryString();
   }
   if (loadJoinManager != nullptr) {
     ret += " FROM GROUPED " + loadJoinManager->getName();
   }
 
-
-  //CHOOSE
+  // CHOOSE
   bool choose;
   if (!(chooseIsConst(choose) && choose)) {
     ToStringVisitor chooseString;
@@ -112,85 +109,95 @@ std::string joda::query::Query::toString() const {
     ret += " CHOOSE " + chooseString.popString();
   }
 
-  //AS (Flat)
+  // AS (Flat)
   if (projectors.size() + setProjectors.size() != 0) {
     ret += " AS ";
-    for (auto &&item : projectors) {
+    for (auto&& item : projectors) {
       ret += "(" + item->toString() + "),";
     }
-    for (auto &&item : setProjectors) {
+    for (auto&& item : setProjectors) {
       ret += "(" + item->toString() + "),";
     }
     ret = ret.substr(0, ret.size() - 1);
   }
 
-  //AGG
+  // AGG
   if (!aggregators.empty()) {
     ret += " AGG ";
-    for (auto &&item : aggregators) {
+    for (auto&& item : aggregators) {
       ret += "(" + item->toString() + "),";
     }
     ret = ret.substr(0, ret.size() - 1);
   }
 
-  //STORE VAR
+  // STORE VAR
   if (exportDestination != nullptr) {
     ret += exportDestination->toQueryString();
   }
 
-  //Delete
-  if (!del.empty()) ret += " DELETE " + del;
+  // Delete
+  if (!del.empty()) {
+    ret += " DELETE " + del;
+  }
   return ret;
 }
 
-const std::shared_ptr<JoinManager> &joda::query::Query::getLoadJoinManager() const {
+const std::shared_ptr<JoinManager>& joda::query::Query::getLoadJoinManager()
+    const {
   return loadJoinManager;
 }
 
-void joda::query::Query::setLoadJoinManager(const std::shared_ptr<JoinManager> &loadJoinManager) {
+void joda::query::Query::setLoadJoinManager(
+    const std::shared_ptr<JoinManager>& loadJoinManager) {
   joda::query::Query::loadJoinManager = loadJoinManager;
 }
 
-const std::shared_ptr<JoinManager> &joda::query::Query::getStoreJoinManager() const {
+const std::shared_ptr<JoinManager>& joda::query::Query::getStoreJoinManager()
+    const {
   return storeJoinManager;
 }
 
-void joda::query::Query::setStoreJoinManager(const std::shared_ptr<JoinManager> &storeJoinManager) {
+void joda::query::Query::setStoreJoinManager(
+    const std::shared_ptr<JoinManager>& storeJoinManager) {
   joda::query::Query::storeJoinManager = storeJoinManager;
 }
 
-const std::vector<std::unique_ptr<joda::docparsing::IImportSource>> &joda::query::Query::getImportSources() const {
+const std::vector<std::unique_ptr<joda::docparsing::IImportSource>>&
+joda::query::Query::getImportSources() const {
   return importSources;
 }
 
-void joda::query::Query::addImportSource(std::unique_ptr<joda::docparsing::IImportSource> &&source) {
+void joda::query::Query::addImportSource(
+    std::unique_ptr<joda::docparsing::IImportSource>&& source) {
   importSources.push_back(std::move(source));
 }
 
-std::unique_ptr<IExportDestination> &joda::query::Query::getExportDestination() {
+std::unique_ptr<IExportDestination>&
+joda::query::Query::getExportDestination() {
   return exportDestination;
 }
 
-void joda::query::Query::setExportDestination(std::unique_ptr<IExportDestination> &&exportDestination) {
+void joda::query::Query::setExportDestination(
+    std::unique_ptr<IExportDestination>&& exportDestination) {
   joda::query::Query::exportDestination = std::move(exportDestination);
 }
 
 std::vector<std::string> joda::query::Query::getAllUsedAttributes() const {
-  //Get Choose attributes
+  // Get Choose attributes
   AttributeVisitor attVisitor;
   pred->accept(attVisitor);
   std::vector<std::string> ret = attVisitor.getAttributes();
-  //Get AS Attributes
-  for (const auto &item : projectors) {
+  // Get AS Attributes
+  for (const auto& item : projectors) {
     auto tmp = item->getMaterializeAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
-  for (const auto &item : setProjectors) {
+  for (const auto& item : setProjectors) {
     auto tmp = item->getAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
-  //Get AGG Attributes
-  for (const auto &item : aggregators) {
+  // Get AGG Attributes
+  for (const auto& item : aggregators) {
     auto tmp = item->getAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
@@ -210,11 +217,11 @@ std::vector<std::string> joda::query::Query::getChooseAttributes() const {
 
 std::vector<std::string> joda::query::Query::getASAttributes() const {
   std::vector<std::string> ret;
-  for (const auto &item : projectors) {
+  for (const auto& item : projectors) {
     auto tmp = item->getMaterializeAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
-  for (const auto &item : setProjectors) {
+  for (const auto& item : setProjectors) {
     auto tmp = item->getAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
@@ -225,7 +232,7 @@ std::vector<std::string> joda::query::Query::getASAttributes() const {
 
 std::vector<std::string> joda::query::Query::getAGGAttributes() const {
   std::vector<std::string> ret;
-  for (const auto &item : aggregators) {
+  for (const auto& item : aggregators) {
     auto tmp = item->getAttributes();
     std::move(tmp.begin(), tmp.end(), std::back_inserter(ret));
   }
@@ -235,10 +242,10 @@ std::vector<std::string> joda::query::Query::getAGGAttributes() const {
 }
 
 bool joda::query::Query::canCreateView() const {
-  return config::enable_views && (
-      (!projectors.empty() && projectors.front()->getType() == PointerCopyProject::allCopy) //Delta Tree
-          || (projectors.empty() && setProjectors.empty()) //Star expression
-  );
+  return config::enable_views &&
+         ((!projectors.empty() &&
+           projectors.front()->getType() ==
+               PointerCopyProject::allCopy)                 // Delta Tree
+          || (projectors.empty() && setProjectors.empty())  // Star expression
+         );
 }
-
-

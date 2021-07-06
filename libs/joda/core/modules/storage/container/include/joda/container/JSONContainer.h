@@ -16,17 +16,17 @@
 #include <unordered_set>
 #include <vector>
 
-#include "joda/misc/bloom_filter.hpp"
-#include "../../../../document/src/DocumentCostHandler.h"
-#include <unordered_set>
-#include <limits.h>
-#include <functional>
+#include <joda/config/config.h>
 #include <joda/document/RapidJsonDocument.h>
+#include <joda/document/view/ViewLayer.h>
+#include <joda/indexing/QueryCache.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
-#include <joda/indexing/QueryCache.h>
-#include <joda/config/config.h>
-#include <joda/document/view/ViewLayer.h>
+#include <limits.h>
+#include <functional>
+#include <unordered_set>
+#include "../../../../document/src/DocumentCostHandler.h"
+#include "joda/misc/bloom_filter.hpp"
 
 typedef std::vector<bool> DocIndex;
 
@@ -103,7 +103,8 @@ class JSONContainer {
    * @param doc The actual rapidjson document
    * @param origin The origin of the document
    */
-  void insertDoc(std::unique_ptr<RJDocument> &&doc, std::unique_ptr<IOrigin> &&origin, size_t baseIndex = 0);
+  void insertDoc(std::unique_ptr<RJDocument> &&doc,
+                 std::unique_ptr<IOrigin> &&origin, size_t baseIndex = 0);
 
   /**
    * Inserts a document into the container using its representation class
@@ -133,11 +134,11 @@ class JSONContainer {
               std::vector<retType> &vec);
 
   /**
- * Executes a function on all documents and stores their return value
- * @tparam  F the function to call
- * @param func The function to execute on all documents.
- */
-  template<class F>
+   * Executes a function on all documents and stores their return value
+   * @tparam  F the function to call
+   * @param func The function to execute on all documents.
+   */
+  template <class F>
   void forAll(F &f) {
     ScopedRef ref(this);
     for (auto &&doc : docs) {
@@ -149,11 +150,11 @@ class JSONContainer {
   }
 
   /**
-* Executes a function on all documents and stores their return value
-* @tparam  F the function to call
-* @param func The function to execute on all documents.
-*/
-  template<class F>
+   * Executes a function on all documents and stores their return value
+   * @tparam  F the function to call
+   * @param func The function to execute on all documents.
+   */
+  template <class F>
   void forAll(F f) {
     ScopedRef ref(this);
     for (auto &&doc : docs) {
@@ -165,11 +166,11 @@ class JSONContainer {
   }
 
   /**
-* Executes a function on all documents and stores their return value
-* @tparam  F the function to call
-* @param func The function to execute on all documents.
-*/
-  template<class F>
+   * Executes a function on all documents and stores their return value
+   * @tparam  F the function to call
+   * @param func The function to execute on all documents.
+   */
+  template <class F>
   void forAll(F f, const DocIndex &ids) {
     ScopedRef ref(this);
     for (size_t i = 0; i < docs.size(); ++i) {
@@ -192,38 +193,36 @@ class JSONContainer {
    * the documents
    * @return A vector containing all projected documents
    */
-  std::vector<std::unique_ptr<RJDocument>> projectDocuments(const DocIndex &ids,
-                                                            const std::vector<
-                                                                std::unique_ptr<joda::query::IProjector>> &proj,
-                                                            RJMemoryPoolAlloc &alloc,
-                                                            const std::vector<
-                                                                std::unique_ptr<joda::query::ISetProjector>> &setProj);
+  std::vector<std::unique_ptr<RJDocument>> projectDocuments(
+      const DocIndex &ids,
+      const std::vector<std::unique_ptr<joda::query::IProjector>> &proj,
+      RJMemoryPoolAlloc &alloc,
+      const std::vector<std::unique_ptr<joda::query::ISetProjector>> &setProj);
 
   /**
    * Creates a view from the current container
    * @param ids The documents to project
-   * @param proj A vector containing all projections to be executed on the documents
+   * @param proj A vector containing all projections to be executed on the
+   * documents
    * @param alloc An allocator used to project the documents
-   * @param setProj A vector containing all set-projections to be executed on the documents
+   * @param setProj A vector containing all set-projections to be executed on
+   * the documents
    * @return A vector containing all projected documents
    */
-  std::unique_ptr<JSONContainer> createViewFromContainer(const DocIndex &ids,
-                                                         const std::vector<
-                                                             std::unique_ptr<joda::query::IProjector>> &proj,
-                                                         const std::vector<
-                                                             std::unique_ptr<joda::query::ISetProjector>> &setProj);
+  std::unique_ptr<JSONContainer> createViewFromContainer(
+      const DocIndex &ids,
+      const std::vector<std::unique_ptr<joda::query::IProjector>> &proj,
+      const std::vector<std::unique_ptr<joda::query::ISetProjector>> &setProj);
 
-  DocumentCostHandler createTempViewDocs(const DocIndex &ids,
-                                         const std::vector<
-                                             std::unique_ptr<joda::query::IProjector>> &proj,
-                                         const std::vector<
-                                             std::unique_ptr<joda::query::ISetProjector>> &setProj);
+  DocumentCostHandler createTempViewDocs(
+      const DocIndex &ids,
+      const std::vector<std::unique_ptr<joda::query::IProjector>> &proj,
+      const std::vector<std::unique_ptr<joda::query::ISetProjector>> &setProj);
 
-  bool useViewBasedOnSample(const DocIndex &ids,
-                            const std::vector<
-                                std::unique_ptr<joda::query::IProjector>> &proj,
-                            const std::vector<
-                                std::unique_ptr<joda::query::ISetProjector>> &setProj);
+  bool useViewBasedOnSample(
+      const DocIndex &ids,
+      const std::vector<std::unique_ptr<joda::query::IProjector>> &proj,
+      const std::vector<std::unique_ptr<joda::query::ISetProjector>> &setProj);
   /**
    * Finalizes the container.
    * After finalization no further documents can be added.
@@ -275,9 +274,9 @@ class JSONContainer {
   size_t estimatedSize() const;
 
   /**
- * Returns the parsed size of the container (in Bytes)
- * @return parsed size of the container (in Bytes)
- */
+   * Returns the parsed size of the container (in Bytes)
+   * @return parsed size of the container (in Bytes)
+   */
   size_t parsedSize() const;
 
   /*
@@ -298,17 +297,20 @@ class JSONContainer {
    * @param end End index of documents
    * @return Vector of raw documents
    */
-  std::vector<std::unique_ptr<RJDocument>> getRaw(unsigned long start = 0, unsigned long end = ULONG_MAX);
+  std::vector<std::unique_ptr<RJDocument>> getRaw(
+      unsigned long start = 0, unsigned long end = ULONG_MAX);
   /**
- * Returns the raw document representation of the chosen documents
- * @param ids IDs of desired documents
- * @return Vector of raw documents
- */
+   * Returns the raw document representation of the chosen documents
+   * @param ids IDs of desired documents
+   * @return Vector of raw documents
+   */
   std::vector<std::unique_ptr<RJDocument>> getRaw(const DocIndex &ids);
-  std::vector<std::unique_ptr<RJDocument>> getRaw(const DocIndex &ids, RJMemoryPoolAlloc &alloc);
+  std::vector<std::unique_ptr<RJDocument>> getRaw(const DocIndex &ids,
+                                                  RJMemoryPoolAlloc &alloc);
 
-  template<class Handler>
-  std::vector<bool> AcceptDocuments(Handler &handler, unsigned long start = 0, unsigned long end = ULONG_MAX) {
+  template <class Handler>
+  std::vector<bool> AcceptDocuments(Handler &handler, unsigned long start = 0,
+                                    unsigned long end = ULONG_MAX) {
     std::vector<bool> ret;
     if (docs.empty()) return ret;
     ScopedRef useCont(this, false);
@@ -324,7 +326,8 @@ class JSONContainer {
         } else {
           ret.push_back(doc.doc.getJson()->Accept(handler));
         }
-      } else ret.push_back(false);
+      } else
+        ret.push_back(false);
     }
     return ret;
   }
@@ -356,12 +359,14 @@ class JSONContainer {
    */
   void materializeAttributes(const std::vector<std::string> &atts);
   /**
- * Materializes the given attributes if the container is a view and the attributes cannot be returned without materialization
- * @param atts
- */
+   * Materializes the given attributes if the container is a view and the
+   * attributes cannot be returned without materialization
+   * @param atts
+   */
   void materializeAttributesIfRequired(const std::vector<std::string> &atts);
   /**
-   * Materializes the view completly and turns the container to a normal container.
+   * Materializes the view completly and turns the container to a normal
+   * container.
    */
   void materializeView();
 
@@ -377,17 +382,23 @@ class JSONContainer {
    */
   unsigned long getLastUsed() const;
 
-
   bool isBaseContainer(const JSONContainer *cont) const;
 
   /*
- * Ref Counting
- */
+   * Ref Counting
+   */
   class ScopedRef {
    public:
-    ScopedRef(JSONContainer *cont, bool parsed = true) : engaged_(true), cont_(cont) { cont_->useCont(parsed); }
+    ScopedRef(JSONContainer *cont, bool parsed = true)
+        : engaged_(true), cont_(cont) {
+      cont_->useCont(parsed);
+    }
 
-    ~ScopedRef() { if (engaged_) { release(); }}
+    ~ScopedRef() {
+      if (engaged_) {
+        release();
+      }
+    }
 
     void release() {
       engaged_ = false;
@@ -421,7 +432,7 @@ class JSONContainer {
     if (prev == 1 && !config::storeJson) removeDocuments();
   }
 
-  //Indices
+  // Indices
   DOC_ID minID = std::numeric_limits<DOC_ID>::max();
   DOC_ID maxID = 0;
   bloom_filter attr_bloom;
@@ -448,10 +459,10 @@ class JSONContainer {
   void removeSubContainer(JSONContainer *cont);
 
   /**
- * Inserts a document into the container using its raw components
- * @param doc The actual rapidjson document
- * @param origin The origin of the document
- */
+   * Inserts a document into the container using its raw components
+   * @param doc The actual rapidjson document
+   * @param origin The origin of the document
+   */
   void insertViewDoc(std::unique_ptr<RJDocument> &&doc, size_t baseIndex);
 
   // Size
@@ -466,12 +477,15 @@ class JSONContainer {
   void setLastUsed();
 
   struct DocContainer {
-    explicit DocContainer(RapidJsonDocument &&doc) noexcept : doc(std::move(doc)) {}
+    explicit DocContainer(RapidJsonDocument &&doc) noexcept
+        : doc(std::move(doc)) {}
 
-    explicit DocContainer(RapidJsonDocument &&doc, size_t baseIndex = 0) noexcept
+    explicit DocContainer(RapidJsonDocument &&doc,
+                          size_t baseIndex = 0) noexcept
         : doc(std::move(doc)), baseIndex(baseIndex) {}
 
-    DocContainer(DocContainer &&doc) noexcept : doc(std::move(doc.doc)), valid(doc.valid), baseIndex(doc.baseIndex) {}
+    DocContainer(DocContainer &&doc) noexcept
+        : doc(std::move(doc.doc)), valid(doc.valid), baseIndex(doc.baseIndex) {}
 
     DocContainer &operator=(DocContainer &&doc) noexcept {
       valid = doc.valid;
@@ -503,8 +517,9 @@ class JSONContainer {
   RJMemoryPoolPointer alloc;
 };
 
-template<class retType>
-void JSONContainer::forAll(std::function<retType(RapidJsonDocument &)> &func, std::vector<retType> &vec) {
+template <class retType>
+void JSONContainer::forAll(std::function<retType(RapidJsonDocument &)> &func,
+                           std::vector<retType> &vec) {
   ScopedRef ref(this);
   for (auto &&doc : docs) {
     if (doc.valid) {

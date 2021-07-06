@@ -8,14 +8,14 @@
 #include "IOrigin.h"
 
 /**
- * Represents a document that fully originates from in-memory, like projected documents
+ * Represents a document that fully originates from in-memory, like projected
+ * documents
  */
 class TemporaryOrigin : public IOrigin {
  public:
   bool isReparsable() const override;
   std::unique_ptr<IOrigin> clone() const override;
   std::string toString() const override;
-
 };
 
-#endif //JODA_TEMPORARYORIGIN_H
+#endif  // JODA_TEMPORARYORIGIN_H

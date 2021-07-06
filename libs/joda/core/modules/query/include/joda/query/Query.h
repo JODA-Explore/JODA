@@ -5,15 +5,15 @@
 #ifndef JODA_QUERY_H
 #define JODA_QUERY_H
 
-#include <memory>
-#include <joda/parser/IImportSource.h>
-#include <joda/export/IExportDestination.h>
-#include <joda/query/predicate/Predicate.h>
 #include <joda/document/RapidJsonDocument.h>
+#include <joda/export/IExportDestination.h>
+#include <joda/join/JoinManager.h>
+#include <joda/parser/IImportSource.h>
+#include <joda/query/aggregation/IAggregator.h>
+#include <joda/query/predicate/Predicate.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
-#include <joda/query/aggregation/IAggregator.h>
-#include <joda/join/JoinManager.h>
+#include <memory>
 
 namespace joda::query {
 /**
@@ -23,18 +23,18 @@ namespace joda::query {
  */
 class Query {
  public:
-
   /**
    * The default constructor constructs an empty default query.
    */
   Query();
 
   /**
-   * This function checks if the given document fulfils the CHOOSE predicate of the query.
+   * This function checks if the given document fulfils the CHOOSE predicate of
+   * the query.
    * @param doc The document to check
    * @return True if the document fulfils the predicate, else False
    */
-  bool check(const RapidJsonDocument &doc) const;
+  bool check(const RapidJsonDocument &json) const;
 
   /**
    * @return the name of the collection on which this query is based.
@@ -48,13 +48,15 @@ class Query {
 
   /**
    *
-   * @return the name of the collection which should be deleted after the query, or "" if none
+   * @return the name of the collection which should be deleted after the query,
+   * or "" if none
    */
   const std::string &getDelete() const;
 
   /**
    *
-   * @param del the name of the collection which should be deleted after the query, or "" if none
+   * @param del the name of the collection which should be deleted after the
+   * query, or "" if none
    */
   void setDelete(const std::string &del);
 
@@ -66,7 +68,8 @@ class Query {
 
   /**
    *
-   * @return a copy of the CHOOSE expression predicate, default: ValToPredicate(TrueValue)
+   * @return a copy of the CHOOSE expression predicate, default:
+   * ValToPredicate(TrueValue)
    */
   std::unique_ptr<Predicate> getPredicate() const;
 
@@ -108,18 +111,22 @@ class Query {
    * @return The list of aggregators, default: []
    */
   const std::vector<std::unique_ptr<IAggregator>> &getAggregators() const;
-  const std::vector<std::unique_ptr<docparsing::IImportSource>> &getImportSources() const;
+  const std::vector<std::unique_ptr<docparsing::IImportSource>>
+      &getImportSources() const;
   void addImportSource(std::unique_ptr<docparsing::IImportSource> &&source);
   const std::shared_ptr<JoinManager> &getLoadJoinManager() const;
   void setLoadJoinManager(const std::shared_ptr<JoinManager> &loadJoinManager);
   const std::shared_ptr<JoinManager> &getStoreJoinManager() const;
-  void setStoreJoinManager(const std::shared_ptr<JoinManager> &storeJoinManager);
+  void setStoreJoinManager(
+      const std::shared_ptr<JoinManager> &storeJoinManager);
   std::unique_ptr<IExportDestination> &getExportDestination();
-  void setExportDestination(std::unique_ptr<IExportDestination> &&exportDestination);
+  void setExportDestination(
+      std::unique_ptr<IExportDestination> &&exportDestination);
 
   /**
    *
-   * @return True if this query is a NOOP query (does nothing except for displaying a collection), else False
+   * @return True if this query is a NOOP query (does nothing except for
+   * displaying a collection), else False
    */
   bool isDefault() const;
 
@@ -132,9 +139,9 @@ class Query {
   bool chooseIsConst(bool &val) const;
 
   /**
- * Checks whether the AS transformations can be evaluated with views.
- * @return
- */
+   * Checks whether the AS transformations can be evaluated with views.
+   * @return
+   */
   bool canCreateView() const;
 
   /**
@@ -148,7 +155,6 @@ class Query {
   std::vector<std::string> getAGGAttributes() const;
 
  protected:
-
   /*
    * Load command
    */
@@ -185,8 +191,7 @@ class Query {
    * Delete command
    */
   std::string del;
-
 };
-}
+}  // namespace joda::query
 
-#endif //JODA_QUERY_H
+#endif  // JODA_QUERY_H

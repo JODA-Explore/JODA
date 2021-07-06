@@ -63,9 +63,9 @@ class QueryPlan {
   void addGenericBenchmarkInformation(Benchmark *bench = nullptr) const;
   std::shared_ptr<JSONStorage> load;
   std::shared_ptr<joda::query::Query> q;
-  std::unique_ptr<JSONContainer> aggregate(std::shared_ptr<joda::query::Query> &q,
-                                           joda::query::AggregatorQueue::queue_t *queue,
-                                           Benchmark *benchmark);
+  std::unique_ptr<JSONContainer> aggregate(
+      std::shared_ptr<joda::query::Query> &q,
+      joda::query::AggregatorQueue::queue_t *queue, Benchmark *benchmark);
   std::unique_ptr<JsonContainerRefQueue::queue_t> loadQueue;
   std::unique_ptr<JsonContainerQueue::queue_t> storeQueue;
   std::unique_ptr<joda::query::AggregatorQueue::queue_t> aggregatorQueue;
