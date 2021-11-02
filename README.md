@@ -132,13 +132,13 @@ These are options that may be supplied to the program during invokation.
 - __-h --help__:        Shows help text and exits the program
 - __--version__:        Displays the version number
 - __-d --data__:        Data dictionary for benchmarks. (Default: current dictionary)
-- __--tmpdir__:           Dictionary to use for temporary files.
 - __-s --nostorage__:   Does not keep JSON files in memory. This results in less RAM usage, but increases execution time
-- __--tmpdir__:           Temporary directory to use. (Default: "/tmp/PJDB")
+- __--tmpdir__:           Temporary directory to use. (Default: "/tmp/JODA")
 - __-t --maxthreads__:  Sets the maximum number of threads to be used. Default is all available threads
 - __--logtostderr__:    Writes log to terminal.
 - __-c --time__:        Times the execution
 - __--benchfile__:      Sets file in which time (and benchmark) results will be stored
+- __-f --queryfile__:   A JODA query file to execute
 - __--server__:         Starts the program in server mode (Needs port option)
 - __-p --port__:        Port on which the server will listen
 

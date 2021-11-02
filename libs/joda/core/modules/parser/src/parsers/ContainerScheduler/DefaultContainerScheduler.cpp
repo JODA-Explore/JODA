@@ -3,6 +3,7 @@
 //
 
 #include "DefaultContainerScheduler.h"
+
 #include <joda/config/config.h>
 #include <joda/storage/JSONStorage.h>
 
@@ -21,9 +22,9 @@ joda::docparsing::DefaultContainerScheduler<meta>::createContainer(
 template <>
 void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(
     ContainerIdentifier /*id*/, std::unique_ptr<RJDocument>&& doc,
-    std::unique_ptr<IOrigin>&& origin, size_t /*size*/) {
-  currentContainer->insertDoc(std::move(doc), std::move(origin));
-  if (!(currentContainer->hasMetaSpace(0) || currentContainer->size() == 0)) {
+    std::unique_ptr<IOrigin>&& origin, size_t size) {
+  if (!(currentContainer->hasMetaSpace(size) ||
+        currentContainer->size() == 0)) {
     currentContainer->metaFinalize();
     currentContainer->removeDocuments();
     DCHECK(currentContainer != nullptr);
@@ -32,21 +33,22 @@ void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(
     currentContainer = createContainer(contSize);
     DCHECK(currentContainer != nullptr);
   }
+  currentContainer->insertDoc(std::move(doc), std::move(origin));
 }
 
 template <>
 void joda::docparsing::DefaultContainerScheduler<false>::scheduleDocument(
     ContainerIdentifier /*id*/, std::unique_ptr<RJDocument>&& doc,
-    std::unique_ptr<IOrigin>&& origin, size_t /*size*/) {
+    std::unique_ptr<IOrigin>&& origin, size_t size) {
   DCHECK(currentContainer != nullptr);
-  currentContainer->insertDoc(std::move(doc), std::move(origin));
-  if (!(currentContainer->hasSpace(0) || currentContainer->size() == 0)) {
+  if (!(currentContainer->hasSpace(size) || currentContainer->size() == 0)) {
     currentContainer->finalize();
     queue->send(std::move(currentContainer));  // Enqueue
     DCHECK(currentContainer == nullptr);
     currentContainer = createContainer(contSize);
     DCHECK(currentContainer != nullptr);
   }
+  currentContainer->insertDoc(std::move(doc), std::move(origin));
 }
 
 template <bool meta>

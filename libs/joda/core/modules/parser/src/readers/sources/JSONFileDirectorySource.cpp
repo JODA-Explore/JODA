@@ -79,5 +79,5 @@ size_t joda::docparsing::JSONFileDirectorySource::estimatedSize() {
   for (auto&& item : dfs.getFilesInDir(dirPath, "json")) {
     size += dfs.getFileSize(item);
   }
-  return size;
+  return size*config::text_binary_mod;
 }

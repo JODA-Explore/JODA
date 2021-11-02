@@ -158,7 +158,7 @@ void joda::docparsing::ReaderParser::startParser(
       }
     }
     estimated = std::max(static_cast<unsigned long> JSON_CONTAINER_DEFAULT_SIZE,
-                         estimated / maxThreads);
+                         estimated / (maxThreads*2));
 
     for (const auto& parserId : parserIds) {
       if (parserId.first == JODA_JSON_TEXT_PARSER_FLAG &&
@@ -200,7 +200,7 @@ void joda::docparsing::ReaderParser::startParser(
       }
     }
     estimated = std::max(static_cast<unsigned long> JSON_CONTAINER_DEFAULT_SIZE,
-                         estimated / maxThreads);
+                         estimated / (maxThreads*2));
     for (const auto& parserId : parserIds) {
       if (parserId.first == JSONStreamParser<>::getIQueueFlags() &&
           parserId.second == JSONStreamParser<>::getOQueueFlags()) {

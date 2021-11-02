@@ -8,9 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY *.deb .
 
 #Install JODA
-RUN apt-get update && apt install -y ./*.deb
-#Cleanup
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt install --no-install-recommends -y ./*.deb && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy config
 COPY docker/application-container/buster/joda.conf joda.conf

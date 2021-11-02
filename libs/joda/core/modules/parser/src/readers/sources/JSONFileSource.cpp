@@ -66,5 +66,5 @@ joda::docparsing::JSONFileSource::JSONFileSource(std::string filePath,
 
 size_t joda::docparsing::JSONFileSource::estimatedSize() {
   joda::filesystem::DirectoryFileScanner dfs;
-  return dfs.getFileSize(filePath);
+  return dfs.getFileSize(filePath)*config::text_binary_mod;
 }

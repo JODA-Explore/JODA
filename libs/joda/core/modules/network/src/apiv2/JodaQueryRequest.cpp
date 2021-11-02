@@ -66,7 +66,7 @@ void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request& req,
     queries.push_back(std::move(query));
   }
 
-  Benchmark bench;
+  Benchmark bench(config::benchfile);
   unsigned long result;
   for (const auto& query : queries) {
     QueryPlan plan(query);

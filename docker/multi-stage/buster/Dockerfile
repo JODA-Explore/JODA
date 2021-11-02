@@ -44,9 +44,7 @@ COPY --from=0 /app/build/apps/joda/joda /bin/joda
 COPY --from=0 /app/build/apps/client/joda-client /bin/joda-client
 
 #Install JODA
-RUN apt-get update && apt-get install -y $DEPENDENCY_PACKAGES
-#Cleanup
-RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt-get install --no-install-recommends -y $DEPENDENCY_PACKAGES && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy config
 COPY docker/application-container/buster/joda.conf joda.conf

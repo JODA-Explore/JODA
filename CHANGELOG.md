@@ -6,6 +6,13 @@
 
 
 ## 0.12.X
+### 0.12.3
+#### Changed
+- Create 2 containers per thread by default
+#### Fixed
+- Fix statistics not being stored persistently in server mode
+- Fix container scheduling 
+- Improve ImportSource size estimation
 ### 0.12.2
 #### Added
 - FINDSTR and SUBSTR functions
