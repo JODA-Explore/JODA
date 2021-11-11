@@ -53,7 +53,7 @@ class AttributeStatAggregator : public IAggregator {
       uint64_t max_strsize = 0;
       uint64_t min_strsize = std::numeric_limits<uint64_t>::max();
       size_t count_double = 0;
-      double max_double = std::numeric_limits<double>::min();
+      double max_double = std::numeric_limits<double>::lowest();
       double min_double = std::numeric_limits<double>::max();
       size_t count_int = 0;
       int64_t max_int = std::numeric_limits<int64_t>::min();

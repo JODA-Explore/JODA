@@ -45,6 +45,8 @@ class ViewLayer {
    * Accepts
    */
  public:
+
+  void updateDoc(const RJValue *doc);
   void setPrefix(const std::string &prefix);
 
   bool pointerIsOverwritten(const std::string &ptr) const;

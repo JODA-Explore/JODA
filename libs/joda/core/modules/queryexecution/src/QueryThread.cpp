@@ -80,7 +80,7 @@ void QueryThread::work() {
         continue;
       }
       pipelineCont = inCont;
-      auto contLock = pipelineCont->useContInScope();
+      auto contLock = pipelineCont->useContInScope(false);
 
       /*
        * -------------------------  Query Exec
@@ -187,7 +187,7 @@ void QueryThread::work() {
         isSelected = true;
       }
 
-      auto tmpContScope = pipelineCont->useContInScope();
+      auto tmpContScope = pipelineCont->useContInScope(false);
       if (pipelineCont->size() == 0) {
         DLOG(INFO) << "Empty container, skipping";
         continue;
@@ -198,6 +198,7 @@ void QueryThread::work() {
 
       if (hasAggregators()) {
         DCHECK(oqueue == nullptr);
+        LOG(INFO) << "Starting aggregation";
         aggregate_timer.start();
         if (pipelineCont->isView()) {
           auto& atts = aggAttributes;

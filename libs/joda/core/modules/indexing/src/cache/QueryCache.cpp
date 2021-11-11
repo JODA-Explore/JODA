@@ -37,6 +37,17 @@ std::shared_ptr<const CacheEntry::CacheIndex> QueryCache::getBestCache(
   return getBestCache(str);
 }
 
+std::shared_ptr<const CacheEntry::CacheIndex> QueryCache::getBestCache(
+    const std::unique_ptr<joda::query::Predicate>& pred) {
+  if (queryMap.empty()) {
+    return nullptr;  // No need to stringify if cache is empty
+  }
+  joda::query::ToStringVisitor stringify;
+  pred->accept(stringify);
+  auto str = stringify.popString();
+  return getBestCache(str);
+}
+
 void QueryCache::reset() { queryMap.clear(); }
 
 bool QueryCache::cacheAvailable(

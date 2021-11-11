@@ -134,7 +134,7 @@ class JSONContainer {
               std::vector<retType> &vec);
 
   /**
-   * Executes a function on all documents and stores their return value
+   * Executes a function on all documents and discards their return value
    * @tparam  F the function to call
    * @param func The function to execute on all documents.
    */
@@ -150,7 +150,7 @@ class JSONContainer {
   }
 
   /**
-   * Executes a function on all documents and stores their return value
+   * Executes a function on all documents and discards their return value
    * @tparam  F the function to call
    * @param func The function to execute on all documents.
    */
@@ -166,13 +166,17 @@ class JSONContainer {
   }
 
   /**
-   * Executes a function on all documents and stores their return value
+   * Executes a function on all documents and discards their return value
    * @tparam  F the function to call
    * @param func The function to execute on all documents.
+   * @param ids The documents to check
    */
+  
   template <class F>
   void forAll(F f, const DocIndex &ids) {
-    ScopedRef ref(this);
+    ScopedRef useCont(this, false);
+    reparseSubset(ids);
+    
     for (size_t i = 0; i < docs.size(); ++i) {
       if (!ids[i]) continue;
       auto &doc = docs[i];
@@ -181,6 +185,35 @@ class JSONContainer {
       }
     }
     setLastUsed();
+  }
+
+  /**
+   * Executes a function on all documents and stores their return value
+   * @tparam  F the function to call
+   * @param func The function to execute on all documents.
+   * @param ids The documents to check
+   * @param vec The vector of return types to fill
+   */
+  template <class F, class R>
+  std::vector<R> forAllRet(F f, const DocIndex &ids) {
+    auto ret = std::vector<R>();
+    ret.reserve(ids.size());
+
+    ScopedRef useCont(this, false);
+    reparseSubset(ids);
+
+    for (size_t i = 0; i < docs.size(); ++i) {
+      if (!ids[i]) {
+        ret.emplace_back();
+        continue;
+      };
+      auto &doc = docs[i];
+      if (doc.valid) {
+        ret.emplace_back(f(doc.doc,i));
+      }
+    }
+    setLastUsed();
+    return ret;
   }
 
   /**
@@ -261,6 +294,12 @@ class JSONContainer {
    * @param end End index of documents to reparse
    */
   void reparseSubset(unsigned long start = 0, unsigned long end = ULONG_MAX);
+
+  /**
+   * Reparses the contained documents
+   * @param index The document index of all documents to be parsed
+   */
+  void reparseSubset(const DocIndex &index);
 
   /**
    * Checks if the container is reparsable
@@ -410,7 +449,7 @@ class JSONContainer {
     JSONContainer *cont_ = nullptr;
   };
 
-  inline auto useContInScope() { return ScopedRef(this); }
+  inline auto useContInScope(bool parse = true) { return ScopedRef(this, parse); }
 
  private:
   size_t lastParsedSize = 0;
@@ -420,7 +459,7 @@ class JSONContainer {
   std::atomic<unsigned int> usage{0};
 
   inline void useCont(bool parse = true) {
-    if (isView()) baseContainer->useCont();
+    if (isView()) baseContainer->useCont(parse);
     auto prev = usage.fetch_add(1);
     if (parse) reparse();
     if (prev == 0) setViews();

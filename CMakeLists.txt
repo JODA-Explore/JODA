@@ -21,7 +21,7 @@ system_info(DISTRO)
 set(JODA_ALLOC "AUTO") #Possible values: JEMALLOC, TCMALLOC, AUTO , PROFILE
 set(PACKAGE_AUTHOR "Nico Schäfer")
 
-project(JODA VERSION 0.12.3 HOMEPAGE_URL https://github.com/JODA-Explore/JODA LANGUAGES CXX)
+project(JODA VERSION 0.12.4 HOMEPAGE_URL https://github.com/JODA-Explore/JODA LANGUAGES CXX)
 
 SET(JODA_API_VERSION 2)
 

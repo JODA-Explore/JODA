@@ -20,6 +20,9 @@ class AndPredicate : public Predicate {
   virtual std::string getType() override;
   void accept(PredicateVisitor &v) override;
 
+  const std::unique_ptr<Predicate>& getLHS();
+  const std::unique_ptr<Predicate>& getRHS();
+
   /**
    * Accepts either the left hand or right hand predicate
    * @param v The visitor to use

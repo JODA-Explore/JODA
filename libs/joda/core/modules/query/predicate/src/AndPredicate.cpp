@@ -35,3 +35,11 @@ void joda::query::AndPredicate::subAccept(PredicateVisitor& v, bool lhs) {
     p2->accept(v);
   }
 }
+
+const std::unique_ptr<joda::query::Predicate>& joda::query::AndPredicate::getLHS(){
+  return this->p1;
+}
+
+const std::unique_ptr<joda::query::Predicate>& joda::query::AndPredicate::getRHS(){
+  return this->p2;
+}

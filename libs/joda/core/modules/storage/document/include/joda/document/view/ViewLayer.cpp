@@ -77,6 +77,10 @@ bool ViewLayer::pointerIsOverwritten(const std::string& ptr) const {
          viewPaths->end();
 }
 
+void ViewLayer::updateDoc(const RJValue *doc) {
+  this->doc = doc;
+}
+
 const VirtualObject* ViewLayer::getVO(const std::string& ptr) const {
   auto obj = objects.find(ptr);
   if (obj != objects.end()) {

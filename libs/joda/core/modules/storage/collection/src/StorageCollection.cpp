@@ -25,6 +25,7 @@ std::shared_ptr<JSONStorage> StorageCollection::getStorage(
 }
 
 void StorageCollection::removeStorage(const std::string& name) {
+  LOG(INFO) << "Removing storage " << name;
   std::lock_guard<std::mutex> guard(mut);
   storages.erase(name);
   storageInsertion.erase(
@@ -49,6 +50,7 @@ std::shared_ptr<JSONStorage> StorageCollection::getOrAddStorage(
     const std::string& name) {
   std::lock_guard<std::mutex> guard(mut);
   if (storages.find(name) == storages.end()) {
+    LOG(INFO) << "Adding storage " << name;
     storages[name] = std::make_shared<JSONStorage>(name);
     storageInsertion.emplace_back(name);
   }
@@ -79,10 +81,12 @@ std::shared_ptr<JSONStorage> StorageCollection::getStorage(unsigned long id) {
   return tmp->second;
 }
 void StorageCollection::removeStorage(unsigned long id) {
+  LOG(INFO) << "Removing result " << id;
   std::lock_guard<std::mutex> guard(mut);
   resultStorage.erase(id);
 }
 unsigned long StorageCollection::addTemporaryStorage() {
+  LOG(INFO) << "Creating temporary storage";
   return addTemporaryStorage(
       std::make_shared<JSONStorage>(JODA_TEMPORARY_STORAGE_NAME));
 }
@@ -118,6 +122,7 @@ std::shared_ptr<JoinManager> StorageCollection::getOrStartJoin(
     return nullptr;
   }
   auto jName = getJoinName(*tmpValProv);  // Get Name
+  LOG(INFO) << "Starting join " << jName;
   std::lock_guard<std::mutex> guard(mut);
   auto f = runningJoins.find(jName);
   if (f != runningJoins.end()) {
@@ -138,6 +143,7 @@ std::shared_ptr<JoinManager> StorageCollection::getOrStartJoin(
 
 void StorageCollection::stopJoin(const joda::query::IValueProvider& valProv) {
   auto jName = getJoinName(valProv);  // Get Name
+  LOG(INFO) << "Stopping join " << jName;
   std::lock_guard<std::mutex> guard(mut);
   runningJoins.erase(jName);  // Remove
 }
@@ -154,6 +160,7 @@ std::string StorageCollection::getJoinName(
 
 void StorageCollection::stopJoin(const JoinManager& jm) {
   std::lock_guard<std::mutex> guard(mut);
+  LOG(INFO) << "Stopping join " << jm.getName();
   runningJoins.erase(jm.getName());
 }
 

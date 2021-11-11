@@ -210,6 +210,7 @@ void JSONContainer::reparse() {
       DCHECK(false) << "This should not happen";
     }
   }
+  removeViews();
   setViews();
   deleted = false;
   lastParsedSize = 0;
@@ -232,8 +233,9 @@ void JSONContainer::reparseSubset(unsigned long start, unsigned long end) {
   }
   for (unsigned long i = start; i <= end; ++i) {
     auto& doc = docs[i];
+    if (doc.isValid()) continue;
     auto* orig = doc.doc.getOrigin();
-    if (!doc.isValid() && orig->isReparsable()) {
+    if (orig->isReparsable()) {
       auto tmpDoc = orig->reparse(*alloc);
       if (tmpDoc == nullptr) {
         LOG(ERROR) << "Document could not be reparsed. Skipping";
@@ -246,6 +248,46 @@ void JSONContainer::reparseSubset(unsigned long start, unsigned long end) {
       DCHECK(false) << "This should not happen";
     }
   }
+  removeViews();
+  setViews();
+}
+
+void JSONContainer::reparseSubset(const DocIndex &index) {
+  if (!deleted) {
+    return;
+  }
+  if (docs.empty()) {
+    return;
+  }
+  DLOG(INFO) << "Reparsing container with indices";
+  if (isView()) {
+    auto baseIndex = DocIndex(baseContainer->size());
+    for (unsigned long i = 0; i < docs.size(); ++i) {
+      if (!index[i]) continue;
+      baseIndex[docs[i].baseIndex] = true;
+    }
+    baseContainer->reparseSubset(baseIndex);
+  }
+  for (unsigned long i = 0; i < docs.size(); ++i) {
+    if (!index[i]) continue;
+    auto& doc = docs[i];
+    if (doc.isValid()) continue;
+    auto* orig = doc.doc.getOrigin();
+    if (orig->isReparsable()) {
+      auto tmpDoc = orig->reparse(*alloc);
+      if (tmpDoc == nullptr) {
+        LOG(ERROR) << "Document could not be reparsed. Skipping";
+        doc.valid = false;
+      } else {
+        doc.doc.setJson(std::move(tmpDoc));
+        doc.valid = true;
+      }
+    } else {
+      DCHECK(false) << "This should not happen";
+    }
+  }
+  removeViews();
+  setViews();
 }
 
 const std::unique_ptr<QueryCache>& JSONContainer::getCache() const {
@@ -472,7 +514,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
           (proj.empty() && setProj.empty())))
       << "* Projection has to be the first projection";
 
-  ScopedRef useCont(this);
+  ScopedRef useCont(this, false); //Does not need to parse everything yet
   auto tmpCont = std::make_unique<JSONContainer>();
   tmpCont->baseContainer = this;
   if (proj.empty() && setProj.empty()) {
@@ -485,6 +527,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
                          i);
     }
   } else {
+    ScopedRef useContContent(this); //Needs to parse, and needs the actual content
     bool used = false;
     for (size_t j = 0; j < docs.size(); ++j) {
       auto& doc = docs[j];
@@ -1021,6 +1064,12 @@ void JSONContainer::removeViews() {
   viewStruc = nullptr;
   for (auto& doc : docs) {
     doc.doc.setView(nullptr);
+  }
+  if(materializedAttributes.empty() && baseContainer != nullptr){
+    //If the view did not change anything, then remove basecontainer
+    //As this was a selection only view and all documents are reparsable
+    baseContainer->removeSubContainer(this);
+    baseContainer = nullptr;
   }
 }
 bool JSONContainer::useViewBasedOnSample(

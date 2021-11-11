@@ -1,11 +1,24 @@
 # Changelog
 ## DEV
 #### Added
+
 #### Changed
+
 #### Fixed
 
 
 ## 0.12.X
+### 0.12.4
+#### Added
+- Ability to use caches of subpredicates (e.g. A && B can use a cached result of "A" )
+#### Changed
+- Improve reparsing of containers if documents have been deleted
+- Improve logging of web-api and storage
+#### Fixed
+- Aggregation functions with 0 parameters 
+- Crashes if documents are requested to be reparsed multiple times
+- Broken delta trees with reparsing
+- Wrong aggregation with negative floats in ATTSTAT
 ### 0.12.3
 #### Changed
 - Create 2 containers per thread by default

@@ -7,8 +7,6 @@ data_dir = .
 tmpdir = /tmp/JODA
 readthreads=1
 
-[indices.cracking]
-enable = true
 
 [indices.caching]
 enable = true

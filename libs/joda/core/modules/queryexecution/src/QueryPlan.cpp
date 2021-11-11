@@ -255,6 +255,7 @@ std::unique_ptr<JSONContainer> QueryPlan::aggregate(
       }
     }
   }
+  LOG(INFO) << "Finished merging aggregators";
 
   /*
    * Make object

@@ -49,8 +49,8 @@ struct aggFrom
           aggKeywords, tao::pegtl::pad<tao::pegtl::one<'('>, tao::pegtl::space>,
           tao::pegtl::opt<
               tao::pegtl::list<functionstateaction, tao::pegtl::one<','>,
-                               tao::pegtl::space>,
-              tao::pegtl::pad<tao::pegtl::one<')'>, tao::pegtl::space>>> {};
+                               tao::pegtl::space>>,
+              tao::pegtl::pad<tao::pegtl::one<')'>, tao::pegtl::space>> {};
 
 /*
  * Aggregation Group

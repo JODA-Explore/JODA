@@ -23,6 +23,14 @@ class QueryCache {
    */
   std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
       const std::shared_ptr<joda::query::Predicate> &pred);
+
+  /**
+   * Returns the cached DOC_IDs for the given predicate
+   * @param pred The predicated in internal representation
+   * @return A set of DOC_IDs stored by a previous query execution
+   */
+  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
+      const std::unique_ptr<joda::query::Predicate> &pred);
   /**
    * Returns the cached DOC_IDs for the given predicate
    * @param predStr The predicated in string representation

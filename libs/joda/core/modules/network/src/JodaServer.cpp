@@ -30,7 +30,7 @@ bool joda::network::JodaServer::start(const std::string& addr, int port) {
   server.set_logger([](const auto& req, const auto& res) {
     LOG(INFO) << "Got request: " << req.path << " (Response: " << res.status
               << ")";
-    DLOG(INFO) << "Request Parameters:\n" << printParameters(req.params);
+    LOG(INFO) << "Request Parameters:\n" << printParameters(req.params);
   });
 
   /*
@@ -74,10 +74,10 @@ std::string joda::network::JodaServer::printParameters(
     const httplib::Params& p) {
   std::string ret = "{";
   for (const auto& item : p) {
-    ret += "\n" + item.first + " : " + item.second;
-  }
-  if (ret.size() > 1) {
-    ret += "\n";
+    ret += "\"" + item.first + "\" : \"" + item.second + "\"";
+    if (ret.size() > 1) {
+      ret += ", ";
+    }
   }
   ret += "}";
   return ret;
