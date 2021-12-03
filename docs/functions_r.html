@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -84,7 +84,11 @@ $(function() {
 , <a class="el" href="d7/de5/classCursesPrettyHandler.html#a1cfe55d08b31f5f28a0b72142b2d1d30">CursesPrettyHandler</a>
 , <a class="el" href="d7/d15/classDocumentCostHandler.html#ad71495ca5bf029433dc94ab87400b349">DocumentCostHandler</a>
 , <a class="el" href="d7/da6/classjoda_1_1query_1_1AttributeStatAggregator_1_1AttStatHandler.html#af5d4aff6dfc6a8cfe91b5e3dc523c18b">joda::query::AttributeStatAggregator::AttStatHandler</a>
+, <a class="el" href="d0/d8b/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastHandler.html#aadec76c0a95c03da90a4b65197ef6cbe">joda::query::providers::cast::FloatCastHandler</a>
+, <a class="el" href="d8/dc2/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastHandler.html#ac9add18e2dd5dede4bdfcfff7278f061">joda::query::providers::cast::IntCastHandler</a>
+, <a class="el" href="d4/d04/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastHandler.html#a0d17cf9337009fbd2c95889cf7c37e36">joda::query::providers::cast::StringCastHandler</a>
 , <a class="el" href="db/d44/classjoda_1_1query_1_1providers_1_1hash_1_1HashHandler.html#a431f3ea0f525c54c7d53a948c588d94c">joda::query::providers::hash::HashHandler</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#a7a205341c253cd89b8638b66a2159535">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d4/dd3/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountHandler.html#a3bf10789e51dc41f41298d5d80871250">joda::query::providers::membercount::MemberCountHandler</a>
 , <a class="el" href="d9/d73/classRJAttributeReader.html#a75ecde740b9804d3947aa4b27737216e">RJAttributeReader</a>
 , <a class="el" href="d8/d70/classRJPathsReader.html#aee3e438c756c9467d05ec31ffd3a8b17">RJPathsReader</a>
@@ -120,12 +124,6 @@ $(function() {
 , <a class="el" href="d9/dbb/classjoda_1_1docparsing_1_1JSONStreamParser.html#ab8d852b0503f05c3fedbf895fbfdc97c">joda::docparsing::JSONStreamParser&lt; Scheduler &gt;</a>
 , <a class="el" href="da/d5a/classjoda_1_1docparsing_1_1JSONTextParser.html#a0971a202a7f12f714af814980d3f4573">joda::docparsing::JSONTextParser&lt; Scheduler &gt;</a>
 , <a class="el" href="da/da2/classjoda_1_1docparsing_1_1JSONURLReader.html#a2348a8eac858232f16e750a1f7b047ef">joda::docparsing::JSONURLReader</a>
-</li>
-<li>recursive
-: <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a7c37be98f2cfd2a1fa5aa3d067eb4ba3">joda::query::ListAttributesProvider</a>
-</li>
-<li>recursiveAdd()
-: <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a779a32696761268a51cc65cfd711516c">joda::query::ListAttributesProvider</a>
 </li>
 <li>referenceAgg
 : <a class="el" href="dc/d82/classAggregatorParsingTest.html#aa1a6be2fcca021de16638572bc0aa6e6">AggregatorParsingTest&lt; T &gt;</a>
@@ -227,6 +225,7 @@ $(function() {
 <li>reset()
 : <a class="el" href="d7/da6/classjoda_1_1query_1_1AttributeStatAggregator_1_1AttStatHandler.html#a0650baf1b73b3b23afdb4b7f66357bf5">joda::query::AttributeStatAggregator::AttStatHandler</a>
 , <a class="el" href="db/d44/classjoda_1_1query_1_1providers_1_1hash_1_1HashHandler.html#ad6e6e46bae264182148fab2154981018">joda::query::providers::hash::HashHandler</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#afd0f1880a5f4137940506a4b93a9e006">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d4/dd3/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountHandler.html#ada5befb41920e0d1d174be01d6242194">joda::query::providers::membercount::MemberCountHandler</a>
 , <a class="el" href="dd/d5c/classProgressBar.html#a9b39dcf1d2f9ff5f7bf3f91ca3ba86d1">ProgressBar&lt; IntType &gt;</a>
 , <a class="el" href="d7/d56/classQueryCache.html#a64b60c8e83748ccbb6fdf5f8e4697f4b">QueryCache</a>
@@ -259,7 +258,7 @@ $(function() {
 : <a class="el" href="da/d91/classStorageCollection.html#a7f5497297e918a12013434ff85bfa0ad">StorageCollection</a>
 </li>
 <li>retrieve()
-: <a class="el" href="d1/d30/structJODA__SHARED__QUEUE.html#a3065548542147f11825a10b293354b9e">JODA_SHARED_QUEUE&lt; payload_t, flag, queue_trait &gt;</a>
+: <a class="el" href="d1/d30/structJODA__SHARED__QUEUE.html#a85346f08f256c2b939e9fef99004d2cf">JODA_SHARED_QUEUE&lt; payload_t, flag, queue_trait &gt;</a>
 </li>
 <li>retType
 : <a class="el" href="d0/d2d/structjoda_1_1query_1_1BinaryAtan2CalculationFunction.html#a99c73faac87187aa4b3c7f25ec6a6cff">joda::query::BinaryAtan2CalculationFunction</a>
@@ -273,8 +272,13 @@ $(function() {
 , <a class="el" href="d1/dc2/structjoda_1_1query_1_1BinarySTARTSWITHCalculationFunction.html#a92290c7488c18e9cbacfea5f0eeb1b44">joda::query::BinarySTARTSWITHCalculationFunction</a>
 , <a class="el" href="d1/ddf/structjoda_1_1query_1_1BinarySubCalculationFunction.html#a4bc34bcba65e7e1207e9b8b1a1beee4f">joda::query::BinarySubCalculationFunction</a>
 , <a class="el" href="db/d6e/structjoda_1_1query_1_1BinarySumCalculationFunction.html#a271995dc7e45ab55dc3605510183e6a0">joda::query::BinarySumCalculationFunction</a>
+, <a class="el" href="d8/d03/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastCalculator.html#a64a1536bf7b4b7d43480a801511955f0">joda::query::providers::cast::FloatCastCalculator</a>
+, <a class="el" href="d9/d4c/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastCalculator.html#a0838d65a00986edd7711eb76bc6a62dd">joda::query::providers::cast::IntCastCalculator</a>
+, <a class="el" href="d7/d2e/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastCalculator.html#aa56ba596f6aaf527481a9938452481d2">joda::query::providers::cast::StringCastCalculator</a>
 , <a class="el" href="d5/d73/classjoda_1_1query_1_1providers_1_1hash_1_1HashCalculator.html#a7e17f819ac564881035ca7763adcf1aa">joda::query::providers::hash::HashCalculator</a>
+, <a class="el" href="dc/d37/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesCalculator.html#aa4435854e9b0db0f75b4e30ecf31139b">joda::query::providers::listattributes::ListAttributesCalculator</a>
 , <a class="el" href="df/d74/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountCalculator.html#a9498022f13a09a1cd2fd1bd51919d622">joda::query::providers::membercount::MemberCountCalculator</a>
+, <a class="el" href="d0/dd8/structjoda_1_1query_1_1TemplateCalc.html#ab7101438f025a59e6ad1bd330664d4e6">joda::query::TemplateCalc</a>
 , <a class="el" href="dc/d34/structjoda_1_1query_1_1UnaryAbsCalculationFunction.html#a69bbad75a6c3f736d0a180ba72b6b9f9">joda::query::UnaryAbsCalculationFunction</a>
 , <a class="el" href="dc/d76/structjoda_1_1query_1_1UnaryAcosCalculationFunction.html#a72f05977857380eb0230b554f7968e9e">joda::query::UnaryAcosCalculationFunction</a>
 , <a class="el" href="dd/d3d/structjoda_1_1query_1_1UnaryAsinCalculationFunction.html#a2ebab7b736bb3103173ef73a25d79b86">joda::query::UnaryAsinCalculationFunction</a>
@@ -295,6 +299,15 @@ $(function() {
 , <a class="el" href="d4/d4c/structjoda_1_1query_1_1UnaryTruncCalculationFunction.html#a2a1045d449f9e3fc9e564f82923b3df6">joda::query::UnaryTruncCalculationFunction</a>
 , <a class="el" href="d5/d5d/structjoda_1_1query_1_1UnaryUpperCalculationFunction.html#ad001fe8abd18249111c81c68bcb6a531">joda::query::UnaryUpperCalculationFunction</a>
 </li>
+<li>ReturnT
+: <a class="el" href="d6/d87/structjoda_1_1query_1_1values_1_1AnyParameter.html#a07ea85dc53b9f794524536c0bb1247e6">joda::query::values::AnyParameter&lt; k &gt;</a>
+, <a class="el" href="dc/d41/structjoda_1_1query_1_1values_1_1BoolParameter.html#a0e618328f22b53ea5b4941ba88b708d1">joda::query::values::BoolParameter&lt; k &gt;</a>
+, <a class="el" href="dd/ddd/structjoda_1_1query_1_1values_1_1ObjectParameter.html#a962114aeec312e94b3564a33ad5e3a08">joda::query::values::ObjectParameter&lt; k &gt;</a>
+, <a class="el" href="d5/dc0/structjoda_1_1query_1_1values_1_1OptionalParameter.html#ac2986a6d939e2e3699c093a7c391d195">joda::query::values::OptionalParameter&lt; k, T &gt;</a>
+, <a class="el" href="d5/de5/structjoda_1_1query_1_1values_1_1OptionalWithDefaultParameter.html#a64ec27496bf0423819534b3cff610664">joda::query::values::OptionalWithDefaultParameter&lt; k, T, Default &gt;</a>
+, <a class="el" href="d9/d3f/structjoda_1_1query_1_1values_1_1OrParameter.html#a6042a09df304c691a491e03c530600fe">joda::query::values::OrParameter&lt; k, T1, T2, Default &gt;</a>
+, <a class="el" href="d1/d0f/structjoda_1_1query_1_1values_1_1StringParameter.html#aafe42c4b89097b414100b7d5c4385062">joda::query::values::StringParameter&lt; k &gt;</a>
+</li>
 <li>rhs
 : <a class="el" href="df/da0/classjoda_1_1query_1_1ComparePredicate.html#a21ee1154591a308b77211e9ce806389c">joda::query::ComparePredicate</a>
 , <a class="el" href="d5/d39/classjoda_1_1query_1_1EqualizePredicate.html#a0d6e31dc91d1979c77c884b1ed981d37">joda::query::EqualizePredicate</a>
@@ -306,7 +319,7 @@ $(function() {
 : <a class="el" href="d8/d70/classRJPathsReader.html#a50c976dad3fb26bcd7e0fc5536dbb023">RJPathsReader</a>
 </li>
 <li>rjvalToString()
-: <a class="el" href="db/d95/classAggregatorTest.html#aec9a04e632ca82350ac0a829d7f69032">AggregatorTest</a>
+: <a class="el" href="db/d95/classAggregatorTest.html#aedd08b05bbedbe69a67844fb82b25868">AggregatorTest</a>
 </li>
 <li>RPayload
 : <a class="el" href="d2/d38/classIReader.html#a98363a9bf60fe3272b7a480f801fc01f">IReader&lt; R_FLAGS, P_FLAGS &gt;</a>

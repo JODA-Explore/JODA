@@ -1,6 +1,9 @@
 <map id="joda::query::WrongParameterException" name="joda::query::WrongParameterException">
-<area shape="rect" id="node1" title=" " alt="" coords="168,39,379,80"/>
-<area shape="rect" id="node3" href="$d8/d38/classjoda_1_1query_1_1WrongParameterCountException.html" title=" " alt="" coords="427,5,637,47"/>
-<area shape="rect" id="node4" href="$db/d12/classjoda_1_1query_1_1WrongParameterTypeException.html" title=" " alt="" coords="427,71,637,112"/>
-<area shape="rect" id="node2" title="STL class." alt="" coords="5,46,120,73"/>
+<area shape="rect" id="node1" title=" " alt="" coords="168,104,379,145"/>
+<area shape="rect" id="node3" href="$d4/d03/classjoda_1_1query_1_1ConstParameterException.html" title=" " alt="" coords="429,5,635,47"/>
+<area shape="rect" id="node4" href="$db/d92/classjoda_1_1query_1_1values_1_1IncompatibleTypeException.html" title=" " alt="" coords="427,71,637,112"/>
+<area shape="rect" id="node5" href="$d8/d38/classjoda_1_1query_1_1WrongParameterCountException.html" title=" " alt="" coords="427,136,637,177"/>
+<area shape="rect" id="node7" href="$db/d12/classjoda_1_1query_1_1WrongParameterTypeException.html" title=" " alt="" coords="427,201,637,243"/>
+<area shape="rect" id="node2" title="STL class." alt="" coords="5,111,120,138"/>
+<area shape="rect" id="node6" href="$df/dbd/classjoda_1_1query_1_1MissingParameterException.html" title=" " alt="" coords="685,136,904,177"/>
 </map>

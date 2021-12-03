@@ -220,125 +220,125 @@
 <!-- Node16 -->
 <g id="node16" class="node">
 <title>Node16</title>
-<g id="a_node16"><a xlink:href="../../d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="204,-476.5 204,-506.5 346,-506.5 346,-476.5 204,-476.5"/>
-<text text-anchor="start" x="212" y="-494.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::ListAttributes</text>
-<text text-anchor="middle" x="275" y="-483.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider</text>
+<g id="a_node16"><a xlink:href="../../dc/d24/classjoda_1_1query_1_1NullProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="206.5,-488 206.5,-507 343.5,-507 343.5,-488 206.5,-488"/>
+<text text-anchor="middle" x="275" y="-495" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::NullProvider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node16 -->
 <g id="edge16" class="edge">
 <title>Node1&#45;&gt;Node16</title>
-<path fill="none" stroke="midnightblue" d="M127.74,-523.76C151.67,-518.48 180.21,-512.19 205.69,-506.57"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="126.8,-520.38 117.79,-525.95 128.31,-527.22 126.8,-520.38"/>
+<path fill="none" stroke="midnightblue" d="M134.45,-524.08C162.99,-518.64 196.74,-512.22 223.89,-507.04"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="133.75,-520.65 124.58,-525.96 135.06,-527.53 133.75,-520.65"/>
 </g>
 <!-- Node17 -->
 <g id="node17" class="node">
 <title>Node17</title>
-<g id="a_node17"><a xlink:href="../../dc/d24/classjoda_1_1query_1_1NullProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="206.5,-438 206.5,-457 343.5,-457 343.5,-438 206.5,-438"/>
-<text text-anchor="middle" x="275" y="-445" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::NullProvider</text>
+<g id="a_node17"><a xlink:href="../../df/d90/classjoda_1_1query_1_1PointerProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="199,-450 199,-469 351,-469 351,-450 199,-450"/>
+<text text-anchor="middle" x="275" y="-457" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::PointerProvider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node17 -->
 <g id="edge17" class="edge">
 <title>Node1&#45;&gt;Node17</title>
-<path fill="none" stroke="midnightblue" d="M95.11,-519.72C116.31,-504.24 150.82,-481.03 184,-467.5 194.52,-463.21 206.13,-459.76 217.41,-457.02"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="92.82,-517.06 86.88,-525.84 97,-522.68 92.82,-517.06"/>
+<path fill="none" stroke="midnightblue" d="M98.66,-520.47C120.29,-507.63 153.24,-489.52 184,-478.5 194.52,-474.73 206.02,-471.6 217.17,-469.04"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="96.6,-517.63 89.85,-525.79 100.22,-523.62 96.6,-517.63"/>
 </g>
 <!-- Node18 -->
 <g id="node18" class="node">
 <title>Node18</title>
-<g id="a_node18"><a xlink:href="../../df/d90/classjoda_1_1query_1_1PointerProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="199,-400 199,-419 351,-419 351,-400 199,-400"/>
-<text text-anchor="middle" x="275" y="-407" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::PointerProvider</text>
+<g id="a_node18"><a xlink:href="../../d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="204,-400.5 204,-430.5 346,-430.5 346,-400.5 204,-400.5"/>
+<text text-anchor="start" x="212" y="-418.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexExtract</text>
+<text text-anchor="middle" x="275" y="-407.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node18 -->
 <g id="edge18" class="edge">
 <title>Node1&#45;&gt;Node18</title>
-<path fill="none" stroke="midnightblue" d="M87.39,-517.7C105.91,-493.51 142.43,-450.72 184,-428.5 191.32,-424.58 199.38,-421.48 207.58,-419.01"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="84.38,-515.87 81.2,-525.98 89.99,-520.06 84.38,-515.87"/>
+<path fill="none" stroke="midnightblue" d="M89.76,-518.2C109.48,-496.89 145.83,-461 184,-440.5 191.14,-436.66 198.93,-433.37 206.84,-430.56"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="86.95,-516.09 82.82,-525.84 92.14,-520.79 86.95,-516.09"/>
 </g>
 <!-- Node19 -->
 <g id="node19" class="node">
 <title>Node19</title>
-<g id="a_node19"><a xlink:href="../../d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="204,-350.5 204,-380.5 346,-380.5 346,-350.5 204,-350.5"/>
-<text text-anchor="start" x="212" y="-368.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexExtract</text>
-<text text-anchor="middle" x="275" y="-357.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider</text>
+<g id="a_node19"><a xlink:href="../../de/dcb/classjoda_1_1query_1_1RegexProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="201,-362 201,-381 349,-381 349,-362 201,-362"/>
+<text text-anchor="middle" x="275" y="-369" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexProvider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node19 -->
 <g id="edge19" class="edge">
 <title>Node1&#45;&gt;Node19</title>
-<path fill="none" stroke="midnightblue" d="M83.71,-516.3C99.68,-485.08 135.5,-423.5 184,-390.5 190.03,-386.39 196.73,-382.96 203.66,-380.09"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="80.38,-515.12 79.07,-525.63 86.65,-518.24 80.38,-515.12"/>
+<path fill="none" stroke="midnightblue" d="M83.33,-516.6C98.96,-485.33 134.58,-423.16 184,-391.5 190.74,-387.18 198.28,-383.79 206.05,-381.12"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="80.02,-515.4 78.8,-525.93 86.32,-518.46 80.02,-515.4"/>
 </g>
 <!-- Node20 -->
 <g id="node20" class="node">
 <title>Node20</title>
-<g id="a_node20"><a xlink:href="../../de/dcb/classjoda_1_1query_1_1RegexProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="201,-312 201,-331 349,-331 349,-312 201,-312"/>
-<text text-anchor="middle" x="275" y="-319" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexProvider</text>
+<g id="a_node20"><a xlink:href="../../db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="202,-312.5 202,-342.5 348,-342.5 348,-312.5 202,-312.5"/>
+<text text-anchor="start" x="210" y="-330.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexReplace</text>
+<text text-anchor="middle" x="275" y="-319.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node20 -->
 <g id="edge20" class="edge">
 <title>Node1&#45;&gt;Node20</title>
-<path fill="none" stroke="midnightblue" d="M79.6,-516.28C91.1,-476.86 122.94,-386.76 184,-341.5 189.79,-337.21 196.32,-333.81 203.16,-331.12"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="76.21,-515.4 76.89,-525.98 82.95,-517.29 76.21,-515.4"/>
+<path fill="none" stroke="midnightblue" d="M80.63,-516.08C93.49,-478.57 126.92,-396.01 184,-352.5 189.42,-348.37 195.48,-344.92 201.83,-342.05"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="77.24,-515.2 77.42,-525.79 83.88,-517.4 77.24,-515.2"/>
 </g>
 <!-- Node21 -->
 <g id="node21" class="node">
 <title>Node21</title>
-<g id="a_node21"><a xlink:href="../../db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="202,-262.5 202,-292.5 348,-292.5 348,-262.5 202,-262.5"/>
-<text text-anchor="start" x="210" y="-280.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexReplace</text>
-<text text-anchor="middle" x="275" y="-269.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider</text>
+<g id="a_node21"><a xlink:href="../../d3/def/classjoda_1_1query_1_1SeqNumberProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="188,-274 188,-293 362,-293 362,-274 188,-274"/>
+<text text-anchor="middle" x="275" y="-281" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SeqNumberProvider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node21 -->
 <g id="edge21" class="edge">
 <title>Node1&#45;&gt;Node21</title>
-<path fill="none" stroke="midnightblue" d="M77.99,-515.86C87.01,-471.01 115.37,-360.45 184,-302.5 189.33,-298 195.41,-294.31 201.83,-291.28"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="74.53,-515.3 76.1,-525.78 81.41,-516.61 74.53,-515.3"/>
+<path fill="none" stroke="midnightblue" d="M77.81,-515.69C86.46,-470.5 114.08,-359.38 184,-303.5 189.38,-299.2 195.49,-295.79 201.93,-293.07"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="74.34,-515.23 76.01,-525.69 81.23,-516.47 74.34,-515.23"/>
 </g>
 <!-- Node22 -->
 <g id="node22" class="node">
 <title>Node22</title>
-<g id="a_node22"><a xlink:href="../../d3/def/classjoda_1_1query_1_1SeqNumberProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="188,-224 188,-243 362,-243 362,-224 188,-224"/>
-<text text-anchor="middle" x="275" y="-231" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SeqNumberProvider</text>
+<g id="a_node22"><a xlink:href="../../db/d5d/classjoda_1_1query_1_1SubStringProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="193,-236 193,-255 357,-255 357,-236 193,-236"/>
+<text text-anchor="middle" x="275" y="-243" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SubStringProvider</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node22 -->
 <g id="edge22" class="edge">
 <title>Node1&#45;&gt;Node22</title>
-<path fill="none" stroke="midnightblue" d="M75.98,-515.79C80.95,-464.16 101.76,-324.12 184,-253.5 188.98,-249.22 194.67,-245.81 200.72,-243.08"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="72.48,-515.65 75.1,-525.92 79.45,-516.26 72.48,-515.65"/>
+<path fill="none" stroke="midnightblue" d="M76.27,-515.84C81.91,-465.54 104.07,-331.47 184,-264.5 188.53,-260.71 193.63,-257.61 199.04,-255.09"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="72.77,-515.69 75.24,-525.99 79.73,-516.4 72.77,-515.69"/>
 </g>
 <!-- Node23 -->
 <g id="node23" class="node">
 <title>Node23</title>
-<g id="a_node23"><a xlink:href="../../db/d5d/classjoda_1_1query_1_1SubStringProvider.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="193,-186 193,-205 357,-205 357,-186 193,-186"/>
-<text text-anchor="middle" x="275" y="-193" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SubStringProvider</text>
+<g id="a_node23"><a xlink:href="../../df/d80/classjoda_1_1query_1_1TemplateProvider.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="194,-186.5 194,-216.5 356,-216.5 356,-186.5 194,-186.5"/>
+<text text-anchor="start" x="202" y="-204.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::TemplateProvider</text>
+<text text-anchor="middle" x="275" y="-193.5" font-family="Helvetica,sans-Serif" font-size="10.00">&lt; Calc &gt;</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node23 -->
 <g id="edge23" class="edge">
 <title>Node1&#45;&gt;Node23</title>
-<path fill="none" stroke="midnightblue" d="M74.82,-515.65C76.89,-459.03 91.01,-295.62 184,-214.5 188.33,-210.72 193.23,-207.63 198.44,-205.11"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="71.32,-515.68 74.55,-525.77 78.32,-515.87 71.32,-515.68"/>
+<path fill="none" stroke="midnightblue" d="M75.37,-515.94C78.89,-461.48 96.51,-306.8 184,-226.5 188.18,-222.66 192.9,-219.41 197.94,-216.65"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="71.88,-515.8 74.82,-525.98 78.86,-516.19 71.88,-515.8"/>
 </g>
 <!-- Node24 -->
 <g id="node24" class="node">
@@ -352,8 +352,8 @@
 <!-- Node1&#45;&gt;Node24 -->
 <g id="edge24" class="edge">
 <title>Node1&#45;&gt;Node24</title>
-<path fill="none" stroke="midnightblue" d="M73.85,-515.62C73.01,-454.36 79.47,-267.13 184,-176.5 190.03,-171.27 197.14,-167.36 204.68,-164.45"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="70.35,-515.92 74.07,-525.84 77.35,-515.76 70.35,-515.92"/>
+<path fill="none" stroke="midnightblue" d="M74.13,-515.57C74.14,-454.91 82.91,-270.98 184,-177.5 189.99,-171.96 197.17,-167.83 204.82,-164.77"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="70.63,-515.73 74.21,-525.7 77.63,-515.67 70.63,-515.73"/>
 </g>
 <!-- Node25 -->
 <g id="node25" class="node">
@@ -368,8 +368,8 @@
 <!-- Node1&#45;&gt;Node25 -->
 <g id="edge25" class="edge">
 <title>Node1&#45;&gt;Node25</title>
-<path fill="none" stroke="midnightblue" d="M77.19,-515.67C87.48,-442.82 126.67,-191.45 184,-138.5 189.36,-133.55 195.62,-129.57 202.29,-126.36"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="73.7,-515.39 75.79,-525.77 80.63,-516.35 73.7,-515.39"/>
+<path fill="none" stroke="midnightblue" d="M77.21,-515.69C87.58,-442.92 126.99,-191.8 184,-138.5 189.33,-133.52 195.57,-129.51 202.23,-126.3"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="73.72,-515.4 75.8,-525.78 80.65,-516.37 73.72,-515.4"/>
 </g>
 <!-- Node26 -->
 <g id="node26" class="node">

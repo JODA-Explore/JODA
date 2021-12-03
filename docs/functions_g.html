@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -109,7 +109,6 @@ $(function() {
 , <a class="el" href="da/d38/classjoda_1_1query_1_1INListProvider.html#a636fb82a2aee0ae467e587ec6f8a5fb1">joda::query::INListProvider</a>
 , <a class="el" href="d8/dcb/classjoda_1_1query_1_1IsXBoolProvider.html#aedcb034650c2a3ffb376af02892dbb4a">joda::query::IsXBoolProvider&lt; T &gt;</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#a80a3903341583c4ebdc90bcbfbe2a33f">joda::query::IValueProvider</a>
-, <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a04804ef9578c87feb26e87ed1347e2db">joda::query::ListAttributesProvider</a>
 , <a class="el" href="dc/d24/classjoda_1_1query_1_1NullProvider.html#ae551bd4a9db642392ef76cbae2efbc30">joda::query::NullProvider</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#a446148f95dfaf3d1acf642916b0e51f2">joda::query::PointerProvider</a>
 , <a class="el" href="d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html#a616c1a07036bc4e2a12966a26c3dd4e5">joda::query::RegexExtractProvider</a>
@@ -117,6 +116,7 @@ $(function() {
 , <a class="el" href="db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a983f4266e278314be6b859c38d9b3143">joda::query::RegexReplaceProvider</a>
 , <a class="el" href="d3/def/classjoda_1_1query_1_1SeqNumberProvider.html#a18499eb9d5996f44978f4e3c115a116f">joda::query::SeqNumberProvider</a>
 , <a class="el" href="db/d5d/classjoda_1_1query_1_1SubStringProvider.html#a05eb6f298ff76da27266791b70399bfb">joda::query::SubStringProvider</a>
+, <a class="el" href="df/d80/classjoda_1_1query_1_1TemplateProvider.html#acd9530daf5e251c0a1d8c6b2b260ace2">joda::query::TemplateProvider&lt; Calc &gt;</a>
 , <a class="el" href="d8/d7c/classjoda_1_1query_1_1TypeProvider.html#a3b385150ea6f63615b57153fed106cc6">joda::query::TypeProvider</a>
 , <a class="el" href="d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#af0989546218780d9ad782310495534ba">joda::query::UnaryNumberProvider&lt; Calc &gt;</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#a58acc97a7d3cece914d81d677bcbf281">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>
@@ -134,6 +134,7 @@ $(function() {
 , <a class="el" href="d4/d31/classjoda_1_1query_1_1ISetProjector.html#a52730fd9a369f2b83dff934952ce726b">joda::query::ISetProjector</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#ad4b699f9e947fd6a193250a200eec68f">joda::query::IValueProvider</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#a40b3374eabcb6a9a1b33d5d0e275f560">joda::query::PointerProvider</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#a8ed5fb4fc7a22885d916ea2b94141714">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#acfc80613ec3701bc30d652d69ea219bb">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>
 , <a class="el" href="df/df8/classjoda_1_1query_1_1ValToPredicate.html#a85abdf9f6c62414bfada3c8abf91cf0a">joda::query::ValToPredicate</a>
 , <a class="el" href="d9/d73/classRJAttributeReader.html#a43cdbed500d345fcd44ed10dca03c34e">RJAttributeReader</a>
@@ -401,12 +402,12 @@ $(function() {
 , <a class="el" href="d5/d66/classjoda_1_1query_1_1FileNameProvider.html#ad9b13234bfc292f2eeb3052a475a742c">joda::query::FileNameProvider</a>
 , <a class="el" href="d1/dc3/classjoda_1_1query_1_1FilePosProvider.html#a779d5813a4420ee13596385bf6d868dc">joda::query::FilePosProvider&lt; start &gt;</a>
 , <a class="el" href="de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a44e3faf6ff06ad6ce514755ed1d82102">joda::query::GroupAggregator</a>
+, <a class="el" href="db/dac/classjoda_1_1query_1_1HistogramAggregator.html#ae003d6a6730ed404d1c576902e017d59">joda::query::HistogramAggregator</a>
 , <a class="el" href="d0/d07/classjoda_1_1query_1_1IAggregator.html#aebc573da9756fc6f3eb3b0bbeafc4a4b">joda::query::IAggregator</a>
 , <a class="el" href="d3/d59/classjoda_1_1query_1_1IDProvider.html#a5dfe1bb908be9370feb43c94c35a7444">joda::query::IDProvider</a>
 , <a class="el" href="da/d38/classjoda_1_1query_1_1INListProvider.html#abfd19df4c5651e42799cb29ff54505d6">joda::query::INListProvider</a>
 , <a class="el" href="d8/dcb/classjoda_1_1query_1_1IsXBoolProvider.html#ac5101934e897d4d6191a02abcf88cf71">joda::query::IsXBoolProvider&lt; T &gt;</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#a059b01475d1f345ae5e790715bf6c798">joda::query::IValueProvider</a>
-, <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a4732656fc446bfd6b102feb59f9a5a63">joda::query::ListAttributesProvider</a>
 , <a class="el" href="dc/d24/classjoda_1_1query_1_1NullProvider.html#ae31921d75b8139864e5ed690283e388e">joda::query::NullProvider</a>
 , <a class="el" href="d0/d92/classjoda_1_1query_1_1NumberAggregator.html#ab001f1906a31549b3c17adf39920a42b">joda::query::NumberAggregator&lt; T &gt;</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#ae6c41b918d8b95f853cbc7873616f9b3">joda::query::PointerProvider</a>
@@ -415,6 +416,7 @@ $(function() {
 , <a class="el" href="db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a54039e82145fd1b31f6d7e567a4edad6">joda::query::RegexReplaceProvider</a>
 , <a class="el" href="d3/def/classjoda_1_1query_1_1SeqNumberProvider.html#ace3372c2cebc6f675b74b62f16262668">joda::query::SeqNumberProvider</a>
 , <a class="el" href="db/d5d/classjoda_1_1query_1_1SubStringProvider.html#a8ce38a1d43a26493b30c84b22b52ef03">joda::query::SubStringProvider</a>
+, <a class="el" href="df/d80/classjoda_1_1query_1_1TemplateProvider.html#a750f110b8be499b84cef36b8482038ee">joda::query::TemplateProvider&lt; Calc &gt;</a>
 , <a class="el" href="d8/d7c/classjoda_1_1query_1_1TypeProvider.html#af77e62c394573b76a8074b0cbb5c4a9e">joda::query::TypeProvider</a>
 , <a class="el" href="d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#a2c11d30680240dd2a5f184c9981b1f2b">joda::query::UnaryNumberProvider&lt; Calc &gt;</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#a29e064457f3236255a2d7287813192bc">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>
@@ -429,6 +431,7 @@ $(function() {
 , <a class="el" href="df/d90/classjoda_1_1query_1_1CountAggregator.html#aa24ff2589981ca4c69e1886ffafe1389">joda::query::CountAggregator</a>
 , <a class="el" href="d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#afaa98956d10e25d6bb04cc24495fba58">joda::query::DistinctAggregator</a>
 , <a class="el" href="de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a5f98c45cefe19998d1d10fc832c0ebfb">joda::query::GroupAggregator</a>
+, <a class="el" href="db/dac/classjoda_1_1query_1_1HistogramAggregator.html#a5b8c695fc380c5449c800b5b4198ead5">joda::query::HistogramAggregator</a>
 , <a class="el" href="d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a1e15893d9fcc999eec4564f0758da0be">joda::query::NumberAggregator&lt; T &gt;</a>
 </li>
 <li>getNewDoc()
@@ -442,7 +445,7 @@ $(function() {
 : <a class="el" href="dc/d58/classFileNameRepo.html#a97fa3bedff2fecbcc5acdb65a4e2a5f8">FileNameRepo</a>
 </li>
 <li>getNumVal()
-: <a class="el" href="d4/df8/classIValueTestHelper.html#aa3ddcdc665b3e588a8a7557935c7e391">IValueTestHelper</a>
+: <a class="el" href="d4/df8/classIValueTestHelper.html#a3702ba323364c4c37fa5664906eb3770">IValueTestHelper</a>
 , <a class="el" href="d1/d60/classStaticEvalVisitorTest.html#aac0596cbffa3d2b669aa06d9b59a2b49">StaticEvalVisitorTest</a>
 </li>
 <li>getObjVO()
@@ -452,13 +455,13 @@ $(function() {
 : <a class="el" href="db/de4/classIWorkerThread.html#a38ca00c4b750c9c014e6da40877100a9">IWorkerThread&lt; IQueueStruct, OQueueStruct, WConfig &gt;</a>
 </li>
 <li>getOrAdd()
-: <a class="el" href="dd/d47/classViewStructure.html#a397d801b1efef6e5e3fd8d3613d3714b">ViewStructure</a>
+: <a class="el" href="dd/d47/classViewStructure.html#af75bf81163862b81798da496767174f3">ViewStructure</a>
 </li>
 <li>getOrAddStorage()
 : <a class="el" href="da/d91/classStorageCollection.html#a42d2dd552cbf57b46e0b37fdedf97f6e">StorageCollection</a>
 </li>
 <li>getOrigin()
-: <a class="el" href="d7/d4e/classRapidJsonDocument.html#a082a19bfa4fdfefec6044553b58279ab">RapidJsonDocument</a>
+: <a class="el" href="d7/d4e/classRapidJsonDocument.html#a20649f43f5133d19b530579f9dc4b0c6">RapidJsonDocument</a>
 </li>
 <li>getOrStartJoin()
 : <a class="el" href="da/d91/classStorageCollection.html#aaef3f44a8d24f533bd2ce3f5210e3e32">StorageCollection</a>
@@ -513,6 +516,9 @@ $(function() {
 <li>getProjectors()
 : <a class="el" href="d5/de6/classjoda_1_1query_1_1Query.html#ad9dcc790accd303a442ad8cc0346ab2c">joda::query::Query</a>
 </li>
+<li>getQueryString()
+: <a class="el" href="d2/dcc/classJSONStorage.html#a2769d63cb85b73614b2a82a58f434473">JSONStorage</a>
+</li>
 <li>getQueue()
 : <a class="el" href="dc/d1e/structjoda_1_1query_1_1JODA__AGGREGATOR__QUEUE.html#a7e3c22b8a823af14f730a69041a9bb9c">joda::query::JODA_AGGREGATOR_QUEUE</a>
 , <a class="el" href="dd/d1e/structJODA__CONTAINER__QUEUE_3_01JODA__JSON__CONTAINER__FLAG_01_4.html#a8fa9c7590cd168dc44aa135e6948eeb6">JODA_CONTAINER_QUEUE&lt; JODA_JSON_CONTAINER_FLAG &gt;</a>
@@ -562,7 +568,7 @@ $(function() {
 <li>getRepresentation()
 : <a class="el" href="dc/de0/structsimilarityRepresentation.html#af39ce777add56fd0fa1ee3e44707b00f">similarityRepresentation&lt; T &gt;</a>
 , <a class="el" href="d7/dc2/structsimilarityRepresentation_3_01AttributeJaccard_01_4.html#aae3196e5eba5b2c3c62b4cdd298d9565">similarityRepresentation&lt; AttributeJaccard &gt;</a>
-, <a class="el" href="d1/d82/structsimilarityRepresentation_3_01PathJaccard_01_4.html#a2b912547b7d1f5d677cc3811bebf138f">similarityRepresentation&lt; PathJaccard &gt;</a>
+, <a class="el" href="d1/d82/structsimilarityRepresentation_3_01PathJaccard_01_4.html#a82c0f25039416e6d6958f02d08d522f8">similarityRepresentation&lt; PathJaccard &gt;</a>
 </li>
 <li>getReturnType()
 : <a class="el" href="d8/d2d/classDummyArray.html#a7ab19be477340e9a2b1b244883233a1c">DummyArray</a>
@@ -578,7 +584,6 @@ $(function() {
 , <a class="el" href="da/d38/classjoda_1_1query_1_1INListProvider.html#a297389c57c65f9f02838b5925a063aa2">joda::query::INListProvider</a>
 , <a class="el" href="d8/dcb/classjoda_1_1query_1_1IsXBoolProvider.html#ada9e0e71c9da699628b75158b476d5d1">joda::query::IsXBoolProvider&lt; T &gt;</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#a7353bb4809b215603871f5ddaa353285">joda::query::IValueProvider</a>
-, <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a2ec18edda59a74324679a15ea0c95c54">joda::query::ListAttributesProvider</a>
 , <a class="el" href="dc/d24/classjoda_1_1query_1_1NullProvider.html#a0b3960052a5307996d9879e07930ee72">joda::query::NullProvider</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#aaea80dcf0880fbcd7b953697f156cb94">joda::query::PointerProvider</a>
 , <a class="el" href="d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html#a41ebb79d2132e2a40812aa2c44bba393">joda::query::RegexExtractProvider</a>
@@ -586,6 +591,7 @@ $(function() {
 , <a class="el" href="db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a9b50a8102dbf911fed0d8a5c538466ee">joda::query::RegexReplaceProvider</a>
 , <a class="el" href="d3/def/classjoda_1_1query_1_1SeqNumberProvider.html#a98078a85ddf3c14d73b710d62bc7de76">joda::query::SeqNumberProvider</a>
 , <a class="el" href="db/d5d/classjoda_1_1query_1_1SubStringProvider.html#a4b097b816d56b4de1446537b637aad01">joda::query::SubStringProvider</a>
+, <a class="el" href="df/d80/classjoda_1_1query_1_1TemplateProvider.html#a8e34ceca8b5a034303955cdf6e1ec4d2">joda::query::TemplateProvider&lt; Calc &gt;</a>
 , <a class="el" href="d8/d7c/classjoda_1_1query_1_1TypeProvider.html#ad9f23208ad40323539caf00b9ab15d74">joda::query::TypeProvider</a>
 , <a class="el" href="d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#a7db93ff790dc2e4f3482071d370949ca">joda::query::UnaryNumberProvider&lt; Calc &gt;</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#a4429f8b40618291cc64979e53cfd2405">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>
@@ -722,14 +728,17 @@ $(function() {
 , <a class="el" href="da/d38/classjoda_1_1query_1_1INListProvider.html#a07a5cc73a2fdceaa2e7b3062f5b144b5">joda::query::INListProvider</a>
 , <a class="el" href="d8/dcb/classjoda_1_1query_1_1IsXBoolProvider.html#abd5d7661fea4178e7e6abb9b1c6156d3">joda::query::IsXBoolProvider&lt; T &gt;</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#ad3d4d9768cd365cefc3f35f40efc3929">joda::query::IValueProvider</a>
-, <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a8d7ca332b2d66bddf5b4263b82fef8f0">joda::query::ListAttributesProvider</a>
 , <a class="el" href="dc/d24/classjoda_1_1query_1_1NullProvider.html#a436ea24e9a1a5e6ccd9f3e363fc8b8e5">joda::query::NullProvider</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#a03fb7d67d1930c7a95373107a8230d2d">joda::query::PointerProvider</a>
+, <a class="el" href="d0/d8b/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastHandler.html#abe6b2e6473cfa086010fa67058fc66fd">joda::query::providers::cast::FloatCastHandler</a>
+, <a class="el" href="d8/dc2/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastHandler.html#a125705968ea1f534c3d5210c8f1d04a3">joda::query::providers::cast::IntCastHandler</a>
+, <a class="el" href="d4/d04/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastHandler.html#a197d4d6ccc9b47b7ff9dc29d57e1a067">joda::query::providers::cast::StringCastHandler</a>
 , <a class="el" href="d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html#af7e2a6039c2b807c41a9b95fff9b14db">joda::query::RegexExtractProvider</a>
 , <a class="el" href="de/dcb/classjoda_1_1query_1_1RegexProvider.html#accd93cd6b5bed61f562b12275cc92d49">joda::query::RegexProvider</a>
 , <a class="el" href="db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a3cd2faa60427d8347a67a5a4d8ddc3f7">joda::query::RegexReplaceProvider</a>
 , <a class="el" href="d3/def/classjoda_1_1query_1_1SeqNumberProvider.html#afe92d4640a58bc9061cd72d1be6b28b9">joda::query::SeqNumberProvider</a>
 , <a class="el" href="db/d5d/classjoda_1_1query_1_1SubStringProvider.html#ae248b2fb12a3f13bafcf5fdd20dbbaa8">joda::query::SubStringProvider</a>
+, <a class="el" href="df/d80/classjoda_1_1query_1_1TemplateProvider.html#aae0726b83d68030aaf965c12a432b74c">joda::query::TemplateProvider&lt; Calc &gt;</a>
 , <a class="el" href="d8/d7c/classjoda_1_1query_1_1TypeProvider.html#adb861545330c1269cef2694f5d7ff64a">joda::query::TypeProvider</a>
 , <a class="el" href="d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#ab3125a5226e248c79d95b2f82c7e51d7">joda::query::UnaryNumberProvider&lt; Calc &gt;</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#ae3c37be40cc7c96f6a13caa7bb318478">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>

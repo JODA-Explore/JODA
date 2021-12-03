@@ -1,5 +1,6 @@
 <map id="joda::query::WrongParameterCountException" name="joda::query::WrongParameterCountException">
-<area shape="rect" id="node1" title=" " alt="" coords="5,169,216,211"/>
-<area shape="rect" id="node2" href="$de/d8d/classjoda_1_1query_1_1WrongParameterException.html" title=" " alt="" coords="5,80,216,121"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="53,5,168,32"/>
+<area shape="rect" id="node1" title=" " alt="" coords="9,169,220,211"/>
+<area shape="rect" id="node4" href="$df/dbd/classjoda_1_1query_1_1MissingParameterException.html" title=" " alt="" coords="5,259,224,300"/>
+<area shape="rect" id="node2" href="$de/d8d/classjoda_1_1query_1_1WrongParameterException.html" title=" " alt="" coords="9,80,220,121"/>
+<area shape="rect" id="node3" title="STL class." alt="" coords="57,5,172,32"/>
 </map>

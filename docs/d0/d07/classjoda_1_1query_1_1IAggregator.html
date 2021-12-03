@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="../../JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -81,7 +81,7 @@ $(function() {
 <div class="dynheader">
 Inheritance diagram for joda::query::IAggregator:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../de/d8f/classjoda_1_1query_1_1IAggregator__inherit__graph.svg" width="502" height="307"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../de/d8f/classjoda_1_1query_1_1IAggregator__inherit__graph.svg" width="502" height="358"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 <center><span class="legend">[<a href="../../graph_legend.html">legend</a>]</span></center></div>
 <div class="dynheader">
@@ -124,8 +124,12 @@ Public Member Functions</h2></td></tr>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:aba27ef46536f274a20557423c99520cd"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d07/classjoda_1_1query_1_1IAggregator.html#aba27ef46536f274a20557423c99520cd">checkParamSize</a> (unsigned int expected)</td></tr>
 <tr class="separator:aba27ef46536f274a20557423c99520cd"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1e3e65103045e4eed99bacdec095a2f8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d07/classjoda_1_1query_1_1IAggregator.html#a1e3e65103045e4eed99bacdec095a2f8">checkMinParamSize</a> (unsigned int expected)</td></tr>
+<tr class="separator:a1e3e65103045e4eed99bacdec095a2f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a038abd27961fc6350f72f76472dad7d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d07/classjoda_1_1query_1_1IAggregator.html#a038abd27961fc6350f72f76472dad7d5">checkParamType</a> (unsigned int i, <a class="el" href="../../db/de8/namespacejoda_1_1query.html#af299efbab1eb135723736aeade47a2f3">IValueType</a> expected)</td></tr>
 <tr class="separator:a038abd27961fc6350f72f76472dad7d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac228d39d1e0cd426683aea399f3107c8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d07/classjoda_1_1query_1_1IAggregator.html#ac228d39d1e0cd426683aea399f3107c8">checkOptionalParamType</a> (unsigned int i, <a class="el" href="../../db/de8/namespacejoda_1_1query.html#af299efbab1eb135723736aeade47a2f3">IValueType</a> expected)</td></tr>
+<tr class="separator:ac228d39d1e0cd426683aea399f3107c8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68567714937b950990d63b9c7ee0f4c0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::unique_ptr&lt; <a class="el" href="../../d4/df5/classjoda_1_1query_1_1IValueProvider.html">IValueProvider</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d0/d07/classjoda_1_1query_1_1IAggregator.html#a68567714937b950990d63b9c7ee0f4c0">duplicateParameters</a> () const</td></tr>
 <tr class="separator:a68567714937b950990d63b9c7ee0f4c0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -287,11 +291,91 @@ Here is the call graph for this function:</div>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a1bf1552b184dadfbefc471e81805557f">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a9415e014bef4df8c85ca4e37729a43fd">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a9badf427b2a3d92a0f3b6cd046718d3c">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#aca9c35342bfa05c9bbf9d66000835f8b">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a405761e86b4558e9fd959c612809a55f">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a5ac9a9c824f767bf80c5536e7b551a1b">joda::query::AttributeStatAggregator</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a1bf1552b184dadfbefc471e81805557f">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../db/dac/classjoda_1_1query_1_1HistogramAggregator.html#adf86a837c22e370cfd1213cf38ad1235">joda::query::HistogramAggregator</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a9415e014bef4df8c85ca4e37729a43fd">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a9badf427b2a3d92a0f3b6cd046718d3c">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#aca9c35342bfa05c9bbf9d66000835f8b">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a405761e86b4558e9fd959c612809a55f">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a5ac9a9c824f767bf80c5536e7b551a1b">joda::query::AttributeStatAggregator</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
 <div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_add967060d8262992eb3ab02d17936d19_icgraph.svg" width="100%" height="366"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a1e3e65103045e4eed99bacdec095a2f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1e3e65103045e4eed99bacdec095a2f8">&#9670;&nbsp;</a></span>checkMinParamSize()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void joda::query::IAggregator::checkMinParamSize </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>expected</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_a1e3e65103045e4eed99bacdec095a2f8_cgraph.svg" width="416" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_a1e3e65103045e4eed99bacdec095a2f8_icgraph.svg" width="480" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+
+</div>
+</div>
+<a id="ac228d39d1e0cd426683aea399f3107c8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac228d39d1e0cd426683aea399f3107c8">&#9670;&nbsp;</a></span>checkOptionalParamType()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void joda::query::IAggregator::checkOptionalParamType </td>
+          <td>(</td>
+          <td class="paramtype">unsigned int&#160;</td>
+          <td class="paramname"><em>i</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="../../db/de8/namespacejoda_1_1query.html#af299efbab1eb135723736aeade47a2f3">IValueType</a>&#160;</td>
+          <td class="paramname"><em>expected</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_ac228d39d1e0cd426683aea399f3107c8_cgraph.svg" width="432" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -377,7 +461,7 @@ Here is the call graph for this function:</div>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_a038abd27961fc6350f72f76472dad7d5_icgraph.svg" width="495" height="118"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_a038abd27961fc6350f72f76472dad7d5_icgraph.svg" width="495" height="183"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 
@@ -407,7 +491,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 <p>Duplicates the Aggregator </p><dl class="section return"><dt>Returns</dt><dd>A new Instance of the given Aggregator </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a50045e5e258fc64da85273bcfa413bc3">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a73db6ac0cef2386bdfa30ac585e45c7b">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a55ed01d2ce56243753cba4304de93509">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#acbf7e523fcbf251389e51d90a388c141">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a3a0d628be889b202b01cba1af81e25ff">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#afea9f73b0e2d35976a62fd6088431c99">joda::query::AttributeStatAggregator</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a50045e5e258fc64da85273bcfa413bc3">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../db/dac/classjoda_1_1query_1_1HistogramAggregator.html#a4e7827c0adbac46e3a73cd5992213cd1">joda::query::HistogramAggregator</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a73db6ac0cef2386bdfa30ac585e45c7b">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a55ed01d2ce56243753cba4304de93509">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#acbf7e523fcbf251389e51d90a388c141">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a3a0d628be889b202b01cba1af81e25ff">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#afea9f73b0e2d35976a62fd6088431c99">joda::query::AttributeStatAggregator</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -531,7 +615,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 <p>Returns the name of the Aggregator </p><dl class="section return"><dt>Returns</dt><dd>Name of Aggregator </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#ab001f1906a31549b3c17adf39920a42b">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a44e3faf6ff06ad6ce514755ed1d82102">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a54e5349197fb4d84d9d53760740528af">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#a10ebb615e70f620e181c136e98422830">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a6d56a0d7981f0e984dc2b3d8b9c11895">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a3e78d4e95b5ae62df70cc99121bae1cb">joda::query::AttributeStatAggregator</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#ab001f1906a31549b3c17adf39920a42b">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../db/dac/classjoda_1_1query_1_1HistogramAggregator.html#ae003d6a6730ed404d1c576902e017d59">joda::query::HistogramAggregator</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a44e3faf6ff06ad6ce514755ed1d82102">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a54e5349197fb4d84d9d53760740528af">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#a10ebb615e70f620e181c136e98422830">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a6d56a0d7981f0e984dc2b3d8b9c11895">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a3e78d4e95b5ae62df70cc99121bae1cb">joda::query::AttributeStatAggregator</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -602,7 +686,13 @@ Here is the caller graph for this function:</div>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#ab3b920554a939112720ab6da7dca8b12">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a681931323a14db428a52864790ff7907">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#aa9ec81c16851f18c7c9fc79a7f738a9a">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#ae2292232379d36e00f803cff07315606">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a57638f1e50884ad94677195234c3b29e">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a74aa5b5391bec4ce2f88e61cdf963fa1">joda::query::AttributeStatAggregator</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#ab3b920554a939112720ab6da7dca8b12">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../db/dac/classjoda_1_1query_1_1HistogramAggregator.html#acec0956362cfc7445518345a5d3cf305">joda::query::HistogramAggregator</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a681931323a14db428a52864790ff7907">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#aa9ec81c16851f18c7c9fc79a7f738a9a">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#ae2292232379d36e00f803cff07315606">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a57638f1e50884ad94677195234c3b29e">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a74aa5b5391bec4ce2f88e61cdf963fa1">joda::query::AttributeStatAggregator</a>.</p>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d07/classjoda_1_1query_1_1IAggregator_ad59945fd55bae4cb27aa5fbb3badad98_icgraph.svg" width="307" height="52"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
 
 </div>
 </div>
@@ -657,7 +747,7 @@ Here is the caller graph for this function:</div>
 </div><div class="memdoc">
 <p>Terminates the aggregation and collects the values </p><dl class="section return"><dt>Returns</dt><dd>Collected values (GroupKey,Value) </dd></dl>
 
-<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a85768ef6760b63af19615ae4b4fdade7">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a81685fcd4f11ae1aff35163b0d8e8c2e">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a942cbfec8acb8901a4fde02a53141a8f">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#aade1da853015a33ee72f72859a5b242f">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a6fca96c31db44bff280fec1cc8a445a4">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a0da112a5c7bdbfd273ec509f0ed65b70">joda::query::AttributeStatAggregator</a>.</p>
+<p>Implemented in <a class="el" href="../../d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a85768ef6760b63af19615ae4b4fdade7">joda::query::NumberAggregator&lt; T &gt;</a>, <a class="el" href="../../db/dac/classjoda_1_1query_1_1HistogramAggregator.html#ab69528e212fc0aa197ed0a31457ba131">joda::query::HistogramAggregator</a>, <a class="el" href="../../de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a81685fcd4f11ae1aff35163b0d8e8c2e">joda::query::GroupAggregator</a>, <a class="el" href="../../d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a942cbfec8acb8901a4fde02a53141a8f">joda::query::DistinctAggregator</a>, <a class="el" href="../../df/d90/classjoda_1_1query_1_1CountAggregator.html#aade1da853015a33ee72f72859a5b242f">joda::query::CountAggregator</a>, <a class="el" href="../../dc/de2/classjoda_1_1query_1_1CollectAggregator.html#a6fca96c31db44bff280fec1cc8a445a4">joda::query::CollectAggregator</a>, and <a class="el" href="../../db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a0da112a5c7bdbfd273ec509f0ed65b70">joda::query::AttributeStatAggregator</a>.</p>
 <div class="dynheader">
 Here is the caller graph for this function:</div>
 <div class="dyncontent">
@@ -752,7 +842,7 @@ Here is the caller graph for this function:</div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following file:<ul>
-<li>/home/nico/projects/JODA-gh/libs/joda/core/modules/query/aggregate/include/joda/query/aggregation/<a class="el" href="../../dd/d5b/IAggregator_8h_source.html">IAggregator.h</a></li>
+<li>/home/nico/projects/tmp-joda-dirs/JODA-gh/libs/joda/core/modules/query/aggregate/include/joda/query/aggregation/<a class="el" href="../../dd/d5b/IAggregator_8h_source.html">IAggregator.h</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->

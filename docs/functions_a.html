@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -85,7 +85,13 @@ $(function() {
 </li>
 <li>Accept()
 : <a class="el" href="dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#a3e8e21a8dcbe565d2d7d7de1e5117f34">joda::query::ValueAccepter</a>
-, <a class="el" href="d7/d4e/classRapidJsonDocument.html#a94684e414fd9f572164f1da873d16783">RapidJsonDocument</a>
+</li>
+<li>accept()
+: <a class="el" href="d6/d87/structjoda_1_1query_1_1values_1_1AnyParameter.html#a1d935e58b21036f376190be54891f5ff">joda::query::values::AnyParameter&lt; k &gt;</a>
+, <a class="el" href="dd/ddd/structjoda_1_1query_1_1values_1_1ObjectParameter.html#af9411764c021566be73652936e0d74f4">joda::query::values::ObjectParameter&lt; k &gt;</a>
+</li>
+<li>Accept()
+: <a class="el" href="d7/d4e/classRapidJsonDocument.html#a94684e414fd9f572164f1da873d16783">RapidJsonDocument</a>
 , <a class="el" href="d5/d9d/classViewLayer.html#a090106ef6c63f61675059100a311f175">ViewLayer</a>
 , <a class="el" href="dd/d47/classVirtualObject.html#a8c4cf7087469a25a23489de6be5b2be7">VirtualObject</a>
 </li>
@@ -109,6 +115,7 @@ $(function() {
 , <a class="el" href="df/d90/classjoda_1_1query_1_1CountAggregator.html#aca9c35342bfa05c9bbf9d66000835f8b">joda::query::CountAggregator</a>
 , <a class="el" href="d7/d28/classjoda_1_1query_1_1DistinctAggregator.html#a9badf427b2a3d92a0f3b6cd046718d3c">joda::query::DistinctAggregator</a>
 , <a class="el" href="de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a9415e014bef4df8c85ca4e37729a43fd">joda::query::GroupAggregator</a>
+, <a class="el" href="db/dac/classjoda_1_1query_1_1HistogramAggregator.html#adf86a837c22e370cfd1213cf38ad1235">joda::query::HistogramAggregator</a>
 , <a class="el" href="d0/d07/classjoda_1_1query_1_1IAggregator.html#add967060d8262992eb3ab02d17936d19">joda::query::IAggregator</a>
 , <a class="el" href="d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a1bf1552b184dadfbefc471e81805557f">joda::query::NumberAggregator&lt; T &gt;</a>
 </li>
@@ -145,6 +152,9 @@ $(function() {
 </li>
 <li>addQueryResult()
 : <a class="el" href="d7/d56/classQueryCache.html#a5bd0b19a970bce6458d396ffe7189e54">QueryCache</a>
+</li>
+<li>addQueryString()
+: <a class="el" href="d2/dcc/classJSONStorage.html#a7fa658c59b509681f9684364443ad23a">JSONStorage</a>
 </li>
 <li>addStatistics()
 : <a class="el" href="d8/d57/classThreadQueueUser.html#a360888a1ab4ecf817f214db565246048">ThreadQueueUser</a>
@@ -286,6 +296,7 @@ $(function() {
 , <a class="el" href="d3/d28/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__COLLECT_01_4.html#af7b10eeace379e2cf7c21fe22f62497e">joda::queryparsing::grammar::aggExpAction&lt; aggKW_COLLECT &gt;</a>
 , <a class="el" href="dd/df2/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__COUNT_01_4.html#aac09220f645b8da1c1c1e82e16b7844d">joda::queryparsing::grammar::aggExpAction&lt; aggKW_COUNT &gt;</a>
 , <a class="el" href="da/dbb/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__DISTINCT_01_4.html#adca64cc4fbfc58fa1451bd0b96085025">joda::queryparsing::grammar::aggExpAction&lt; aggKW_DISTINCT &gt;</a>
+, <a class="el" href="dd/d76/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__HISTOGRAM_01_4.html#aa184e705a548a70d275ed19ac434f46b">joda::queryparsing::grammar::aggExpAction&lt; aggKW_HISTOGRAM &gt;</a>
 , <a class="el" href="dc/da1/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__MAX_01_4.html#a40f4d61d7161497b6541097d55c08d5b">joda::queryparsing::grammar::aggExpAction&lt; aggKW_MAX &gt;</a>
 , <a class="el" href="de/d4b/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__MIN_01_4.html#a0d1f9caa5938f89bc05ad43b6c5c1b99">joda::queryparsing::grammar::aggExpAction&lt; aggKW_MIN &gt;</a>
 , <a class="el" href="de/d61/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__SUM_01_4.html#a5670ee7d273918552cbd11088c8acfcb">joda::queryparsing::grammar::aggExpAction&lt; aggKW_SUM &gt;</a>

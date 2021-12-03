@@ -1,5 +1,6 @@
 <map id="joda::query::IAggregator::checkParamType" name="joda::query::IAggregator::checkParamType">
-<area shape="rect" id="node1" title=" " alt="" coords="311,39,489,80"/>
+<area shape="rect" id="node1" title=" " alt="" coords="311,71,489,112"/>
 <area shape="rect" id="node2" href="$db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#aa0d5cf43ac250223ece8d40bd9dce0ff" title=" " alt="" coords="5,5,263,47"/>
-<area shape="rect" id="node3" href="$d0/d92/classjoda_1_1query_1_1NumberAggregator.html#add6ce9109df89c7d9231585c9fff072b" title=" " alt="" coords="21,71,247,112"/>
+<area shape="rect" id="node3" href="$db/dac/classjoda_1_1query_1_1HistogramAggregator.html#ab683cf32e576c44a360388e7147c6501" title=" " alt="" coords="13,71,255,112"/>
+<area shape="rect" id="node4" href="$d0/d92/classjoda_1_1query_1_1NumberAggregator.html#add6ce9109df89c7d9231585c9fff072b" title=" " alt="" coords="21,136,247,177"/>
 </map>

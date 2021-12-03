@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -78,7 +78,11 @@ $(function() {
 , <a class="el" href="d7/de5/classCursesPrettyHandler.html#aad8207794e8fccc711e38995fb489f11">CursesPrettyHandler</a>
 , <a class="el" href="d7/d15/classDocumentCostHandler.html#a65982452a58fd6928b3c15c2f2a406cf">DocumentCostHandler</a>
 , <a class="el" href="d7/da6/classjoda_1_1query_1_1AttributeStatAggregator_1_1AttStatHandler.html#ac0b0890fa50fbb39a8c8daae6b08317c">joda::query::AttributeStatAggregator::AttStatHandler</a>
+, <a class="el" href="d0/d8b/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastHandler.html#aab2988350a830a1634244e87df7e52fa">joda::query::providers::cast::FloatCastHandler</a>
+, <a class="el" href="d8/dc2/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastHandler.html#aa60ea4386c4cb8053341164272e8c5cf">joda::query::providers::cast::IntCastHandler</a>
+, <a class="el" href="d4/d04/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastHandler.html#a7751739696f9e2594c78b75c3d776056">joda::query::providers::cast::StringCastHandler</a>
 , <a class="el" href="db/d44/classjoda_1_1query_1_1providers_1_1hash_1_1HashHandler.html#a2ffed797da3dc3a42d1b23a1e51226b4">joda::query::providers::hash::HashHandler</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#a9db4ffa0de06b0b0e53fe53817a76267">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d4/dd3/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountHandler.html#ad76286fc3b633929538b6dcbcfa70a31">joda::query::providers::membercount::MemberCountHandler</a>
 , <a class="el" href="d9/d73/classRJAttributeReader.html#a39543ed8f4d0d43a4639598ced37db6c">RJAttributeReader</a>
 , <a class="el" href="d8/d70/classRJPathsReader.html#a0f004ffdbe5f47a0abe1facbbaf3e30c">RJPathsReader</a>
@@ -88,7 +92,11 @@ $(function() {
 , <a class="el" href="d7/de5/classCursesPrettyHandler.html#afc99d98d2f474c35789b9fe0785a2d6d">CursesPrettyHandler</a>
 , <a class="el" href="d7/d15/classDocumentCostHandler.html#ad310906c65bdbe744749438e3784aa57">DocumentCostHandler</a>
 , <a class="el" href="d7/da6/classjoda_1_1query_1_1AttributeStatAggregator_1_1AttStatHandler.html#adc975b993700f748b9bf32c447278d72">joda::query::AttributeStatAggregator::AttStatHandler</a>
+, <a class="el" href="d0/d8b/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastHandler.html#ad66f40342bbf8fb56c06e88352d6f00d">joda::query::providers::cast::FloatCastHandler</a>
+, <a class="el" href="d8/dc2/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastHandler.html#ac41b21752f1df646689d2186f5f294e2">joda::query::providers::cast::IntCastHandler</a>
+, <a class="el" href="d4/d04/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastHandler.html#a5a24cb5cbfa676407382f4aabb47aec6">joda::query::providers::cast::StringCastHandler</a>
 , <a class="el" href="db/d44/classjoda_1_1query_1_1providers_1_1hash_1_1HashHandler.html#a5ce22a04b9927ec1d33665da5a02729e">joda::query::providers::hash::HashHandler</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#aba7beb123f3bc0b451f75df58a1be184">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d4/dd3/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountHandler.html#a2bc0a9dfa4828b8d7cb94f71ab71b3f2">joda::query::providers::membercount::MemberCountHandler</a>
 , <a class="el" href="d9/d73/classRJAttributeReader.html#ac99f1fdfa4dc1c06a37f79145a91276c">RJAttributeReader</a>
 , <a class="el" href="d8/d70/classRJPathsReader.html#a427a298201cfb8a3044789b8f7bd7b15">RJPathsReader</a>
@@ -96,11 +104,11 @@ $(function() {
 <li>enqueue()
 : <a class="el" href="db/dea/classmoodycamel_1_1BlockingConcurrentQueue.html#a946e95ec2d550d638d21edcfdb2406fc">moodycamel::BlockingConcurrentQueue&lt; T, Traits &gt;</a>
 , <a class="el" href="dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a165896a93eb9f9f76a3d33bdbb39c1dd">moodycamel::BlockingReaderWriterQueue&lt; T, MAX_BLOCK_SIZE &gt;</a>
-, <a class="el" href="d8/dc8/classmoodycamel_1_1ConcurrentQueue.html#aceaa7271014aa901829e3ed1b1005d65">moodycamel::ConcurrentQueue&lt; T, Traits &gt;</a>
+, <a class="el" href="d8/dc8/classmoodycamel_1_1ConcurrentQueue.html#a4a36bd689aeaffd635416a4279566198">moodycamel::ConcurrentQueue&lt; T, Traits &gt;</a>
 , <a class="el" href="da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a6524c9cce29e24151fdf18eb5b0a8c7c">moodycamel::ReaderWriterQueue&lt; T, MAX_BLOCK_SIZE &gt;</a>
 </li>
 <li>enqueue_bulk()
-: <a class="el" href="db/dea/classmoodycamel_1_1BlockingConcurrentQueue.html#a02f278708f32b902bd9464306239ed14">moodycamel::BlockingConcurrentQueue&lt; T, Traits &gt;</a>
+: <a class="el" href="db/dea/classmoodycamel_1_1BlockingConcurrentQueue.html#a96d120ad2998315484d4f10c3b1a31b0">moodycamel::BlockingConcurrentQueue&lt; T, Traits &gt;</a>
 , <a class="el" href="d8/dc8/classmoodycamel_1_1ConcurrentQueue.html#a57b0aa33a19538a7c97d839fbf0d8459">moodycamel::ConcurrentQueue&lt; T, Traits &gt;</a>
 </li>
 <li>ensureSpace()
@@ -117,7 +125,7 @@ $(function() {
 : <a class="el" href="d5/d39/classjoda_1_1query_1_1EqualizePredicate.html#a758786ab5ac77da0f3af03e1a2c78764">joda::query::EqualizePredicate</a>
 </li>
 <li>error_message()
-: <a class="el" href="d7/da9/structjoda_1_1queryparsing_1_1grammar_1_1query__control.html#a5dbd4344b3d8139b4dd9d9f473849532">joda::queryparsing::grammar::query_control&lt; Rule &gt;</a>
+: <a class="el" href="d7/da9/structjoda_1_1queryparsing_1_1grammar_1_1query__control.html#a0e603a62081e65b4025e3fcc3c268145">joda::queryparsing::grammar::query_control&lt; Rule &gt;</a>
 </li>
 <li>estimatedCapacity()
 : <a class="el" href="d2/dcc/classJSONStorage.html#ade59dd21148fec2429bfe53afb03d91d">JSONStorage</a>
@@ -173,6 +181,15 @@ $(function() {
 , <a class="el" href="d9/d71/classIExportDestination.html#a1b9e8bbfdbe80deb3b7dbcb8f260a641">IExportDestination</a>
 , <a class="el" href="d7/d24/classJoinExport.html#a7cc109290a8d8f9bf288955a919c9d9d">JoinExport</a>
 , <a class="el" href="d1/d92/classStorageExport.html#a7c472bd96c2065747bfe266765ce956c">StorageExport</a>
+</li>
+<li>extractValue()
+: <a class="el" href="d6/d87/structjoda_1_1query_1_1values_1_1AnyParameter.html#a23066bd984692d77f1d12cfc0a4712e2">joda::query::values::AnyParameter&lt; k &gt;</a>
+, <a class="el" href="dc/d41/structjoda_1_1query_1_1values_1_1BoolParameter.html#a331cd99c73a5afd168d02df723ef8af3">joda::query::values::BoolParameter&lt; k &gt;</a>
+, <a class="el" href="dd/ddd/structjoda_1_1query_1_1values_1_1ObjectParameter.html#aa059b286d119bbd2befcc30c91a2cd9f">joda::query::values::ObjectParameter&lt; k &gt;</a>
+, <a class="el" href="d5/dc0/structjoda_1_1query_1_1values_1_1OptionalParameter.html#ad6f671eae074edb24c1264b104706d6a">joda::query::values::OptionalParameter&lt; k, T &gt;</a>
+, <a class="el" href="d5/de5/structjoda_1_1query_1_1values_1_1OptionalWithDefaultParameter.html#ad4d99688867846d25581803037e2e84a">joda::query::values::OptionalWithDefaultParameter&lt; k, T, Default &gt;</a>
+, <a class="el" href="d9/d3f/structjoda_1_1query_1_1values_1_1OrParameter.html#aae1699f6686ae386f2add78cb7fd2b5c">joda::query::values::OrParameter&lt; k, T1, T2, Default &gt;</a>
+, <a class="el" href="d1/d0f/structjoda_1_1query_1_1values_1_1StringParameter.html#a6df10a2120065953708c56f4bff43505">joda::query::values::StringParameter&lt; k &gt;</a>
 </li>
 </ul>
 </div><!-- contents -->
