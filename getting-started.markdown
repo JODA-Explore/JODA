@@ -3,7 +3,7 @@ title: Getting Started
 permalink: /getting-started/
 ---
 
-<a href="{{ '/ | relative_url }}"><img id="logo" src="assets/img/JODA.svg" alt="JODA" /></a>
+<a href="{{ site.baseurl }}/"><img id="logo" src="{{ '/assets/img/JODA.svg' | relative_url }}" alt="JODA" /></a>
 
 
 In this guide, we'll use the web interface as a basis.
@@ -47,7 +47,7 @@ Collection documents cannot be viewed directly and must be queried first.
 
 The starting page of the web interface contains the essential information of the current data.
 
-<a href="/assets/img/JODA-Web-1.png"><img class="inline-image" src="assets/img/JODA-Web-1.png" alt="JODA web interface index page" /></a>
+<a href="{{ '/assets/img/JODA-Web-1.png' | relative_url }}"><img class="inline-image" src="{{ '/assets/img/JODA-Web-1.png' | relative_url }}" alt="JODA web interface index page" /></a>
 
 If you imported datasets during previous runs of JODA, they are shown at the top of the page with buttons to import them again or change the responsible queries immediately.
 
@@ -66,12 +66,12 @@ At the sidebar to the left, the different functions can be accessed.
 
 ### Query & Result
 
-<a href="/assets/img/JODA-Web-query.png"><img class="inline-image" src="assets/img/JODA-Web-query.png" alt="JODA web interface index page" /></a>
+<a href="{{ '/assets/img/JODA-Web-query.png' | relative_url }}"><img class="inline-image" src="{{ '/assets/img/JODA-Web-query.png' | relative_url }}" alt="JODA web interface index page" /></a>
 
 The query interface consists of a simple textbox and a button to execute the query.
 If the query is successful, we are shown the query result screen in which we can see the result size and basic execution statistics. 
 
-<a href="/assets/img/JODA-Web-query-stats.png"><img class="inline-image" src="assets/img/JODA-Web-query-stats.png" alt="JODA web interface index page" /></a>
+<a href="{{ '/assets/img/JODA-Web-query-stats.png' | relative_url }}"><img class="inline-image" src="{{ '/assets/img/JODA-Web-query-stats.png' | relative_url }}" alt="JODA web interface index page" /></a>
 
 From here, the result documents can either be downloaded, or viewed.
 When choosing to view the documents, each document can be browsed by using the buttons or left and right arrow keys.
@@ -79,7 +79,7 @@ Every document can also be copied to the clipboard, or downloaded.
 At the top, we can choose to download the result set, or to delete or keep it and return to the overview.
 If a document is in GeoJSON format, a map can be displayed to visualize the contents.
 
-<a href="/assets/img/JODA-Web-result.png"><img class="inline-image" src="assets/img/JODA-Web-result.png" alt="JODA web interface index page" /></a>
+<a href="{{ '/assets/img/JODA-Web-result.png' | relative_url }}"><img class="inline-image" src="{{ '/assets/img/JODA-Web-result.png' | relative_url }}" alt="JODA web interface index page" /></a>
 
 ### Analyze
 
@@ -87,7 +87,7 @@ The web interface can also show a summary over the structure of a collection, us
 Here the attributes of all documents in the collection are summarized and displayed in a graph.
 When hovering over a node, statistics about the type-distribution and existence of the attribute is shown.
 
-<a href="/assets/img/JODA-Web-analyze.png"><img class="inline-image" src="assets/img/JODA-Web-analyze.png" alt="JODA web interface index page" /></a>
+<a href="{{ '/assets/img/JODA-Web-analyze.png' | relative_url }}"><img class="inline-image" src="{{ '/assets/img/JODA-Web-analyze.png' | relative_url }}" alt="JODA web interface index page" /></a>
 
 ## Query Examples
 
@@ -106,8 +106,8 @@ STORE movies
 DELETE temp;
 ```
 
-The first command [loads](/language/#load) the dataset from the URL and stores it in the internal collection `temp`.
-As the dataset consists of only one large JSON array containing all movies, we flatten it using the [FLATTEN](/language/#set-functions) function to split this array into individual documents.
+The first command [loads]({{ '/language/#load' | relative_url }}) the dataset from the URL and stores it in the internal collection `temp`.
+As the dataset consists of only one large JSON array containing all movies, we flatten it using the [FLATTEN]({{ '/language/#set-functions' | relative_url }}) function to split this array into individual documents.
 We store this dataset in the `movies` collection.
 Finally, we delete the temporary collection.
 The resulting documents look like:
@@ -123,8 +123,8 @@ STORE action_movies;
 ```
 
 
-For this, we filter the dataset using the [CHOOSE](/language/#choose-optional) command.
-As `genres` are an array of strings, we will use the [IN(\<element\>, \<array\>)](/language/#array-functions) function to check if the movie genre list contains "Action".
+For this, we filter the dataset using the [CHOOSE]({{ '/language/#choose-optional' | relative_url }}) command.
+As `genres` are an array of strings, we will use the [IN(\<element\>, \<array\>)]({{ '/language/#array-functions' | relative_url }}) function to check if the movie genre list contains "Action".
 The structure of the documents will be the same, except that only action movies remain.
 
 Using the set of action movies, we will now create a list of actors, together with the movie they played in.
@@ -135,7 +135,7 @@ AS ('/actor': FLATTEN('/cast')), ('/movie': '/title'), ('/year': '/year')
 STORE action_actors  
 ```
 
-Once again, we use the [FLATTEN](/language/#set-functions) function to create one document per actor in the cast array.
+Once again, we use the [FLATTEN]({{ '/language/#set-functions' | relative_url }}) function to create one document per actor in the cast array.
 But now, we additionally also add the movie title and the year of release.
 This will give us the following JSON documents:
 
@@ -162,7 +162,7 @@ DELETE flattenedActors
 STORE AS FILE "action-actors.json"
 ```
 
-The first query [aggregates](/language/#agg-optional) all documents by [grouping](/language/#group-by) them by the actor and collecting a distinct list of movie titles.
+The first query [aggregates]({{ '/language/#agg-optional' | relative_url }}) all documents by [grouping]({{ '/language/#group-by' | relative_url }}) them by the actor and collecting a distinct list of movie titles.
 The intermediate result will have the following format:
 
 ```json
@@ -173,5 +173,5 @@ The intermediate result will have the following format:
 ```
 
 This result is then flattened again into separate documents per actor with the second query.
-Finally we rename the `group` attribute to `actor` and keep the `movies` attribute to obtain our final documents containing action-movie actors together with a list of their movie titles.
+Finally, we rename the `group` attribute to `actor` and keep the `movies` attribute to obtain our final documents containing action-movie actors together with a list of their movie titles.
 The result is stored as a line-separated JSON file in `action-actors.json`.

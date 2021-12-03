@@ -3,7 +3,7 @@ title: Language
 permalink: /language/
 ---
 
-<a href="{{ '/' | relative_url }}"><img id="logo" src="assets/img/JODA.svg" alt="JODA" /></a>
+<a href="{{ site.baseurl }}/"><img id="logo" src="{{ '/assets/img/JODA.svg' | relative_url }}" alt="JODA" /></a>
 
 
 ## Syntax

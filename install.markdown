@@ -3,7 +3,7 @@ title: Installation
 permalink: /install/
 ---
 
-<a href="{{ '/' | relative_url }}"><img id="logo" src="assets/img/JODA.svg" alt="JODA" /></a>
+<a href="{{ site.baseurl }}/"><img id="logo" src="{{ '/assets/img/JODA.svg' | relative_url }}" alt="JODA" /></a>
 
 To install JODA you can choose between the following options:
 
@@ -67,7 +67,7 @@ services:
 ```
 
 The web interface can now be accessed at [http://localhost:8080](http://localhost:8080).
-Refer to the [Getting Started](/getting-started) page for further instructions on using the interface.
+Refer to the [Getting Started]({{ '/getting-started' | relative_url }}) page for further instructions on using the interface.
 
 ## Packages
 Native packages for JODA are available for Ubuntu and Debian distributions on the [release page](https://github.com/JODA-Explore/JODA/releases).
