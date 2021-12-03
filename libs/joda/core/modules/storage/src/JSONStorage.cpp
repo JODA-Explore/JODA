@@ -346,3 +346,14 @@ const std::vector<std::unique_ptr<JSONContainer>>& JSONStorage::getContainer()
     const {
   return container;
 }
+
+void JSONStorage::addQueryString(const std::string &query_string){
+  if(!query.empty()){
+    query.append("\n");
+  }
+  query.append(query_string);
+}
+
+const std::string &JSONStorage::getQueryString() const{
+  return query;
+}

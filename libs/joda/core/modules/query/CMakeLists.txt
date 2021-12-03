@@ -39,5 +39,5 @@ target_link_libraries(joda-core-query-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-query-lib INTERFACE glog)
+
+target_link_libraries(joda-core-query-lib INTERFACE glog::glog)

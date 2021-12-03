@@ -198,12 +198,30 @@ class JSONStorage {
    */
   unsigned long getLastUsed() const;
 
+  /**
+   * Add query strings that resulted in the generation of this storage
+   * @param query_string The optimized final query string
+   */
+  void addQueryString(const std::string &query_string);
+
+  /**
+   * Returns the query string that resulted in the creation of this Storage
+   * @return The query string that resulted in the creation of this Storage
+   *
+   */
+  const std::string &getQueryString() const;
+
+
+
  protected:
   friend QueryPlan;
   const std::vector<std::unique_ptr<JSONContainer>> &getContainer() const;
 
   std::string name;
   std::string regtmpdir;
+
+  // Stored Queries
+  std::string query;
 
   std::mutex documentMutex;
   std::vector<std::unique_ptr<JSONContainer>> container;

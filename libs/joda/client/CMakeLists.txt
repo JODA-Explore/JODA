@@ -16,8 +16,7 @@ target_link_libraries(joda-client-lib PRIVATE -static-libstdc++)
 find_package(Threads REQUIRED)
 target_link_libraries(joda-client-lib PRIVATE Threads::Threads stdc++fs)
 
-find_package(glog REQUIRED)
-target_link_libraries(joda-client-lib PRIVATE glog)
+target_link_libraries(joda-client-lib PRIVATE glog::glog)
 
 find_package(Boost REQUIRED system program_options)
 target_link_libraries(joda-client-lib PUBLIC Boost::boost PRIVATE Boost::system Boost::program_options)

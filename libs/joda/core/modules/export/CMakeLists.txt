@@ -26,5 +26,5 @@ target_link_libraries(joda-core-export-lib INTERFACE joda-core-concurrency-lib)
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-export-lib INTERFACE glog)
+
+target_link_libraries(joda-core-export-lib INTERFACE glog::glog)

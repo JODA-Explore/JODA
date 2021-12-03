@@ -41,6 +41,20 @@ class FileOrigin : public IDPositionOrigin {
    * @return
    */
   ParseInterval getInterval() const;
+
+  /**
+   * Merges a list of ParseIntervals to the minimal possible list
+   * @param intervals the list of intervals to merge
+   * @return the merged list
+   */
+  static std::vector<ParseInterval> mergeIntervals(std::vector<ParseInterval> &&intervals);
+  /**
+   * Parses a list of ParseIntervals to a list of RJDocuments
+   * @param alloc The memory allocator to use
+   * @param intervals the list of intervals to parse
+   * @return the list of parsed documents
+   */
+  static std::vector<std::unique_ptr<RJDocument>> parseIntervals(RJMemoryPoolAlloc &alloc, std::vector<ParseInterval> &&intervals);
 };
 
 #endif  // JODA_FILEORIGIN_H

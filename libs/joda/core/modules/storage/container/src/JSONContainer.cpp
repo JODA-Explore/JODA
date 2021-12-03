@@ -3,6 +3,7 @@
 //
 
 #include "../include/joda/container/JSONContainer.h"
+
 #include <glog/logging.h>
 #include <joda/container/JSONContainer.h>
 #include <joda/document/FileOrigin.h>
@@ -11,8 +12,10 @@
 #include <joda/misc/JSONFileWriter.h>
 #include <joda/query/project/PointerCopyProject.h>
 #include <rapidjson/writer.h>
+
 #include <fstream>
 #include <unordered_set>
+
 #include "../../document/src/BloomAttributeHandler.h"
 #include "../../document/src/DocumentCostHandler.h"
 #include "joda/config/config.h"
@@ -53,7 +56,8 @@ void JSONContainer::insertDoc(RapidJsonDocument&& doc, size_t baseIndex) {
   // Update indices
   maxID = std::max(maxID, doc.getId());
   minID = std::min(minID, doc.getId());
-  docs.emplace_back(std::move(doc), baseIndex);
+  docs.emplace_back(std::move(doc));
+  baseIds.emplace_back(baseIndex);
 }
 
 void JSONContainer::insertViewDoc(std::unique_ptr<RJDocument>&& doc,
@@ -85,7 +89,7 @@ std::unique_ptr<const DocIndex> JSONContainer::checkDocuments(
   DocIndex ret(docs.size());
   for (size_t i = 0; i < docs.size(); ++i) {
     auto& doc = docs[i];
-    if (doc.valid && func(doc.doc, i)) {
+    if (doc.isValid() && func(doc, i)) {
       ret[i] = true;
     }
   }
@@ -105,12 +109,12 @@ void JSONContainer::calculateBloom() {
   attr_bloom = bloom_filter(parameters);
 
   for (auto& doc : docs) {
-    if (doc.isValid() && doc.doc.getJson()->IsObject()) {
+    if (doc.isValid() && doc.getJson()->IsObject()) {
       BloomAttributeHandler h;
       if (!isView()) {
-        doc.doc.getJson()->Accept(h);
+        doc.getJson()->Accept(h);
       } else {
-        auto& view = doc.doc.getView();
+        auto& view = doc.getView();
         view->Accept(h);
       }
       auto atts = h.getPaths();
@@ -155,7 +159,7 @@ void JSONContainer::setLastUsed() {
 
 bool JSONContainer::isReparsable() {
   for (auto&& doc : docs) {
-    if (!doc.doc.getOrigin()->isReparsable()) {
+    if (!doc.getOrigin()->isReparsable()) {
       return false;
     }
   }
@@ -171,7 +175,7 @@ void JSONContainer::removeDocuments() {
     serializeMissing();
   }
   for (auto&& doc : docs) {
-    doc.remove();
+    doc.removeDoc();
   }
 
   removeViews();
@@ -187,29 +191,57 @@ void JSONContainer::reparse() {
   if (docs.empty()) {
     return;
   }
+  std::vector<bool> parsed(docs.size(), false);
+  std::vector<FileOrigin::ParseInterval> intervals;
 
-  /*
-   * Get Parsing Intervals
-   */
   DLOG(INFO) << "Reparsing container";
-  for (auto& doc : docs) {
-    if (doc.valid) {
+  for (size_t i = 0; i < docs.size(); ++i) {
+    auto& doc = docs[i];
+    if (doc.isValid()) {
+      parsed[i] = true;
       continue;
     }
-    auto* orig = doc.doc.getOrigin();
+    auto& orig = doc.getOrigin();
     if (orig->isReparsable()) {
+      const auto* fileOrig = dynamic_cast<const FileOrigin*>(orig.get());
+      if (fileOrig != nullptr) {  // Get Parsing Intervals
+        intervals.push_back(fileOrig->getInterval());
+        continue;
+      }
       auto tmpDoc = orig->reparse(*alloc);
+      parsed[i] = true;
       if (tmpDoc == nullptr) {
         LOG(ERROR) << "Document could not be reparsed. Skipping";
-        doc.valid = false;
       } else {
-        doc.doc.setJson(std::move(tmpDoc));
-        doc.valid = true;
+        doc.setJson(std::move(tmpDoc));
       }
     } else {
-      DCHECK(false) << "This should not happen";
+      DCHECK(false) << "Fatal error: All documents should have been reparsable";
     }
   }
+
+  // Merge intervals
+  intervals = FileOrigin::mergeIntervals(std::move(intervals));
+  auto fileDocs = FileOrigin::parseIntervals(*alloc, std::move(intervals));
+  // Reverse to be able to pop_back
+  DCHECK_EQ(std::count(parsed.begin(), parsed.end(), false), fileDocs.size())
+      << "All remaining documents should have been parsed";
+  std::reverse(fileDocs.begin(), fileDocs.end());
+  for (size_t i = 0; i < docs.size(); ++i) {
+    if (parsed[i]) {
+      continue;
+    }
+    auto& doc = docs[i];
+    doc.setJson(std::move(fileDocs.back()));
+    DCHECK(doc.isValid()) << "Parser should only return valid documents";
+    fileDocs.pop_back();
+    if (fileDocs.empty()) {
+      break;
+    }
+  }
+
+  DCHECK(fileDocs.empty()) << "All documents should be assigned";
+
   removeViews();
   setViews();
   deleted = false;
@@ -224,68 +256,135 @@ void JSONContainer::reparseSubset(unsigned long start, unsigned long end) {
   if (docs.empty()) {
     return;
   }
+
   end = std::min(docs.size() - 1, end);
+  std::vector<bool> parsed(1 + (end - start), false);
+  std::vector<FileOrigin::ParseInterval> intervals;
   DLOG(INFO) << "Reparsing container [" << start << "," << end << "]";
   if (isView()) {
-    auto minBase = docs[start].baseIndex;
-    auto maxBase = docs[end].baseIndex;
+    auto minBase = baseIds[start];
+    auto maxBase = baseIds[end];
     baseContainer->reparseSubset(minBase, maxBase);
   }
   for (unsigned long i = start; i <= end; ++i) {
     auto& doc = docs[i];
-    if (doc.isValid()) continue;
-    auto* orig = doc.doc.getOrigin();
+    if (doc.isValid()) {
+      parsed[i] = true;
+      continue;
+    }
+    auto& orig = doc.getOrigin();
     if (orig->isReparsable()) {
+      const auto* fileOrig = dynamic_cast<const FileOrigin*>(orig.get());
+      if (fileOrig != nullptr) {  // Get Parsing Intervals
+        intervals.push_back(fileOrig->getInterval());
+        continue;
+      }
+      parsed[i - start] = true;
       auto tmpDoc = orig->reparse(*alloc);
       if (tmpDoc == nullptr) {
         LOG(ERROR) << "Document could not be reparsed. Skipping";
-        doc.valid = false;
+
       } else {
-        doc.doc.setJson(std::move(tmpDoc));
-        doc.valid = true;
+        doc.setJson(std::move(tmpDoc));
       }
     } else {
       DCHECK(false) << "This should not happen";
     }
   }
+
+  // Merge intervals
+  intervals = FileOrigin::mergeIntervals(std::move(intervals));
+  auto fileDocs = FileOrigin::parseIntervals(*alloc, std::move(intervals));
+  // Reverse to be able to pop_back
+  DCHECK_EQ(std::count(parsed.begin(), parsed.end(), false), fileDocs.size())
+      << "All remaining documents should have been parsed";
+  std::reverse(fileDocs.begin(), fileDocs.end());
+  for (size_t i = 0; i < docs.size(); ++i) {
+    if (parsed[i]) {
+      continue;
+    }
+    auto& doc = docs[i];
+    doc.setJson(std::move(fileDocs.back()));
+    DCHECK(doc.isValid()) << "Parser should only return valid documents";
+    fileDocs.pop_back();
+    if (fileDocs.empty()) {
+      break;
+    }
+  }
+
+  DCHECK(fileDocs.empty()) << "All documents should be assigned";
+
   removeViews();
   setViews();
 }
 
-void JSONContainer::reparseSubset(const DocIndex &index) {
+void JSONContainer::reparseSubset(const DocIndex& index) {
   if (!deleted) {
     return;
   }
   if (docs.empty()) {
     return;
   }
+
+  std::vector<bool> parsed(docs.size(), false);
+  std::vector<FileOrigin::ParseInterval> intervals;
   DLOG(INFO) << "Reparsing container with indices";
   if (isView()) {
     auto baseIndex = DocIndex(baseContainer->size());
     for (unsigned long i = 0; i < docs.size(); ++i) {
       if (!index[i]) continue;
-      baseIndex[docs[i].baseIndex] = true;
+      baseIndex[baseIds[i]] = true;
     }
     baseContainer->reparseSubset(baseIndex);
   }
   for (unsigned long i = 0; i < docs.size(); ++i) {
     if (!index[i]) continue;
     auto& doc = docs[i];
-    if (doc.isValid()) continue;
-    auto* orig = doc.doc.getOrigin();
+    if (doc.isValid()) {
+      parsed[i] = true;
+      continue;
+    }
+    auto& orig = doc.getOrigin();
     if (orig->isReparsable()) {
+      const auto* fileOrig = dynamic_cast<const FileOrigin*>(orig.get());
+      if (fileOrig != nullptr) {  // Get Parsing Intervals
+        intervals.push_back(fileOrig->getInterval());
+        continue;
+      }
+      parsed[i] = true;
       auto tmpDoc = orig->reparse(*alloc);
       if (tmpDoc == nullptr) {
         LOG(ERROR) << "Document could not be reparsed. Skipping";
-        doc.valid = false;
+
       } else {
-        doc.doc.setJson(std::move(tmpDoc));
-        doc.valid = true;
+        doc.setJson(std::move(tmpDoc));
       }
     } else {
       DCHECK(false) << "This should not happen";
     }
   }
+  
+
+  // Merge intervals
+  intervals = FileOrigin::mergeIntervals(std::move(intervals));
+  auto fileDocs = FileOrigin::parseIntervals(*alloc, std::move(intervals));
+  // Reverse to be able to pop_back
+  std::reverse(fileDocs.begin(), fileDocs.end());
+  for (size_t i = 0; i < docs.size(); ++i) {
+    if (parsed[i] || !index[i]) {
+      continue;
+    }
+    auto& doc = docs[i];
+    doc.setJson(std::move(fileDocs.back()));
+    DCHECK(doc.isValid()) << "Parser should only return valid documents";
+    fileDocs.pop_back();
+    if (fileDocs.empty()) {
+      break;
+    }
+  }
+
+  DCHECK(fileDocs.empty()) << "All documents should be assigned";
+
   removeViews();
   setViews();
 }
@@ -315,7 +414,7 @@ std::vector<std::unique_ptr<RJDocument>> JSONContainer::projectDocuments(
     bool valid = false;
     for (auto&& projection : proj) {
       used = true;
-      projection->project(doc.doc, *newDoc);
+      projection->project(doc, *newDoc);
       valid = true;
     }
 
@@ -328,7 +427,7 @@ std::vector<std::unique_ptr<RJDocument>> JSONContainer::projectDocuments(
       newDocs.push_back(std::move(newDoc));
       for (auto&& sp : setProj) {
         used = true;
-        sp->project(doc.doc, newDocs);
+        sp->project(doc, newDocs);
         valid = true;
       }
       if (valid) {
@@ -357,7 +456,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
       auto newDoc = std::make_unique<RJDocument>(tmpCont->getAlloc());
       newDoc->SetNull();
       costHandler.checkDocument(*newDoc);
-      tmpCont->insertDoc(std::move(newDoc), docs[i].doc.getOrigin()->clone(),
+      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(),
                          i);
     }
   } else {
@@ -401,7 +500,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
                                             }) == s.end()) ||
                 s == "-") {
               RJPointer tmpPtr(tokens, k);
-              const auto* const tmpval = doc.doc.Get(tmpPtr);
+              const auto* const tmpval = doc.Get(tmpPtr);
               if (tmpval != nullptr && tmpval->IsArray()) {
                 if (tmpPtr.Get(*newDoc) == nullptr) {
                   tmpPtr.Set(*newDoc, *tmpval, newDoc->GetAllocator());
@@ -415,7 +514,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
              */
           }
         }
-        proj[i]->project(doc.doc, *newDoc, true);
+        proj[i]->project(doc, *newDoc, true);
         valid = true;
       }
 
@@ -459,7 +558,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
                                               }) == s.end()) ||
                   s == "-") {
                 RJPointer tmpPtr(tokens, k);
-                const auto* const tmpval = doc.doc.Get(tmpPtr);
+                const auto* const tmpval = doc.Get(tmpPtr);
                 if (tmpval != nullptr && tmpval->IsArray()) {
                   for (auto& nD : newDocs) {
                     if (tmpPtr.Get(*nD) == nullptr) {
@@ -474,7 +573,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
           /*
            * Copy missing base array END
            */
-          sp->project(doc.doc, newDocs);
+          sp->project(doc, newDocs);
           valid = true;
         }
         if (valid) {
@@ -514,7 +613,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
           (proj.empty() && setProj.empty())))
       << "* Projection has to be the first projection";
 
-  ScopedRef useCont(this, false); //Does not need to parse everything yet
+  ScopedRef useCont(this, false);  // Does not need to parse everything yet
   auto tmpCont = std::make_unique<JSONContainer>();
   tmpCont->baseContainer = this;
   if (proj.empty() && setProj.empty()) {
@@ -523,11 +622,12 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
         continue;
       }
       auto newDoc = std::make_unique<RJDocument>(tmpCont->getAlloc());
-      tmpCont->insertDoc(std::move(newDoc), docs[i].doc.getOrigin()->clone(),
+      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(),
                          i);
     }
   } else {
-    ScopedRef useContContent(this); //Needs to parse, and needs the actual content
+    ScopedRef useContContent(
+        this);  // Needs to parse, and needs the actual content
     bool used = false;
     for (size_t j = 0; j < docs.size(); ++j) {
       auto& doc = docs[j];
@@ -567,7 +667,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
                                             }) == s.end()) ||
                 s == "-") {
               RJPointer tmpPtr(tokens, k);
-              const auto* const tmpval = doc.doc.Get(tmpPtr);
+              const auto* const tmpval = doc.Get(tmpPtr);
               if (tmpval != nullptr && tmpval->IsArray()) {
                 if (tmpPtr.Get(*newDoc) == nullptr) {
                   tmpPtr.Set(*newDoc, *tmpval, newDoc->GetAllocator());
@@ -581,7 +681,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
              */
           }
         }
-        proj[i]->project(doc.doc, *newDoc, true);
+        proj[i]->project(doc, *newDoc, true);
         valid = true;
       }
 
@@ -624,7 +724,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
                                               }) == s.end()) ||
                   s == "-") {
                 RJPointer tmpPtr(tokens, k);
-                const auto* const tmpval = doc.doc.Get(tmpPtr);
+                const auto* const tmpval = doc.Get(tmpPtr);
                 if (tmpval != nullptr && tmpval->IsArray()) {
                   for (auto& nD : newDocs) {
                     if (tmpPtr.Get(*nD) == nullptr) {
@@ -639,7 +739,7 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
           /*
            * Copy missing base array END
            */
-          sp->project(doc.doc, newDocs);
+          sp->project(doc, newDocs);
           valid = true;
         }
         if (valid) {
@@ -699,9 +799,9 @@ std::vector<std::string> JSONContainer::stringify(unsigned long start,
       buffer.Clear();
       writer.Reset(buffer);
       if (!isView()) {
-        doc.doc.getJson()->Accept(writer);
+        doc.getJson()->Accept(writer);
       } else {
-        auto& view = doc.doc.getView();
+        auto& view = doc.getView();
         view->Accept(writer);
       }
 
@@ -744,10 +844,10 @@ std::vector<std::unique_ptr<RJDocument>> JSONContainer::getRaw(
     if (doc.isValid()) {
       auto newDoc = std::make_unique<RJDocument>();
       if (isView()) {
-        auto& view = doc.doc.getView();
+        auto& view = doc.getView();
         newDoc->Populate(*view);
       } else {
-        newDoc->CopyFrom(*doc.doc.getJson(), newDoc->GetAllocator(), true);
+        newDoc->CopyFrom(*doc.getJson(), newDoc->GetAllocator(), true);
       }
       ret.push_back(std::move(newDoc));
     } else {
@@ -773,10 +873,10 @@ std::vector<std::unique_ptr<RJDocument>> JSONContainer::getRaw(
     if (item.isValid()) {
       auto doc = std::make_unique<RJDocument>();
       if (isView()) {
-        auto& view = item.doc.getView();
+        auto& view = item.getView();
         doc->Populate(*view);
       } else {
-        doc->CopyFrom(*item.doc.getJson(), doc->GetAllocator(), true);
+        doc->CopyFrom(*item.getJson(), doc->GetAllocator(), true);
       }
       ret.push_back(std::move(doc));
     } else {
@@ -803,10 +903,10 @@ std::vector<std::unique_ptr<RJDocument>> JSONContainer::getRaw(
     if (item.isValid()) {
       auto doc = std::make_unique<RJDocument>(&alloc);
       if (isView()) {
-        auto& view = item.doc.getView();
+        auto& view = item.getView();
         doc->Populate(*view);
       } else {
-        doc->CopyFrom(*item.doc.getJson(), alloc, true);
+        doc->CopyFrom(*item.getJson(), alloc, true);
       }
       ret.push_back(std::move(doc));
     } else {
@@ -861,14 +961,14 @@ bool JSONContainer::serializeMissing() {
   rapidjson::StringBuffer buffer;
   rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
   for (auto& doc : docs) {
-    if (doc.isValid() && !doc.doc.getOrigin()->isReparsable()) {
+    if (doc.isValid() && !doc.getOrigin()->isReparsable()) {
       buffer.Clear();
       writer.Reset(buffer);
       auto start = newfile.tellp();
-      doc.doc.getJson()->Accept(writer);
+      doc.getJson()->Accept(writer);
       newfile << buffer.GetString() << std::endl;
       newfile.flush();
-      doc.doc.setOrigin(
+      doc.setOrigin(
           std::make_unique<FileOrigin>(id, start, newfile.tellp(), 0));
     } else {
       LOG(ERROR) << "Can't serialize invalid document";
@@ -967,11 +1067,11 @@ void JSONContainer::materializeAttributes(
         continue;
       }
       RJDocument val(alloc.get());
-      auto& view = doc.doc.getView();
+      auto& view = doc.getView();
       view->setPrefix(att);
       val.Populate(*view);
       view->setPrefix("");
-      p.Set(*doc.doc.getJson(), val, *alloc);
+      p.Set(*doc.getJson(), val, *alloc);
       DCHECK(val.IsNull()) << "Value should be moved out";
     }
     // Remove all paths prefixed by this path
@@ -997,16 +1097,16 @@ void JSONContainer::materializeView() {
   if (!isView()) {
     return;
   }
+  LOG(INFO) << "Materializing complete view";
   ScopedRef useCont(this);
   auto a = std::make_unique<RJMemoryPoolAlloc>();
-  std::vector<DocContainer> tmpDocs;
 
   for (auto& doc : docs) {
     auto newJson = std::make_unique<RJDocument>(a.get());
-    auto& view = doc.doc.getView();
+    auto& view = doc.getView();
     CHECK(view != nullptr);
     newJson->Populate(*view);
-    doc.doc.setJson(std::move(newJson));
+    doc.setJson(std::move(newJson));
   }
   alloc = std::move(a);
   baseContainer->removeSubContainer(this);
@@ -1037,19 +1137,20 @@ void JSONContainer::setViews() {
     materializedAttributes.clear();
     materializedAttributes.emplace_back("");
     for (auto& doc : docs) {
-      doc.doc.setView(std::make_unique<ViewLayer>(doc.doc.getJson().get(),
+      doc.setView(std::make_unique<ViewLayer>(doc.getJson().get(),
                                                   &materializedAttributes,
                                                   nullptr, viewStruc.get()));
-      DCHECK(doc.doc.getView() != nullptr);
+      DCHECK(doc.getView() != nullptr);
     }
   } else {
     baseContainer->setViews();
-    for (auto& doc : docs) {
-      doc.doc.setView(std::make_unique<ViewLayer>(
-          doc.doc.getJson().get(), &materializedAttributes,
-          baseContainer->docs[doc.baseIndex].doc.getView().get(),
+    for (size_t i = 0; i < docs.size(); i++) {
+      auto& doc = docs[i];
+      doc.setView(std::make_unique<ViewLayer>(
+          doc.getJson().get(), &materializedAttributes,
+          baseContainer->docs[baseIds[i]].getView().get(),
           viewStruc.get()));
-      DCHECK(doc.doc.getView() != nullptr);
+      DCHECK(doc.getView() != nullptr);
     }
   }
 
@@ -1063,11 +1164,11 @@ void JSONContainer::removeViews() {
   viewsComputed = false;
   viewStruc = nullptr;
   for (auto& doc : docs) {
-    doc.doc.setView(nullptr);
+    doc.setView(nullptr);
   }
-  if(materializedAttributes.empty() && baseContainer != nullptr){
-    //If the view did not change anything, then remove basecontainer
-    //As this was a selection only view and all documents are reparsable
+  if (materializedAttributes.empty() && baseContainer != nullptr) {
+    // If the view did not change anything, then remove basecontainer
+    // As this was a selection only view and all documents are reparsable
     baseContainer->removeSubContainer(this);
     baseContainer = nullptr;
   }

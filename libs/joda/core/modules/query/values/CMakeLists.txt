@@ -8,7 +8,6 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/INListProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/IsXBoolProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/IValueProvider.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/ListAttributesProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/AtomProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/PointerProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/RegexExtractProvider.cpp
@@ -44,6 +43,8 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/HashProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/ValueAccepter.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/SubStringProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/TemplateProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/CastProvider.h
         )
 
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-query-values-SOURCES} PARENT_SCOPE )
@@ -65,5 +66,5 @@ target_link_libraries(joda-core-query-values-lib INTERFACE pegtl)
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-query-values-lib INTERFACE glog)
+
+target_link_libraries(joda-core-query-values-lib INTERFACE glog::glog)

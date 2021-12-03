@@ -45,5 +45,5 @@ target_link_libraries(joda-core-document-lib INTERFACE joda-core-misc-lib)
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-document-lib INTERFACE glog)
+
+target_link_libraries(joda-core-document-lib INTERFACE glog::glog)

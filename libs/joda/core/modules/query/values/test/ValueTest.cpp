@@ -24,6 +24,7 @@
 #include <joda/query/values/TypeProvider.h>
 #include <joda/query/values/UnaryNumberProvider.h>
 #include <joda/query/values/UnaryStringProvider.h>
+#include <joda/query/values/CastProvider.h>
 #include <rapidjson/writer.h>
 #include "IValueTestHelper.h"
 #include "rapidjson/stringbuffer.h"
@@ -1287,8 +1288,6 @@ TEST_F(ValueTest, ListAttributesProvider) {
   // Parameters
   std::vector<IValueType> t = {IV_Object};
   testParams<ListAttributesProvider>(t, false);
-  t = {IV_Object, IV_Bool};
-  testParams<ListAttributesProvider>(t, false, false);
 
   // Duplicate
   checkDuplicate(ival);
@@ -1301,30 +1300,13 @@ TEST_F(ValueTest, ListAttributesProvider) {
   }
   {
     SCOPED_TRACE("ListAttributesProvider_Func2");
-    IValueTestHelper::param(p, IValueTestHelper::getPointer(""),
-                            IValueTestHelper::getBoolVal(false));
-    ival = ListAttributesProvider::_FACTORY(std::move(p));
-    auto val = IValueToValueString(ival);
-    EXPECT_STREQ(val.c_str(), R"(["num","str","arr","bool","null","obj"])");
-  }
-  {
-    SCOPED_TRACE("ListAttributesProvider_Func3");
-    IValueTestHelper::param(p, IValueTestHelper::getPointer(""),
-                            IValueTestHelper::getBoolVal(true));
-    ival = ListAttributesProvider::_FACTORY(std::move(p));
-    auto val = IValueToValueString(ival);
-    EXPECT_STREQ(val.c_str(),
-                 R"(["num","str","arr","bool","null","obj","obj/nested"])");
-  }
-  {
-    SCOPED_TRACE("ListAttributesProvider_Func4");
     IValueTestHelper::param(p, IValueTestHelper::getPointer("/obj"));
     ival = ListAttributesProvider::_FACTORY(std::move(p));
     auto val = IValueToValueString(ival);
     EXPECT_STREQ(val.c_str(), R"(["nested"])");
   }
   {
-    SCOPED_TRACE("ListAttributesProvider_Func5");
+    SCOPED_TRACE("ListAttributesProvider_Func3");
     IValueTestHelper::param(p, IValueTestHelper::getPointer("/num"));
     ival = ListAttributesProvider::_FACTORY(std::move(p));
     std::unique_ptr<IValueProvider> res = std::make_unique<DummyNull>();
@@ -2199,4 +2181,102 @@ TEST_F(ValueTest, RtrimProvider) {
   testUnaryAtom<TestType, std::string, std::string>("aaaa", "aaaa");
   testUnaryAtom<TestType, std::string, std::string>("     aaaa       ",
                                                     "     aaaa");
+}
+
+TEST_F(ValueTest, IntCastProvider) {
+  SCOPED_TRACE("IntCastProvider");
+  using TestType = IntCastProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(2l));
+  std::unique_ptr<IValueProvider> ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Number);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+  // Check Function
+
+  testUnaryAtom<TestType, int64_t, int64_t>(6, 6);
+  testUnaryAtom<TestType, int64_t, int64_t>(-6, -6);
+
+  testUnaryAtom<TestType, double, int64_t>(3842.234238, 3842);
+  testUnaryAtom<TestType, double, int64_t>(-3842.234238, -3842);
+
+  testUnaryAtom<TestType, bool, int64_t>(true, 1);
+  testUnaryAtom<TestType, bool, int64_t>(false, 0);
+
+  testUnaryAtom<TestType, std::string, int64_t>("5", 5);
+  testUnaryAtom<TestType, std::string, int64_t>("-5", -5);
+  testUnaryAtom<TestType, std::string, int64_t>("   5    ", 5);
+  testUnaryAtom<TestType, std::string, int64_t>("   -5    ", -5);
+  testUnaryAtom<TestType, std::string, int64_t>("0.5",0);
+  testUnaryAtom<TestType, std::string, int64_t>("-1.6",-1);
+  testUnaryAtom<TestType, std::string, int64_t>("-1.4",-1);
+  testUnaryAtom<TestType, std::string, int64_t>("5 with words", 5);
+
+
+  testUnaryAtom<TestType, std::string>("aas");
+}
+
+TEST_F(ValueTest, FloatCastProvider) {
+  SCOPED_TRACE("FloatCastProvider");
+  using TestType = FloatCastProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(2l));
+  std::unique_ptr<IValueProvider> ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Number);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+  // Check Function
+
+  testUnaryAtom<TestType, int64_t, double>(6, 6.0);
+  testUnaryAtom<TestType, int64_t, double>(-6, -6.0);
+
+  testUnaryAtom<TestType, double, double>(3842.234238, 3842.234238);
+  testUnaryAtom<TestType, double, double>(-3842.234238, -3842.234238);
+
+  testUnaryAtom<TestType, bool, int64_t>(true, 1.0);
+  testUnaryAtom<TestType, bool, int64_t>(false, 0.0);
+
+  testUnaryAtom<TestType, std::string, double>("5", 5.0);
+  testUnaryAtom<TestType, std::string, double>("-5", -5.0);
+  testUnaryAtom<TestType, std::string, double>("   5    ", 5.0);
+  testUnaryAtom<TestType, std::string, double>("   -5    ", -5.0);
+  testUnaryAtom<TestType, std::string, double>("0.5",0.5);
+  testUnaryAtom<TestType, std::string, double>("-1.6",-1.6);
+  testUnaryAtom<TestType, std::string, double>("-1.4",-1.4);
+  testUnaryAtom<TestType, std::string, double>("5 with words", 5.0);
+
+
+  testUnaryAtom<TestType, std::string>("aas");
+}
+
+TEST_F(ValueTest, StringCastProvider) {
+  SCOPED_TRACE("StringCastProvider");
+  using TestType = StringCastProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(2l));
+  std::unique_ptr<IValueProvider> ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Number);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+  // Check Function
+
+  testUnaryAtom<TestType, int64_t,  std::string>(6, "6");
+  testUnaryAtom<TestType, int64_t,  std::string>(-6, "-6");
+
+  testUnaryAtom<TestType, double,  std::string>(3842.234238, "3842.234238");
+  testUnaryAtom<TestType, double,  std::string>(-3842.234238, "-3842.234238");
+
+  testUnaryAtom<TestType, bool, std::string>(true, "true");
+  testUnaryAtom<TestType, bool, std::string>(false, "false");
+
+  testUnaryAtom<TestType, std::string, std::string>("aas","aas");
 }

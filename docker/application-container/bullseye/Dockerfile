@@ -1,5 +1,5 @@
 # Set the base image
-FROM debian:buster
+FROM debian:bullseye
 # Dockerfile author / maintainer
 LABEL maintainer="Nico Schaefer <n_schaefer11@cs.uni-kl.de>"
 
@@ -11,7 +11,7 @@ COPY *.deb .
 RUN apt-get update && apt install --no-install-recommends -y ./*.deb && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # Copy config
-COPY docker/application-container/buster/joda.conf joda.conf
+COPY docker/application-container/bullseye/joda.conf joda.conf
 
 # JODA PORT
 EXPOSE 5632/tcp

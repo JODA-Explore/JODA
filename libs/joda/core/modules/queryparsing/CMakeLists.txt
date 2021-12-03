@@ -57,5 +57,5 @@ target_link_libraries(joda-core-queryparsing-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-queryparsing-lib INTERFACE glog)
+
+target_link_libraries(joda-core-queryparsing-lib INTERFACE glog::glog)

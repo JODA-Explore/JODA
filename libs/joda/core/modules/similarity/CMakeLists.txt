@@ -35,7 +35,7 @@ target_link_libraries(joda-core-similarity-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-similarity-lib INTERFACE glog)
+
+target_link_libraries(joda-core-similarity-lib INTERFACE glog::glog)
 
 

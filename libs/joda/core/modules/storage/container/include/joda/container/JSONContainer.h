@@ -142,8 +142,8 @@ class JSONContainer {
   void forAll(F &f) {
     ScopedRef ref(this);
     for (auto &&doc : docs) {
-      if (doc.valid) {
-        f(doc.doc);
+      if (doc.isValid()) {
+        f(doc);
       }
     }
     setLastUsed();
@@ -158,8 +158,8 @@ class JSONContainer {
   void forAll(F f) {
     ScopedRef ref(this);
     for (auto &&doc : docs) {
-      if (doc.valid) {
-        f(doc.doc);
+      if (doc.isValid()) {
+        f(doc);
       }
     }
     setLastUsed();
@@ -180,8 +180,8 @@ class JSONContainer {
     for (size_t i = 0; i < docs.size(); ++i) {
       if (!ids[i]) continue;
       auto &doc = docs[i];
-      if (doc.valid) {
-        f(doc.doc);
+      if (doc.isValid()) {
+        f(doc);
       }
     }
     setLastUsed();
@@ -208,8 +208,8 @@ class JSONContainer {
         continue;
       };
       auto &doc = docs[i];
-      if (doc.valid) {
-        ret.emplace_back(f(doc.doc,i));
+      if (doc.isValid()) {
+        ret.emplace_back(f(doc,i));
       }
     }
     setLastUsed();
@@ -360,10 +360,10 @@ class JSONContainer {
       auto &doc = docs[i];
       if (doc.isValid()) {
         if (isView()) {
-          auto &view = doc.doc.getView();
+          auto &view = doc.getView();
           ret.push_back(view->Accept(handler));
         } else {
-          ret.push_back(doc.doc.getJson()->Accept(handler));
+          ret.push_back(doc.getJson()->Accept(handler));
         }
       } else
         ret.push_back(false);
@@ -515,43 +515,14 @@ class JSONContainer {
 
   void setLastUsed();
 
-  struct DocContainer {
-    explicit DocContainer(RapidJsonDocument &&doc) noexcept
-        : doc(std::move(doc)) {}
 
-    explicit DocContainer(RapidJsonDocument &&doc,
-                          size_t baseIndex = 0) noexcept
-        : doc(std::move(doc)), baseIndex(baseIndex) {}
-
-    DocContainer(DocContainer &&doc) noexcept
-        : doc(std::move(doc.doc)), valid(doc.valid), baseIndex(doc.baseIndex) {}
-
-    DocContainer &operator=(DocContainer &&doc) noexcept {
-      valid = doc.valid;
-      this->doc = std::move(doc.doc);
-      this->baseIndex = doc.baseIndex;
-      return *this;
-    }
-
-    RapidJsonDocument doc;
-    bool valid = true;
-    size_t baseIndex = 0;
-
-    bool isValid() const { return valid; }
-
-    void remove() {
-      valid = false;
-      doc.removeDoc();
-    }
-  };
-
-  static bool compareDocContainer(const DocContainer &i,
-                                  const DocContainer &j) {
-    if (!i.isValid() || !j.isValid()) return false;
-    return i.doc.getOrigin() < j.doc.getOrigin();
+  static bool compareDocContainer(const RapidJsonDocument &i,
+                                  const RapidJsonDocument &j) {                              
+    return i.getOrigin()->operator<(*j.getOrigin());
   }
 
-  std::vector<DocContainer> docs;
+  std::vector<RapidJsonDocument> docs;
+  std::vector<size_t> baseIds;
 
   RJMemoryPoolPointer alloc;
 };
@@ -561,8 +532,8 @@ void JSONContainer::forAll(std::function<retType(RapidJsonDocument &)> &func,
                            std::vector<retType> &vec) {
   ScopedRef ref(this);
   for (auto &&doc : docs) {
-    if (doc.valid) {
-      vec.push_back(std::move(func(doc.doc)));
+    if (doc.isValid()) {
+      vec.push_back(std::move(func(doc)));
     }
   }
   setLastUsed();

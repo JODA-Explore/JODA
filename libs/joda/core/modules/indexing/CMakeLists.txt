@@ -24,5 +24,5 @@ target_link_libraries(joda-core-indexing-lib INTERFACE joda-core-document-lib jo
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-indexing-lib INTERFACE glog)
+
+target_link_libraries(joda-core-indexing-lib INTERFACE glog::glog)

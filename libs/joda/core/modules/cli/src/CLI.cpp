@@ -164,13 +164,12 @@ void joda::cli::CLI::start(const std::vector<std::string>& onceQueries) {
         execute = false;
       }
     }
-  }
-
-  if (isatty(STDIN_FILENO) != 0) {
-    DLOG(INFO) << "Writing history file";
-    auto err = write_history(config::history_file.c_str());
-    if (err != 0) {
-      LOG(ERROR) << "Error " << err << " while writing history file.";
+    if (isatty(STDIN_FILENO) != 0) {
+      DLOG(INFO) << "Writing history file";
+      auto err = write_history(config::history_file.c_str());
+      if (err != 0) {
+        LOG(ERROR) << "Error " << err << " while writing history file.";
+      }
     }
   }
 }

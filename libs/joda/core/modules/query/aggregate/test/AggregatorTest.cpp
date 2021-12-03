@@ -11,6 +11,7 @@
 #include <joda/query/aggregation/DistinctAggregator.h>
 #include <joda/query/aggregation/IAggregator.h>
 #include <joda/query/aggregation/NumberAggregator.h>
+#include <joda/query/aggregation/HistogramAggregator.h>
 #include <joda/query/values/IValueProvider.h>
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
@@ -480,4 +481,96 @@ TEST_F(AggregatorTest, AttributeStatAggregatorMerge) {
       {}, alloc,
       R"({"Count_Total":8,"Count_Object":2,"Min_Member":1,"Max_Member":1,"Count_Array":1,"Min_Size":1,"Max_Size":1,"Count_Null":2,"Count_Boolean":1,"Count_True":1,"Count_False":0,"Count_String":1,"Min_StrSize":3,"Max_StrSize":3,"Count_Int":1,"Min_Int":1,"Max_Int":1,"Count_Float":0,"Count_Number":1,"Children":[{"Key":"str","Count_Total":1,"Count_Object":0,"Count_Array":0,"Count_Null":0,"Count_Boolean":0,"Count_True":0,"Count_False":0,"Count_String":1,"Min_StrSize":3,"Max_StrSize":3,"Count_Int":0,"Count_Float":0,"Count_Number":0},{"Key":"num","Count_Total":1,"Count_Object":0,"Count_Array":0,"Count_Null":0,"Count_Boolean":0,"Count_True":0,"Count_False":0,"Count_String":0,"Count_Int":1,"Min_Int":1,"Max_Int":1,"Count_Float":0,"Count_Number":1}],"Array_Items":[{"Key":"0","Count_Total":1,"Count_Object":0,"Count_Array":0,"Count_Null":0,"Count_Boolean":0,"Count_True":0,"Count_False":0,"Count_String":0,"Count_Int":1,"Min_Int":1,"Max_Int":1,"Count_Float":0,"Count_Number":1}]})",
       agg);
+}
+
+
+
+TEST_F(AggregatorTest, HistogramAggregator) {
+  SCOPED_TRACE("HistogramAggregator");
+  RJMemoryPoolAlloc alloc;
+  auto docs = getDocs(
+      {R"(1)", R"(2)", R"(3)", R"(1.5)", R"(3.5)"},
+      alloc);
+
+  std::unique_ptr<joda::query::IAggregator> agg;
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getPointer(""));
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal((u_int64_t)3));
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal((u_int64_t)1));
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal((u_int64_t)4));
+  EXPECT_NO_THROW(agg = std::make_unique<joda::query::HistogramAggregator>(
+                      "/agg", std::move(p)));
+
+  // Nulltest
+  {
+    SCOPED_TRACE("Null");
+    auto ptr = agg->duplicate();
+    testAgg(
+        {}, alloc,
+        R"([{"lower":1.0,"upper":2.0,"value":0},{"lower":2.0,"upper":3.0,"value":0},{"lower":3.0,"upper":4.0,"value":0}])",
+        ptr);
+  }
+
+  // Duplicate
+  checkDuplicate(agg);
+
+  // Function
+  testAgg(
+      docs, alloc,
+      R"([{"lower":1.0,"upper":2.0,"value":2},{"lower":2.0,"upper":3.0,"value":1},{"lower":3.0,"upper":4.0,"value":2}])",
+      agg);
+
+  // Overflow
+  {
+    SCOPED_TRACE("Overflow");
+    std::unique_ptr<joda::query::IAggregator> agg2;
+    EXPECT_NO_THROW(agg2 = agg->duplicate());
+     auto docs = getDocs(
+      {R"(-1)", R"(2)", R"(4)", R"(7.5)"},
+      alloc);
+
+    testAgg(
+        docs, alloc,
+        R"([{"upper":1.0,"value":1},{"lower":1.0,"upper":2.0,"value":0},{"lower":2.0,"upper":3.0,"value":1},{"lower":3.0,"upper":4.0,"value":0},{"lower":4.0,"value":2}])",
+        agg2);
+  }
+
+  // Wrong Types
+  {
+    SCOPED_TRACE("Wrong Types");
+    std::unique_ptr<joda::query::IAggregator> agg3;
+    EXPECT_NO_THROW(agg3 = agg->duplicate());
+     auto docs = getDocs(
+      {R"("string")", R"(true)", R"(false)", R"({})", R"([1])", R"(null)"},
+      alloc);
+
+    testAgg(
+        docs, alloc,
+        R"([{"lower":1.0,"upper":2.0,"value":0},{"lower":2.0,"upper":3.0,"value":0},{"lower":3.0,"upper":4.0,"value":0}])",
+        agg3);
+  }
+
+   // Merge
+  {
+    SCOPED_TRACE("Merge");
+    std::unique_ptr<joda::query::IAggregator> agg4;
+    EXPECT_NO_THROW(agg4 = agg->duplicate());
+    std::unique_ptr<joda::query::IAggregator> agg5;
+    EXPECT_NO_THROW(agg5 = agg->duplicate());
+    auto docs1 = getDocs(
+      {R"(1)", R"(2)", R"(3)", R"(1.5)", R"(3.5)"},
+      alloc);
+    auto docs2 = getDocs(
+      {R"(-1)", R"(2.5)", R"(4)"},
+      alloc);
+
+    aggregate(docs1, alloc, agg4);
+    aggregate(docs2, alloc, agg5);
+    EXPECT_NO_FATAL_FAILURE(agg4->merge(agg5.get()));
+
+    testAgg(
+      {}, alloc,
+      R"([{"upper":1.0,"value":1},{"lower":1.0,"upper":2.0,"value":2},{"lower":2.0,"upper":3.0,"value":2},{"lower":3.0,"upper":4.0,"value":2},{"lower":4.0,"value":1}])",
+      agg4);
+  }
 }

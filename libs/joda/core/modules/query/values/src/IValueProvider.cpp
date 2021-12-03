@@ -115,6 +115,13 @@ void joda::query::IValueProvider::checkParamSize(unsigned int expected) {
   }
 }
 
+void joda::query::IValueProvider::checkMinParamSize(unsigned int expected) {
+  if (params.size() < expected) {
+    throw WrongParameterCountException(params.size(), expected, getName(),
+                                        true);
+  }
+}
+
 void joda::query::IValueProvider::checkParamType(unsigned int i,
                                                  IValueType expected) {
   DCHECK_GE(params.size(), i) << "Checked for not existing parameter";
@@ -122,3 +129,13 @@ void joda::query::IValueProvider::checkParamType(unsigned int i,
     throw WrongParameterTypeException(i, expected, getName());
   }
 }
+
+
+  void joda::query::IValueProvider::checkOptionalParamType(unsigned int i, IValueType expected) {
+    if(params.size() < i+1) {
+      return;
+    }
+    if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {
+      throw WrongParameterTypeException(i, expected, getName());
+    }
+  }

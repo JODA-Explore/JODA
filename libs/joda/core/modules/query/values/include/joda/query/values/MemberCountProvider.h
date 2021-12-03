@@ -10,30 +10,54 @@ class MemberCountHandler {
  public:
   typedef char Ch;
 
-  constexpr bool Null() { return true; }
+  constexpr bool Null() {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Bool(bool b) { return true; }
+  constexpr bool Bool(bool b) {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Int(int i) { return true; }
+  constexpr bool Int(int i) {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Uint(unsigned i) { return true; }
+  constexpr bool Uint(unsigned i) {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Int64(int64_t i) { return true; }
+  constexpr bool Int64(int64_t i) {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Uint64(uint64_t i) { return true; }
+  constexpr bool Uint64(uint64_t i) {
+    if (!firstObject) return false;
+    return true;
+  }
 
-  constexpr bool Double(double d) { return true; }
+  constexpr bool Double(double d) {
+    if (!firstObject) return false;
+    return true;
+  }
 
   constexpr bool RawNumber(const Ch *str, rapidjson::SizeType length,
                            bool copy) {
+    if (!firstObject) return false;
     return true;
   }
 
   constexpr bool String(const Ch *str, rapidjson::SizeType length, bool copy) {
+    if (!firstObject) return false;
     return true;
   }
 
   bool StartObject() {
+    if (stack == 0) firstObject = true;
     stack++;
     return true;
   }
@@ -49,6 +73,7 @@ class MemberCountHandler {
   }
 
   constexpr bool StartArray() {
+    if (!firstObject) return false;
     stack++;
     return true;
   }
@@ -63,11 +88,13 @@ class MemberCountHandler {
   void reset() {
     stack = 0;
     count = 0;
+    firstObject = false;
   }
 
  private:
   int stack = 0;
   size_t count = 0;
+  bool firstObject = false;
 };
 
 class MemberCountCalculator {
@@ -80,7 +107,8 @@ class MemberCountCalculator {
   static RJValue accept(const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc,
                         const ValueAccepter &accepter) {
     MemberCountHandler handler;
-    accepter.Accept(json, alloc, handler);
+    auto res = accepter.Accept(json, alloc, handler);
+    if(!res) return RJValue();
     return RJValue(handler.getCount());
   }
 

@@ -17,7 +17,8 @@ enum aggFunction {
   DISTINCT,
   MIN,
   MAX,
-  COLLECT
+  COLLECT,
+  HISTOGRAM
 };
 
 struct aggState {

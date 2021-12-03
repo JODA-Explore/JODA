@@ -59,7 +59,7 @@ std::string MemoryUtility::MemorySize::getHumanReadable() const {
   ss << std::fixed << std::setprecision(2) << remainingBytes << " "
      << suffixes[suffix];
 
-  DLOG(INFO) << bytes << " / 1024^" << suffix << " = " << ss.str();
+  // DLOG(INFO) << bytes << " / 1024^" << suffix << " = " << ss.str();
 
   return ss.str();
 }

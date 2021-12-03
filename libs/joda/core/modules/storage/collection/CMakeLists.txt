@@ -24,5 +24,5 @@ target_link_libraries(joda-core-storage-collection-lib INTERFACE joda-core-join-
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-storage-collection-lib INTERFACE glog)
+
+target_link_libraries(joda-core-storage-collection-lib INTERFACE glog::glog)

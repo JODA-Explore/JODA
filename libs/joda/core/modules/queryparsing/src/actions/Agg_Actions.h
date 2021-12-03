@@ -4,15 +4,16 @@
 
 #ifndef JODA_AGG_ACTIONS_H
 #define JODA_AGG_ACTIONS_H
-#include "../grammar/Grammar.h"
-#include "../states/States.h"
-
 #include <joda/query/aggregation/AttributeStatAggregator.h>
 #include <joda/query/aggregation/CollectAggregator.h>
 #include <joda/query/aggregation/CountAggregator.h>
 #include <joda/query/aggregation/DistinctAggregator.h>
 #include <joda/query/aggregation/GroupAggregator.h>
+#include <joda/query/aggregation/HistogramAggregator.h>
 #include <joda/query/aggregation/NumberAggregator.h>
+
+#include "../grammar/Grammar.h"
+#include "../states/States.h"
 
 namespace joda::queryparsing::grammar {
 
@@ -70,6 +71,14 @@ struct aggExpAction<aggKW_MAX> {
   static void apply0(aggState &state) {
     assert(state.aggfun == NOAGG);
     state.aggfun = MAX;
+  }
+};
+
+template <>
+struct aggExpAction<aggKW_HISTOGRAM> {
+  static void apply0(aggState &state) {
+    assert(state.aggfun == NOAGG);
+    state.aggfun = HISTOGRAM;
   }
 };
 
@@ -149,6 +158,9 @@ struct aggExpAction<aggSingleExp> {
           agg = std::make_unique<joda::query::CollectAggregator>(
               state.toPointer, std::move(state.valprov));
           break;
+        case HISTOGRAM:
+          agg = std::make_unique<joda::query::HistogramAggregator>(
+              state.toPointer, std::move(state.valprov));
       }
     } catch (joda::query::WrongParameterException &e) {
       throw tao::pegtl::parse_error(e.what(), in);

@@ -1,7 +1,9 @@
 <h1>Joda - JSON On-Demand Analysis</h1>
 
 <div style="text-align:center">
+<a href="https://joda-explore.github.io/JODA">
 <img src="https://dbis.informatik.uni-kl.de/files/icons/JODA.png" width="380"  />
+</a>
 <br>
 <a href="https://dbis.informatik.uni-kl.de">
 <img src="https://dbis.informatik.uni-kl.de/images/dbislogo_default.png" width="130"  />
@@ -45,7 +47,8 @@ It can be used to efficiently filter, transform, and aggregate a large set of JS
   - [Misc](#misc)
     - [Functions](#functions)
         - [Metadata-/File-Functions](#metadata-file-functions)
-        - [Type/Attribute-Functions](#typeattribute-functions)
+        - [Type-Functions](#type-functions)
+        - [Casting-Functions](#casting-functions)
         - [String-Functions](#string-functions)
         - [Array-Functions](#array-functions)
         - [Object-Functions](#object-functions)
@@ -68,9 +71,8 @@ The easiest way to get JODA up and running is to use our Docker image available 
 
 ## Packages
 Packages to use with distro package managers are currently built for:
-- Debian Buster
-- Ubuntu 16.04
-- Ubuntu 18.04
+- Debian Bullseye
+- Ubuntu 20.04
 
 ## Precompiled
 Precompiled binary executables are can be downloaded from the release section on this repo.
@@ -78,17 +80,16 @@ Precompiled binary executables are can be downloaded from the release section on
 ### Requirements
 To be able to use the main software, the following packages have to be installed:
 
-- Glog: Google logging framework (Debian Buster: libgoogle-glog0v5)
-- C++ Rest SDK (Debian Buster: libcpprest)
-- SSL Lib (Debian Buster: libssl1.1)
-- Readline (Debian Buster: libreadline7)
-- NCurses (Debian: libncursesw5)
+- C++ Rest SDK (Debian Bullseye: libssl1)
+- SSL Lib (Debian Bullseye: libssl1.1 )
+- Readline (Debian Bullseye: libreadline8)
+- NCurses (Debian: libncursesw6)
 
 
 Example:
 
     apt-get update
-    apt-get install libcpprest libssl1.1 libreadline7 libncursesw5 libgoogle-glog0v5
+    apt-get install libjemalloc2 libcpprest libssl1.1 libreadline8 libncursesw6 libgoogle-glog0v5
 
 ## Compiling
 The program can alternatively be compiled from the sources.
@@ -96,12 +97,12 @@ The program can alternatively be compiled from the sources.
 ### Requirements
 To be able to compile the main software, the following packages have to be installed:
 
-- Glog: Google logging framework. (Debian: libgoogle-glog-dev)
+
 - Jemalloc: (Optional Enhances performance.)  (Debian: libjemalloc-dev)
 - Boost: The basic boost package + modules `system` , `regex` and `iostreams` (Debian: libboost-dev, libboost-system-dev, libboost-regex-dev, libboost-iostreams-dev)
 - NCurses: (Debian: libncursesw5-dev)
 - Readline (Debian Buster: libreadline-dev)
-- 
+  
 For optional support for `FROM URL` imports, the following packages are also required:
 
 - cpprest: C++ REST client (Debian: libcpprest-dev)
@@ -112,14 +113,14 @@ To use the included client for server/client mode the following additional packa
 Example:
 
     apt-get update
-    apt-get install libssl-dev libcpprest-dev libjemalloc-dev libgoogle-glog-dev libboost-dev libboost-system-dev libboost-regex-dev libboost-program-options-dev libncurses5-dev libncursesw5-dev libreadline-dev
+    apt-get install libssl-dev libcpprest-dev libjemalloc-dev libboost-dev libboost-system-dev libboost-regex-dev libboost-program-options-dev libncurses5-dev libncursesw5-dev libreadline-dev
 
 
 ### Commands
 
 To compile the program in Release mode, the following commands can be used.
 
-    https://git.cs.uni-kl.de/n_schaefer11/JODA.git
+    git clone https://github.com/JODA-Explore/JODA.git
     cd JODA
     mkdir build && cd build
     cmake -DCMAKE_BUILD_TYPE=Release ..
@@ -154,23 +155,24 @@ The commands have to be entered followed by a `;`.
 
 ## Syntax
 The basic syntax of queries is:
-```
-LOAD    <VAR>   (<SOURCES>)
-CHOOSE  <PRED>
-AS      <PROJ>
-AGG     <AGG>
-STORE  (<VAR>  | AS FILE        "<FILE>")
-DELETE  <VAR>
+
+```joda
+LOAD     <COLLECTION>   (<SOURCES>)
+(CHOOSE  <PRED>)
+(AS      <PROJ>)
+(AGG     <AGG>)
+(STORE   <COLLECTION>  | AS FILE "<FILE>" | AS FILES "<DIR>")
+(DELETE  <COLLECTION>)
 ```
 
 
 The execution order is `LOAD`->`CHOOSE`->`AS`->`AGG`->`STORE`->`DELETE`.
 ### Load
-`LOAD <VAR>` loads an previously stored result,
-for further usage in the following query, from variable `<VAR>`.
+`LOAD <COLLECTION>` loads an previously stored result,
+for further usage in the following query, from variable `<COLLECTION>`.
 
-`LOAD <VAR> <SOURCES>` imports data from the `<SOURCES>` into `<VAR>` and continues the query with it.
-If `<VAR>` already exists, the contents of `<SOURCES>` will be appended
+`LOAD <COLLECTION> <SOURCES>` imports data from the `<SOURCES>` into `<COLLECTION>` and continues the query with it.
+If `<COLLECTION>` already exists, the contents of `<SOURCES>` will be appended
 to it.
 
 `<SOURCES>` can be one or multiple single `<SOURCE>`, combined with `,`.
@@ -336,6 +338,7 @@ Source can be any of the following functions:
 - __DISTINCT(\<Number/String/Bool>)__: (Array\[Any]) Returns an array of distinct found elements, non atomic values are discarded.
 - __COLLECT(\<ANY>)__: (Array\[Any]) Returns an array of all elements.
 - __ATTSTAT(\<Object>)__: (Object) Returns a statistic about the attributes in the given object.
+- __HISTOGRAM(\<Number>,\<Number>,\<Number>,\<Number>)__: (Object) Creates a histogram of the first parameter. The following parameters represent the number of buckets, the inclusive minimum value, and the exclusive maximum value.
 
 #### GROUP BY
 Aggregations can also be grouped by a specified value.
@@ -470,7 +473,7 @@ or "\[PROJECTION]" if the document was projected.
 
 
 
-##### Type/Attribute-Functions
+##### Type-Functions
 - (String) `TYPE(Any)`: Returns the type of the given attribute
 ("OBJECT","ARRAY","NUMBER","STRING","BOOL","NULL");
 - (Bool) `EXISTS(Any)`: Checks if the given attribute exists.
@@ -481,7 +484,11 @@ or "\[PROJECTION]" if the document was projected.
     - `ISSTRING`
     - `ISOBJECT`
     - `ISARRAY`
-- (Array(String)) `LISTATTRIBUTES(Object,Bool)`: Returns all named attributes in the given object or an empty list if pointed-to value is not an object. The attributes are listed recursively for all objects, if the second parameter is set to true (Default: false).
+  
+##### Casting-Functions
+- (Number) `INT(Any)`: Returns the integer representation of the value. Floats are truncated, Strings are parsed as numbers if possible, and Boolean is converted to {1,0}.
+- (Number) `FLOAT(Any)`: Returns the float representation of the value. Strings are parsed as numbers if possible, and Boolean is converted to {1,0}.
+- (String) `STRING(Any)`: Returns the string representation of the value. Only works for non-object/array values.
 
 ##### String-Functions
 - (Number) `LEN(String)`: Returns the length of the string.
@@ -504,6 +511,8 @@ or "\[PROJECTION]" if the document was projected.
 
 ##### Object-Functions
 - (Number) `MEMCOUNT(Object)`: Returns the number of members.
+- (Array(String)) `LISTATTRIBUTES(Object)`: Returns all members in the given object.
+
 
 ##### Mathematical-Functions
 - (Number) `SUM(Number, Number)`: Calculates the sum of all arguments.

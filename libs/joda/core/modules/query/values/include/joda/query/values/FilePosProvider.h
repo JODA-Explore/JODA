@@ -32,8 +32,8 @@ class FilePosProvider : public joda::query::IValueProvider {
                        RJMemoryPoolAlloc &alloc) const override {
     assert(isAtom() && "Did not check for atom before calling");
     RJValue val;
-    auto *tmp = json.getOrigin();
-    auto *fileOrig = dynamic_cast<const FileOrigin *>(tmp);
+    auto& tmp = json.getOrigin();
+    auto *fileOrig = dynamic_cast<const FileOrigin *>(tmp.get());
     if (fileOrig != nullptr) {
       if (start)
         val.SetInt64(fileOrig->getStart());

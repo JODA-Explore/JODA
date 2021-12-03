@@ -28,6 +28,7 @@ struct aggKW_COUNT : TAOCPP_PEGTL_KEYWORD("COUNT") {};
 struct aggKW_SUM : TAOCPP_PEGTL_KEYWORD("SUM") {};
 struct aggKW_DISTINCT : TAOCPP_PEGTL_KEYWORD("DISTINCT") {};
 struct aggKW_COLLECT : TAOCPP_PEGTL_KEYWORD("COLLECT") {};
+struct aggKW_HISTOGRAM : TAOCPP_PEGTL_KEYWORD("HISTOGRAM") {};
 
 struct aggKW_GROUP : TAOCPP_PEGTL_KEYWORD("GROUP") {};
 struct aggKW_BY : TAOCPP_PEGTL_KEYWORD("BY") {};
@@ -37,7 +38,7 @@ struct aggKW_AS : TAOCPP_PEGTL_KEYWORD("AS") {};
 // Agg commands
 struct aggKeywords
     : tao::pegtl::sor<aggKW_ATTSTAT, aggKW_AVG, aggKW_COUNT, aggKW_SUM,
-                      aggKW_DISTINCT, aggKW_COLLECT, aggKW_MIN, aggKW_MAX> {};
+                      aggKW_DISTINCT, aggKW_COLLECT, aggKW_MIN, aggKW_MAX, aggKW_HISTOGRAM> {};
 
 /*
  * Aggregate Expresstion

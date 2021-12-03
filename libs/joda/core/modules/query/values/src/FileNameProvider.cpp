@@ -16,8 +16,8 @@ RJValue joda::query::FileNameProvider::getAtomValue(
     const RapidJsonDocument& json, RJMemoryPoolAlloc& alloc) const {
   DCHECK(isAtom() && "Did not check for atom before calling");
   RJValue val;
-  auto* tmp = json.getOrigin();
-  auto* fileOrig = dynamic_cast<const FileOrigin*>(tmp);
+  auto& tmp = json.getOrigin();
+  auto* fileOrig = dynamic_cast<const FileOrigin*>(tmp.get());
   if (fileOrig != nullptr) {
     val.SetString(g_FileNameRepoInstance.getFile(fileOrig->getFile()).c_str(),
                   alloc);

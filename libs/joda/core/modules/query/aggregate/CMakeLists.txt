@@ -15,6 +15,8 @@ set(joda-core-query-agg-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/aggregation/GroupAggregator.h
         ${CMAKE_CURRENT_LIST_DIR}/src/CountAggregator.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/aggregation/CountAggregator.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/HistogramAggregator.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/aggregation/HistogramAggregator.h
         )
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-query-agg-SOURCES} PARENT_SCOPE )
 
@@ -37,5 +39,5 @@ target_link_libraries(joda-core-query-agg-lib INTERFACE joda-core-query-values-l
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-query-agg-lib INTERFACE glog)
+
+target_link_libraries(joda-core-query-agg-lib INTERFACE glog::glog)

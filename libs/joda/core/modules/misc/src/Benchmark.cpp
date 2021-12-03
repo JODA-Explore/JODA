@@ -2,6 +2,7 @@
 // Created by Nico Schäfer on 12/07/18.
 //
 #include "../include/joda/misc/Benchmark.h"
+
 #include <glog/logging.h>
 #include <joda/config/config.h>
 #include <joda/misc/RJFwd.h>
@@ -11,6 +12,7 @@
 #include <rapidjson/ostreamwrapper.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
+
 #include <fstream>
 #include <mutex>
 
@@ -21,7 +23,28 @@ Benchmark::Benchmark() : valid(config::benchmark) {
   }
 }
 
-Benchmark::Benchmark(const std::string& file) : benchfile(file) {
+Benchmark::Benchmark(Benchmark &&b)
+    : benchDoc(std::move(b.benchDoc)),
+      currentLine(std::move(b.currentLine)),
+      valid(b.valid),
+      local(b.local),
+      benchfile(std::move(b.benchfile)) {
+  b.valid = false;
+  b.local = false;
+}
+
+Benchmark &Benchmark::operator=(Benchmark &&b) {
+  valid = b.valid;
+  benchDoc = std::move(b.benchDoc);
+  currentLine = std::move(b.currentLine);
+  local = b.local;
+  b.valid = false;
+  b.local = false;
+  benchfile = std::move(b.benchfile);
+  return *this;
+}
+
+Benchmark::Benchmark(const std::string &file) : benchfile(file) {
   valid = config::benchmark;
   if (!valid) {
     return;
@@ -175,6 +198,6 @@ void Benchmark::addThread(double bloom, double select, double project,
 
 bool Benchmark::isValid() const { return valid; }
 
-const RJValue& Benchmark::getLastLine() const {
+const RJValue &Benchmark::getLastLine() const {
   return benchDoc[benchDoc.Size() - 1];
 }

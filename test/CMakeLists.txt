@@ -11,7 +11,6 @@ set_target_properties(gtest_main PROPERTIES FOLDER extern)
 set_target_properties(gmock PROPERTIES FOLDER extern)
 set_target_properties(gmock_main PROPERTIES FOLDER extern)
 
-find_package(glog REQUIRED)
 
 file(COPY data DESTINATION ${PROJECT_BINARY_DIR}/test/)
 
@@ -20,7 +19,7 @@ macro(package_add_test TESTNAME)
     target_compile_options(${TESTNAME} PRIVATE ${JODA_TEST_OPTIONS})
     target_compile_definitions(${TESTNAME} PRIVATE ${RAPIDJSON_COMPILE_DEFINITIONS})
     target_link_libraries(${TESTNAME} PRIVATE -Wl,--whole-archive joda-core-lib -Wl,--no-whole-archive)
-    target_link_libraries(${TESTNAME} PRIVATE gtest gmock gtest_main glog -static-libstdc++)
+    target_link_libraries(${TESTNAME} PRIVATE gtest gmock gtest_main glog::glog -static-libstdc++)
     target_compile_options(${TESTNAME} PRIVATE ${COVERAGE_FLAGS})
     target_link_libraries(${TESTNAME} PRIVATE ${COVERAGE_LIBS})
     set_target_properties(${TESTNAME} PROPERTIES FOLDER test)

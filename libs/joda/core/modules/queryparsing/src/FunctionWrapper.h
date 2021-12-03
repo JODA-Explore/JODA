@@ -48,6 +48,7 @@ struct functionAction : tao::pegtl::nothing<Rule> {};
 #include <joda/query/values/TypeProvider.h>
 #include <joda/query/values/UnaryNumberProvider.h>
 #include <joda/query/values/UnaryStringProvider.h>
+#include <joda/query/values/CastProvider.h>
 #include "states/States.h"
 
 namespace joda::queryparsing::grammar {
@@ -117,6 +118,9 @@ REGISTER_FUNCTION(query::PiProvider, func_kw_PIFUNK, "PI")
 REGISTER_FUNCTION(query::MemberCountProvider, func_kw_MEMCOUNTFUNK, "MEMCOUNT")
 REGISTER_FUNCTION(query::HashProvider, func_kw_HASHFUNK, "HASH")
 REGISTER_FUNCTION(query::NowProvider, func_kw_NOWFUNK, "NOW")
+REGISTER_FUNCTION(query::IntCastProvider, func_kw_INTFUNK, "INT")
+REGISTER_FUNCTION(query::FloatCastProvider, func_kw_FLOATFUNK, "FLOAT")
+REGISTER_FUNCTION(query::StringCastProvider, func_kw_STRINGFUNK, "STRING")
 
 template <typename... Rules>
 struct stringableSOR : tao::pegtl::sor<Rules...> {
@@ -152,7 +156,8 @@ struct functionKWs
           func_kw_LOWERFUNK, func_kw_LTRIMFUNK, func_kw_RTRIMFUNK,
           func_kw_PIFUNK, func_kw_MEMCOUNTFUNK, func_kw_HASHFUNK,
           func_kw_NOWFUNK, func_kw_DIVFUNK, func_kw_FINDSTRFUNK,
-          func_kw_SUBSTRFUNK> {};
+          func_kw_SUBSTRFUNK, func_kw_INTFUNK, func_kw_FLOATFUNK, 
+          func_kw_STRINGFUNK> {};
 
 }  // namespace joda::queryparsing::grammar
 

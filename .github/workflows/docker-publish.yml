@@ -33,7 +33,7 @@ jobs:
           submodules: 'recursive'
 
       - name: Build image
-        run: docker build . --file docker/multi-stage/buster/Dockerfile --tag $IMAGE_NAME
+        run: docker build . --file docker/multi-stage/bullseye/Dockerfile --tag $IMAGE_NAME
 
       - name: Log into Github registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin

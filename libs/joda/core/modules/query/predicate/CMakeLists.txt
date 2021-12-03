@@ -51,5 +51,5 @@ target_link_libraries(joda-core-query-pred-lib INTERFACE joda-core-query-values-
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-query-pred-lib INTERFACE glog)
+
+target_link_libraries(joda-core-query-pred-lib INTERFACE glog::glog)

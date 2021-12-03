@@ -23,5 +23,5 @@ target_link_libraries(joda-core-fs-lib INTERFACE  joda-core-config-lib)
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-fs-lib INTERFACE glog)
+
+target_link_libraries(joda-core-fs-lib INTERFACE glog::glog)
