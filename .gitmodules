@@ -12,3 +12,6 @@
 [submodule "extern/cpp-httplib"]
 	path = extern/cpp-httplib
 	url = https://github.com/yhirose/cpp-httplib.git
+[submodule "extern/glog"]
+	path = extern/glog
+	url = https://github.com/google/glog.git
