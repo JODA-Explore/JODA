@@ -34,3 +34,30 @@ The latest release can always be found on [GitHub](https://github.com/JODA-Explo
 
 {{site.github.latest_release.body}}
 
+
+## Citation
+
+If you use this project in your research, please cite it using our ICDE 2020 demo paper.
+
+### Bibtex:
+
+```
+{% raw %}
+@inproceedings{DBLP:conf/icde/Schafer020,
+  author    = {Nico Sch{\"{a}}fer and
+               Sebastian Michel},
+  title     = {{JODA:} {A} Vertically Scalable, Lightweight {JSON} Processor for
+               Big Data Transformations},
+  booktitle = {36th {IEEE} International Conference on Data Engineering, {ICDE} 2020,
+               Dallas, TX, USA, April 20-24, 2020},
+  pages     = {1726--1729},
+  publisher = {{IEEE}},
+  year      = {2020},
+  url       = {https://doi.org/10.1109/ICDE48307.2020.00155},
+  doi       = {10.1109/ICDE48307.2020.00155},
+  timestamp = {Fri, 05 Jun 2020 17:54:57 +0200},
+  biburl    = {https://dblp.org/rec/conf/icde/Schafer020.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+{% endraw %}
+```
