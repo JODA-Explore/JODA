@@ -1,0 +1,8 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$d4/d83/classjoda_1_1query_1_1PredicateVisitor.html" title=" " alt="" coords="5,129,211,156"/>
+<area shape="rect" id="node2" href="$da/d02/classjoda_1_1query_1_1AttributeVisitor.html" title=" " alt="" coords="263,5,464,32"/>
+<area shape="rect" id="node3" href="$da/d25/classjoda_1_1query_1_1BloomAttributeVisitor.html" title=" " alt="" coords="263,57,464,98"/>
+<area shape="rect" id="node4" href="$d5/de2/classjoda_1_1query_1_1CopyPredicateVisitor.html" title=" " alt="" coords="265,122,461,163"/>
+<area shape="rect" id="node5" href="$d5/d78/classjoda_1_1query_1_1StaticEvalVisitor.html" title=" " alt="" coords="259,188,468,215"/>
+<area shape="rect" id="node6" href="$dc/dc3/classjoda_1_1query_1_1ToStringVisitor.html" title=" " alt="" coords="265,239,461,265"/>
+</map>

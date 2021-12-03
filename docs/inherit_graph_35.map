@@ -1,0 +1,23 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" title="STL class." alt="" coords="5,143,120,170"/>
+<area shape="rect" id="node2" href="$d6/d68/classjoda_1_1filesystem_1_1DirectoryAlreadyInUseException.html" title=" " alt="" coords="176,5,371,47"/>
+<area shape="rect" id="node3" href="$d4/dda/classjoda_1_1query_1_1NotComparableException.html" title=" " alt="" coords="171,71,375,112"/>
+<area shape="rect" id="node4" href="$db/d29/classjoda_1_1query_1_1NotEqualizableException.html" title=" " alt="" coords="173,136,373,177"/>
+<area shape="rect" id="node5" href="$de/d8d/classjoda_1_1query_1_1WrongParameterException.html" title=" " alt="" coords="168,201,379,243"/>
+<area shape="rect" id="node8" title="STL class." alt="" coords="204,306,343,333"/>
+<area shape="rect" id="node6" href="$d8/d38/classjoda_1_1query_1_1WrongParameterCountException.html" title=" " alt="" coords="437,136,648,177"/>
+<area shape="rect" id="node7" href="$db/d12/classjoda_1_1query_1_1WrongParameterTypeException.html" title=" " alt="" coords="437,201,648,243"/>
+<area shape="rect" id="node9" href="$d5/d76/classjoda_1_1network_1_1client_1_1JodaClientException.html" title=" " alt="" coords="463,267,623,308"/>
+<area shape="rect" id="node11" href="$d1/df6/classjoda_1_1network_1_1client_1_1JodaServerException.html" title=" " alt="" coords="461,332,625,373"/>
+<area shape="rect" id="node15" href="$df/d2b/classjoda_1_1network_1_1JodaAPIException.html" title=" " alt="" coords="427,601,659,627"/>
+<area shape="rect" id="node10" href="$d0/d56/classjoda_1_1network_1_1client_1_1JodaClientNoResponseException.html" title=" " alt="" coords="708,201,949,243"/>
+<area shape="rect" id="node12" href="$de/d1e/classjoda_1_1network_1_1client_1_1JodaServerAPIErrorException.html" title=" " alt="" coords="721,267,937,308"/>
+<area shape="rect" id="node13" href="$d9/de1/classjoda_1_1network_1_1client_1_1JodaServerHTTPException.html" title=" " alt="" coords="729,332,928,373"/>
+<area shape="rect" id="node14" href="$d8/df6/classjoda_1_1network_1_1client_1_1JodaServerInvalidJSONException.html" title=" " alt="" coords="709,397,949,439"/>
+<area shape="rect" id="node16" href="$db/dbe/classjoda_1_1network_1_1apiv2_1_1JodaAPIVersionException.html" title=" " alt="" coords="733,463,924,504"/>
+<area shape="rect" id="node17" href="$d3/d62/classjoda_1_1network_1_1apiv2_1_1JodaQueryException.html" title=" " alt="" coords="748,528,909,569"/>
+<area shape="rect" id="node18" href="$db/de9/classjoda_1_1network_1_1apiv2_1_1JodaQuerySkippedException.html" title=" " alt="" coords="722,593,935,635"/>
+<area shape="rect" id="node19" href="$d8/da3/classjoda_1_1network_1_1apiv2_1_1JodaQueryUnkownErrorException.html" title=" " alt="" coords="707,659,951,700"/>
+<area shape="rect" id="node20" href="$d3/d77/classjoda_1_1network_1_1JodaInvalidParameterException.html" title=" " alt="" coords="733,724,924,765"/>
+<area shape="rect" id="node21" href="$d1/d9f/classjoda_1_1network_1_1JodaMissingParameterException.html" title=" " alt="" coords="730,789,927,831"/>
+</map>

@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$d0/d07/classjoda_1_1query_1_1IAggregator.html" title=" " alt="" coords="5,147,184,174"/>
+<area shape="rect" id="node2" href="$db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html" title=" " alt="" coords="271,5,457,47"/>
+<area shape="rect" id="node3" href="$dc/de2/classjoda_1_1query_1_1CollectAggregator.html" title=" " alt="" coords="255,71,473,98"/>
+<area shape="rect" id="node4" href="$df/d90/classjoda_1_1query_1_1CountAggregator.html" title=" " alt="" coords="258,122,470,149"/>
+<area shape="rect" id="node5" href="$d7/d28/classjoda_1_1query_1_1DistinctAggregator.html" title=" " alt="" coords="252,173,476,199"/>
+<area shape="rect" id="node6" href="$de/d3a/classjoda_1_1query_1_1GroupAggregator.html" title=" " alt="" coords="257,223,471,250"/>
+<area shape="rect" id="node7" href="$d0/d92/classjoda_1_1query_1_1NumberAggregator.html" title=" " alt="" coords="232,274,496,301"/>
+</map>

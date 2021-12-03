@@ -1,0 +1,80 @@
+---
+---
+
+$joda-color: rgb(70, 160, 70);
+$joda-highlight-color: rgb(128, 166, 67);
+$banner-background-color: $joda-color;
+
+@import "{{ site.theme }}";
+
+html {background-color: $banner-background-color;}
+
+#project_title, #project_tagline {
+  text-shadow: none;
+}
+
+
+#header_wrap {
+  background: $banner-background-color;
+}
+
+#footer_wrap {
+  background: $banner-background-color;
+}
+
+#logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  border-style: none;
+  box-shadow: none;
+}
+
+h1, h2, h3, h4 {
+  color: $joda-color;
+}
+
+.inline-image {
+  display: block;
+  box-shadow: 5px;
+  margin-left: auto;
+  margin-right: auto;
+  width: 80%;
+}
+
+ 
+  //  ____        _   _                  
+  // |  _ \      | | | |                 
+  // | |_) |_   _| |_| |_ ___  _ __  ___ 
+  // |  _ <| | | | __| __/ _ \| '_ \/ __|
+  // | |_) | |_| | |_| || (_) | | | \__ \
+  // |____/ \__,_|\__|\__\___/|_| |_|___/
+                                      
+                                      
+  .btn-group .button {
+    background-color: $joda-color; /* Green background */
+    border: 1px solid white; /* Green border */
+    color: white; /* White text */
+    padding: 10px 24px; /* Some padding */
+    cursor: pointer; /* Pointer/hand icon */
+    float: left; /* Float the buttons side by side */
+    text-decoration: none;
+  }
+  
+  .btn-group .button:not(:last-child) {
+    border-right: none; /* Prevent double borders */
+  }
+  
+  /* Clear floats (clearfix hack) */
+  .btn-group:after {
+    content: "";
+    clear: both;
+    display: table;
+  }
+  
+  /* Add a background color on hover */
+  .btn-group .button:hover {
+    background-color: $joda-highlight-color;
+    text-decoration: none;
+  } 

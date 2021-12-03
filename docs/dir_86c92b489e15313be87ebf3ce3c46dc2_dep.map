@@ -1,0 +1,30 @@
+<map id="/home/nico/projects/JODA&#45;gh/libs/joda/core/modules/network/src" name="/home/nico/projects/JODA&#45;gh/libs/joda/core/modules/network/src">
+<area shape="rect" id="node2" href="dir_6623d0b4548183de422572e438664a62.html" title="apiv2" alt="" coords="187,159,259,207"/>
+<area shape="rect" id="edge7-headlabel" href="dir_000058_000059.html" title="1" alt="" coords="227,133,237,148"/>
+<area shape="rect" id="node3" href="dir_593657602c74fd2b2e9635270b1bdea2.html" title="storage" alt="" coords="261,351,333,399"/>
+<area shape="rect" id="edge9-headlabel" href="dir_000059_000125.html" title="7" alt="" coords="348,360,357,375"/>
+<area shape="rect" id="node4" href="dir_686a2d3b8380929f3bfddf3b00ff951b.html" title="misc" alt="" coords="114,447,186,495"/>
+<area shape="rect" id="edge10-headlabel" href="dir_000059_000049.html" title="5" alt="" coords="114,420,123,435"/>
+<area shape="rect" id="node5" href="dir_2a2e54c961d19636a21e44e148cfc96d.html" title="include" alt="" coords="66,255,138,303"/>
+<area shape="rect" id="edge11-headlabel" href="dir_000059_000054.html" title="8" alt="" coords="147,243,156,258"/>
+<area shape="rect" id="node6" href="dir_86d2030c590e8edca049b1db16bf8b8d.html" title="include" alt="" coords="17,543,89,591"/>
+<area shape="rect" id="edge12-headlabel" href="dir_000059_000013.html" title="1" alt="" coords="40,515,49,530"/>
+<area shape="rect" id="node7" href="dir_59388288c2adeeeb443ad934bc39e9e7.html" title="queryparsing" alt="" coords="309,255,415,303"/>
+<area shape="rect" id="edge13-headlabel" href="dir_000059_000010.html" title="1" alt="" coords="313,230,322,245"/>
+<area shape="rect" id="node8" href="dir_7370e63381a3da0a5abca9ffd8b57676.html" title="config" alt="" coords="187,543,259,591"/>
+<area shape="rect" id="edge14-headlabel" href="dir_000059_000023.html" title="1" alt="" coords="275,535,284,550"/>
+<area shape="rect" id="node9" href="dir_fdf43ea20e6d4202c172c6149a054b61.html" title="queryexecution" alt="" coords="162,255,285,303"/>
+<area shape="rect" id="edge15-headlabel" href="dir_000059_000104.html" title="1" alt="" coords="227,229,237,244"/>
+<area shape="rect" id="edge1-headlabel" href="dir_000125_000049.html" title="19" alt="" coords="197,436,215,451"/>
+<area shape="rect" id="edge2-headlabel" href="dir_000125_000023.html" title="5" alt="" coords="242,521,251,536"/>
+<area shape="rect" id="edge3-headlabel" href="dir_000049_000013.html" title="1" alt="" coords="91,529,100,543"/>
+<area shape="rect" id="edge4-headlabel" href="dir_000049_000023.html" title="1" alt="" coords="188,516,197,531"/>
+<area shape="rect" id="edge5-headlabel" href="dir_000054_000049.html" title="2" alt="" coords="143,419,153,434"/>
+<area shape="rect" id="edge6-headlabel" href="dir_000010_000125.html" title="2" alt="" coords="325,333,335,348"/>
+<area shape="rect" id="edge8-headlabel" href="dir_000023_000049.html" title="1" alt="" coords="177,507,186,522"/>
+<area shape="rect" id="edge16-headlabel" href="dir_000104_000125.html" title="6" alt="" coords="270,324,279,338"/>
+<area shape="rect" id="edge17-headlabel" href="dir_000104_000049.html" title="6" alt="" coords="169,425,178,440"/>
+<area shape="rect" id="edge18-headlabel" href="dir_000104_000023.html" title="2" alt="" coords="227,517,237,532"/>
+<area shape="rect" id="clust2" href="dir_86c92b489e15313be87ebf3ce3c46dc2.html" alt="" coords="177,52,270,217"/>
+<area shape="rect" id="clust1" href="dir_f5b39f9ad15100309d2401c2220ea1ab.html" title="network" alt="" coords="166,16,281,228"/>
+</map>

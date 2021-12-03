@@ -1,0 +1,9 @@
+<map id="moodycamel::weak_atomic::fetch_add_acquire" name="moodycamel::weak_atomic::fetch_add_acquire">
+<area shape="rect" id="node1" title=" " alt="" coords="801,71,1004,112"/>
+<area shape="rect" id="node2" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a5b68a21a86def468f6f7676162e7417a" title=" " alt="" coords="567,63,753,119"/>
+<area shape="rect" id="node3" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a29d109d74bcbbefce705b5c8894f9855" title=" " alt="" coords="301,5,519,47"/>
+<area shape="rect" id="node4" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a991df0aff00ce8a7c341e9fdd577f9f8" title=" " alt="" coords="301,71,519,112"/>
+<area shape="rect" id="node5" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a9098a9e78b1782399c32783c4c5031a3" title=" " alt="" coords="302,136,518,177"/>
+<area shape="rect" id="node6" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a4616457ce44d363d52b068001c31ae36" title=" " alt="" coords="21,103,238,144"/>
+<area shape="rect" id="node7" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a9d8e2851b594285ea6b6a7a342249ead" title=" " alt="" coords="5,168,253,209"/>
+</map>
