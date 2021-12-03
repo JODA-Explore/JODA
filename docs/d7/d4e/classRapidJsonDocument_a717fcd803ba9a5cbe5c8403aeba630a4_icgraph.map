@@ -1,14 +1,16 @@
 <map id="RapidJsonDocument::Get" name="RapidJsonDocument::Get">
-<area shape="rect" id="node1" title=" " alt="" coords="833,272,1017,299"/>
-<area shape="rect" id="node2" href="$df/d90/classjoda_1_1query_1_1PointerProvider.html#a9ab6e48263b38289831f0776ce148261" title=" " alt="" coords="583,166,785,207"/>
-<area shape="rect" id="node8" href="$d3/de9/classjoda_1_1query_1_1PointerCopyProject.html#a3cab5a81ccb05e1ae882757f224265c0" title=" " alt="" coords="593,231,775,273"/>
-<area shape="rect" id="node9" href="$df/d90/classjoda_1_1query_1_1PointerProvider.html#a03fb7d67d1930c7a95373107a8230d2d" title=" " alt="" coords="583,297,785,338"/>
-<area shape="rect" id="node12" href="$dd/d81/classjoda_1_1query_1_1DeletePointerProjector.html#a5f73ebaf79f844dd7987d1eddd876e09" title=" " alt="" coords="589,362,779,403"/>
-<area shape="rect" id="node3" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#a3e8e21a8dcbe565d2d7d7de1e5117f34" title=" " alt="" coords="340,166,535,207"/>
+<area shape="rect" id="node1" title=" " alt="" coords="833,385,1017,412"/>
+<area shape="rect" id="node2" href="$df/d90/classjoda_1_1query_1_1PointerProvider.html#a9ab6e48263b38289831f0776ce148261" title=" " alt="" coords="583,247,785,289"/>
+<area shape="rect" id="node10" href="$d3/de9/classjoda_1_1query_1_1PointerCopyProject.html#a3cab5a81ccb05e1ae882757f224265c0" title=" " alt="" coords="593,345,775,386"/>
+<area shape="rect" id="node11" href="$df/d90/classjoda_1_1query_1_1PointerProvider.html#a03fb7d67d1930c7a95373107a8230d2d" title=" " alt="" coords="583,410,785,451"/>
+<area shape="rect" id="node14" href="$dd/d81/classjoda_1_1query_1_1DeletePointerProjector.html#a5f73ebaf79f844dd7987d1eddd876e09" title=" " alt="" coords="589,475,779,517"/>
+<area shape="rect" id="node3" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#a3e8e21a8dcbe565d2d7d7de1e5117f34" title=" " alt="" coords="340,231,535,273"/>
 <area shape="rect" id="node4" href="$d5/d73/classjoda_1_1query_1_1providers_1_1hash_1_1HashCalculator.html#a0de19bd26e3e2fc4a9c8602f6b582afb" title=" " alt="" coords="65,5,233,61"/>
 <area shape="rect" id="node5" href="$df/d74/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountCalculator.html#ad44a91198063ae0d94e8f55a39e5d191" title=" " alt="" coords="5,85,292,141"/>
-<area shape="rect" id="node6" href="$db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a5ac9a9c824f767bf80c5536e7b551a1b" title=" " alt="" coords="56,166,241,207"/>
-<area shape="rect" id="node7" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#aef3f07d066d5c04f3d9be38674e02eb4" title=" " alt="" coords="51,231,246,273"/>
-<area shape="rect" id="node10" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#a0167df675283f06ef62730368ef93e50" title=" " alt="" coords="340,297,535,338"/>
-<area shape="rect" id="node11" href="$d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#a58acc97a7d3cece914d81d677bcbf281" title=" " alt="" coords="39,297,259,338"/>
+<area shape="rect" id="node6" href="$dd/ddd/structjoda_1_1query_1_1values_1_1ObjectParameter.html#af9411764c021566be73652936e0d74f4" title=" " alt="" coords="53,166,244,207"/>
+<area shape="rect" id="node7" href="$d6/d87/structjoda_1_1query_1_1values_1_1AnyParameter.html#a1d935e58b21036f376190be54891f5ff" title=" " alt="" coords="62,231,235,273"/>
+<area shape="rect" id="node8" href="$db/d14/classjoda_1_1query_1_1AttributeStatAggregator.html#a5ac9a9c824f767bf80c5536e7b551a1b" title=" " alt="" coords="56,297,241,338"/>
+<area shape="rect" id="node9" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#aef3f07d066d5c04f3d9be38674e02eb4" title=" " alt="" coords="51,362,246,403"/>
+<area shape="rect" id="node12" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html#a0167df675283f06ef62730368ef93e50" title=" " alt="" coords="340,418,535,459"/>
+<area shape="rect" id="node13" href="$d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#a58acc97a7d3cece914d81d677bcbf281" title=" " alt="" coords="39,427,259,469"/>
 </map>

@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=9"/>
 <meta name="generator" content="Doxygen 1.8.19"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>JODA: /home/nico/projects/JODA-gh/libs/joda/core/modules/queryparsing/src/actions/Agg_Actions.h File Reference</title>
+<title>JODA: /home/nico/projects/tmp-joda-dirs/JODA-gh/libs/joda/core/modules/queryparsing/src/actions/Agg_Actions.h File Reference</title>
 <link href="../../tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="../../jquery.js"></script>
 <script type="text/javascript" src="../../dynsections.js"></script>
@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="../../JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -75,14 +75,15 @@ $(function() {
 <div class="title">Agg_Actions.h File Reference</div>  </div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="../../d4/d03/Grammar_8h_source.html">../grammar/Grammar.h</a>&quot;</code><br />
-<code>#include &quot;<a class="el" href="../../dc/d3d/States_8h_source.html">../states/States.h</a>&quot;</code><br />
-<code>#include &lt;<a class="el" href="../../dd/dca/AttributeStatAggregator_8h_source.html">joda/query/aggregation/AttributeStatAggregator.h</a>&gt;</code><br />
+<div class="textblock"><code>#include &lt;<a class="el" href="../../dd/dca/AttributeStatAggregator_8h_source.html">joda/query/aggregation/AttributeStatAggregator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../dc/d10/CollectAggregator_8h_source.html">joda/query/aggregation/CollectAggregator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../d0/d3a/CountAggregator_8h_source.html">joda/query/aggregation/CountAggregator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../da/d54/DistinctAggregator_8h_source.html">joda/query/aggregation/DistinctAggregator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../d3/dca/GroupAggregator_8h_source.html">joda/query/aggregation/GroupAggregator.h</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="../../db/da5/HistogramAggregator_8h_source.html">joda/query/aggregation/HistogramAggregator.h</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="../../d2/d54/NumberAggregator_8h_source.html">joda/query/aggregation/NumberAggregator.h</a>&gt;</code><br />
+<code>#include &quot;<a class="el" href="../../d4/d03/Grammar_8h_source.html">../grammar/Grammar.h</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="../../dc/d3d/States_8h_source.html">../states/States.h</a>&quot;</code><br />
 </div><div class="textblock"><div class="dynheader">
 Include dependency graph for Agg_Actions.h:</div>
 <div class="dyncontent">
@@ -92,7 +93,7 @@ Include dependency graph for Agg_Actions.h:</div>
 </div><div class="textblock"><div class="dynheader">
 This graph shows which files directly or indirectly include this file:</div>
 <div class="dyncontent">
-<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d00/Agg__Actions_8h__dep__incl.svg" width="206" height="319"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d0/d00/Agg__Actions_8h__dep__incl.svg" width="254" height="348"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
 </div>
 </div>
 </div>
@@ -115,6 +116,8 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d3/d28/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__COLLECT_01_4.html">joda::queryparsing::grammar::aggExpAction&lt; aggKW_COLLECT &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da1/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__MAX_01_4.html">joda::queryparsing::grammar::aggExpAction&lt; aggKW_MAX &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d76/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__HISTOGRAM_01_4.html">joda::queryparsing::grammar::aggExpAction&lt; aggKW_HISTOGRAM &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d5/d12/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggToPointer_01_4.html">joda::queryparsing::grammar::aggExpAction&lt; aggToPointer &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>

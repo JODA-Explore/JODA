@@ -150,9 +150,9 @@
 <!-- Node10 -->
 <g id="node10" class="node">
 <title>Node10</title>
-<g id="a_node10"><a xlink:href="../../d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a202efdf44dff257773b62e9d4441f9e1" target="_top" xlink:title=" ">
+<g id="a_node10"><a xlink:href="../../d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html#a5dd7165bdeb77751fff503a3d62a09c1" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="11,-343.5 11,-373.5 153,-373.5 153,-343.5 11,-343.5"/>
-<text text-anchor="start" x="19" y="-361.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::ListAttributes</text>
+<text text-anchor="start" x="19" y="-361.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexExtract</text>
 <text text-anchor="middle" x="82" y="-350.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider::duplicate</text>
 </a>
 </g>
@@ -166,9 +166,9 @@
 <!-- Node11 -->
 <g id="node11" class="node">
 <title>Node11</title>
-<g id="a_node11"><a xlink:href="../../d2/d94/classjoda_1_1query_1_1RegexExtractProvider.html#a5dd7165bdeb77751fff503a3d62a09c1" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="11,-294.5 11,-324.5 153,-324.5 153,-294.5 11,-294.5"/>
-<text text-anchor="start" x="19" y="-312.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexExtract</text>
+<g id="a_node11"><a xlink:href="../../db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a8b2adea9d58bc403ee11aaf5bd18bd7b" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="9,-294.5 9,-324.5 155,-324.5 155,-294.5 9,-294.5"/>
+<text text-anchor="start" x="17" y="-312.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexReplace</text>
 <text text-anchor="middle" x="82" y="-301.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider::duplicate</text>
 </a>
 </g>
@@ -182,10 +182,10 @@
 <!-- Node12 -->
 <g id="node12" class="node">
 <title>Node12</title>
-<g id="a_node12"><a xlink:href="../../db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a8b2adea9d58bc403ee11aaf5bd18bd7b" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="9,-245.5 9,-275.5 155,-275.5 155,-245.5 9,-245.5"/>
-<text text-anchor="start" x="17" y="-263.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::RegexReplace</text>
-<text text-anchor="middle" x="82" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">Provider::duplicate</text>
+<g id="a_node12"><a xlink:href="../../db/d5d/classjoda_1_1query_1_1SubStringProvider.html#af521aff721430341b2e046e5271cf2f0" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="0,-245.5 0,-275.5 164,-275.5 164,-245.5 0,-245.5"/>
+<text text-anchor="start" x="8" y="-263.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SubStringProvider</text>
+<text text-anchor="middle" x="82" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">::duplicate</text>
 </a>
 </g>
 </g>
@@ -198,9 +198,9 @@
 <!-- Node13 -->
 <g id="node13" class="node">
 <title>Node13</title>
-<g id="a_node13"><a xlink:href="../../db/d5d/classjoda_1_1query_1_1SubStringProvider.html#af521aff721430341b2e046e5271cf2f0" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="0,-196.5 0,-226.5 164,-226.5 164,-196.5 0,-196.5"/>
-<text text-anchor="start" x="8" y="-214.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::SubStringProvider</text>
+<g id="a_node13"><a xlink:href="../../df/d80/classjoda_1_1query_1_1TemplateProvider.html#a1697307b32bd296b2099de8d754db8f0" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="1,-196.5 1,-226.5 163,-226.5 163,-196.5 1,-196.5"/>
+<text text-anchor="start" x="9" y="-214.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::TemplateProvider</text>
 <text text-anchor="middle" x="82" y="-203.5" font-family="Helvetica,sans-Serif" font-size="10.00">::duplicate</text>
 </a>
 </g>

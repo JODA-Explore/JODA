@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -155,7 +155,11 @@ $(function() {
 , <a class="el" href="d7/de5/classCursesPrettyHandler.html#a2e29e18ee44120b5653a75944ef1255e">CursesPrettyHandler</a>
 , <a class="el" href="d7/d15/classDocumentCostHandler.html#ac87eb3de7a465ee625defd866542b908">DocumentCostHandler</a>
 , <a class="el" href="d7/da6/classjoda_1_1query_1_1AttributeStatAggregator_1_1AttStatHandler.html#a2c81db3e3c2c363e5b45b6a55b90eda2">joda::query::AttributeStatAggregator::AttStatHandler</a>
+, <a class="el" href="d0/d8b/classjoda_1_1query_1_1providers_1_1cast_1_1FloatCastHandler.html#a857441a1b68094e7903bb035d971fd97">joda::query::providers::cast::FloatCastHandler</a>
+, <a class="el" href="d8/dc2/classjoda_1_1query_1_1providers_1_1cast_1_1IntCastHandler.html#a6bbed4879b4f4d60e14841c77b5a4da9">joda::query::providers::cast::IntCastHandler</a>
+, <a class="el" href="d4/d04/classjoda_1_1query_1_1providers_1_1cast_1_1StringCastHandler.html#ae66f04b1bdee305e4dfc98295fe5599b">joda::query::providers::cast::StringCastHandler</a>
 , <a class="el" href="db/d44/classjoda_1_1query_1_1providers_1_1hash_1_1HashHandler.html#aca4859fa03848ed0bb3d95b41f481270">joda::query::providers::hash::HashHandler</a>
+, <a class="el" href="d2/d0e/classjoda_1_1query_1_1providers_1_1listattributes_1_1ListAttributesHandler.html#a377cf27d20c95bf4d74c058121da6a5c">joda::query::providers::listattributes::ListAttributesHandler</a>
 , <a class="el" href="d4/dd3/classjoda_1_1query_1_1providers_1_1membercount_1_1MemberCountHandler.html#a156a9e79d794f96291a5f6417910568d">joda::query::providers::membercount::MemberCountHandler</a>
 , <a class="el" href="d9/d73/classRJAttributeReader.html#a654f5f52533de36708f6f39f34c4eb18">RJAttributeReader</a>
 , <a class="el" href="d8/d70/classRJPathsReader.html#ae503431df9106eddeeffc9894d797b5a">RJPathsReader</a>
@@ -185,12 +189,12 @@ $(function() {
 , <a class="el" href="d5/d66/classjoda_1_1query_1_1FileNameProvider.html#a3618c1c0f15ab71e1db3beafae99e594">joda::query::FileNameProvider</a>
 , <a class="el" href="d1/dc3/classjoda_1_1query_1_1FilePosProvider.html#a182af4516e1c531a8a8eaabe036c751e">joda::query::FilePosProvider&lt; start &gt;</a>
 , <a class="el" href="de/d3a/classjoda_1_1query_1_1GroupAggregator.html#a73db6ac0cef2386bdfa30ac585e45c7b">joda::query::GroupAggregator</a>
+, <a class="el" href="db/dac/classjoda_1_1query_1_1HistogramAggregator.html#a4e7827c0adbac46e3a73cd5992213cd1">joda::query::HistogramAggregator</a>
 , <a class="el" href="d0/d07/classjoda_1_1query_1_1IAggregator.html#acf4ebc0f99c7ee935ac9c997a58e94ee">joda::query::IAggregator</a>
 , <a class="el" href="d3/d59/classjoda_1_1query_1_1IDProvider.html#a1b21547f89332ad4d725b0573ae0f880">joda::query::IDProvider</a>
 , <a class="el" href="da/d38/classjoda_1_1query_1_1INListProvider.html#a1cbea7600c88c3d537c1c42270d27f03">joda::query::INListProvider</a>
 , <a class="el" href="d8/dcb/classjoda_1_1query_1_1IsXBoolProvider.html#a6f400f03734dcbf60f980e4f14bae876">joda::query::IsXBoolProvider&lt; T &gt;</a>
 , <a class="el" href="d4/df5/classjoda_1_1query_1_1IValueProvider.html#a4dc8ace41c9ea45dcf7f5d6f7b5d86e5">joda::query::IValueProvider</a>
-, <a class="el" href="d0/da0/classjoda_1_1query_1_1ListAttributesProvider.html#a202efdf44dff257773b62e9d4441f9e1">joda::query::ListAttributesProvider</a>
 , <a class="el" href="dc/d24/classjoda_1_1query_1_1NullProvider.html#a28de98473ff6083d792f3cc11966004c">joda::query::NullProvider</a>
 , <a class="el" href="d0/d92/classjoda_1_1query_1_1NumberAggregator.html#a50045e5e258fc64da85273bcfa413bc3">joda::query::NumberAggregator&lt; T &gt;</a>
 , <a class="el" href="df/d90/classjoda_1_1query_1_1PointerProvider.html#a61bfb8c9d8da5042c74b1e778a2f0ea6">joda::query::PointerProvider</a>
@@ -199,6 +203,7 @@ $(function() {
 , <a class="el" href="db/df6/classjoda_1_1query_1_1RegexReplaceProvider.html#a8b2adea9d58bc403ee11aaf5bd18bd7b">joda::query::RegexReplaceProvider</a>
 , <a class="el" href="d3/def/classjoda_1_1query_1_1SeqNumberProvider.html#a9d88ac85ce7da71788e8024a1acfce8f">joda::query::SeqNumberProvider</a>
 , <a class="el" href="db/d5d/classjoda_1_1query_1_1SubStringProvider.html#af521aff721430341b2e046e5271cf2f0">joda::query::SubStringProvider</a>
+, <a class="el" href="df/d80/classjoda_1_1query_1_1TemplateProvider.html#a1697307b32bd296b2099de8d754db8f0">joda::query::TemplateProvider&lt; Calc &gt;</a>
 , <a class="el" href="d8/d7c/classjoda_1_1query_1_1TypeProvider.html#a4d5001854f9e69828b7a5c8fdeca3adb">joda::query::TypeProvider</a>
 , <a class="el" href="d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#a80bb108c92c05e919e11e80b340a6b15">joda::query::UnaryNumberProvider&lt; Calc &gt;</a>
 , <a class="el" href="d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#ac4aaffd18fb9da7675a5076dae6dfdc9">joda::query::UnaryPointerAcceptProvider&lt; Calc &gt;</a>

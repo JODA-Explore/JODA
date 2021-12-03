@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="../../JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -101,6 +101,8 @@ Data Structures</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../da/dbb/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__DISTINCT_01_4.html">aggExpAction&lt; aggKW_DISTINCT &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dd/d76/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__HISTOGRAM_01_4.html">aggExpAction&lt; aggKW_HISTOGRAM &gt;</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/da1/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__MAX_01_4.html">aggExpAction&lt; aggKW_MAX &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d4b/structjoda_1_1queryparsing_1_1grammar_1_1aggExpAction_3_01aggKW__MIN_01_4.html">aggExpAction&lt; aggKW_MIN &gt;</a></td></tr>
@@ -136,6 +138,8 @@ Data Structures</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../dc/d5e/structjoda_1_1queryparsing_1_1grammar_1_1aggKW__DISTINCT.html">aggKW_DISTINCT</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../de/d7a/structjoda_1_1queryparsing_1_1grammar_1_1aggKW__GROUP.html">aggKW_GROUP</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/dd8/structjoda_1_1queryparsing_1_1grammar_1_1aggKW__HISTOGRAM.html">aggKW_HISTOGRAM</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../db/dbe/structjoda_1_1queryparsing_1_1grammar_1_1aggKW__MAX.html">aggKW_MAX</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -478,7 +482,8 @@ Enumerations</h2></td></tr>
 <a class="el" href="../../df/dfc/namespacejoda_1_1queryparsing_1_1grammar.html#a9fc9163e086feb491168086be000bb31a60d5e49ae0c7bfb21bde906e5e779573">MIN</a>, 
 <a class="el" href="../../df/dfc/namespacejoda_1_1queryparsing_1_1grammar.html#a9fc9163e086feb491168086be000bb31a3394f914c5c9f0fac024f2bf48f60dbd">MAX</a>, 
 <br />
-&#160;&#160;<a class="el" href="../../df/dfc/namespacejoda_1_1queryparsing_1_1grammar.html#a9fc9163e086feb491168086be000bb31a044c66c0766d8baf735385d7e7a0c2df">COLLECT</a>
+&#160;&#160;<a class="el" href="../../df/dfc/namespacejoda_1_1queryparsing_1_1grammar.html#a9fc9163e086feb491168086be000bb31a044c66c0766d8baf735385d7e7a0c2df">COLLECT</a>, 
+<a class="el" href="../../df/dfc/namespacejoda_1_1queryparsing_1_1grammar.html#a9fc9163e086feb491168086be000bb31a4efcaa58c3762397cc048bc5271fd5ae">HISTOGRAM</a>
 <br />
  }</td></tr>
 <tr class="separator:a9fc9163e086feb491168086be000bb31"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -562,6 +567,7 @@ Enumerations</h2></td></tr>
 <tr><td class="fieldname"><a id="a9fc9163e086feb491168086be000bb31a60d5e49ae0c7bfb21bde906e5e779573"></a>MIN&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a9fc9163e086feb491168086be000bb31a3394f914c5c9f0fac024f2bf48f60dbd"></a>MAX&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a9fc9163e086feb491168086be000bb31a044c66c0766d8baf735385d7e7a0c2df"></a>COLLECT&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a9fc9163e086feb491168086be000bb31a4efcaa58c3762397cc048bc5271fd5ae"></a>HISTOGRAM&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>

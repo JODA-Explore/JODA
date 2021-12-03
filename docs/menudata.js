@@ -76,6 +76,7 @@ var menudata={children:[
 {text:"e",url:"namespacemembers_eval.html#index_e"},
 {text:"f",url:"namespacemembers_eval.html#index_f"},
 {text:"g",url:"namespacemembers_eval.html#index_g"},
+{text:"h",url:"namespacemembers_eval.html#index_h"},
 {text:"i",url:"namespacemembers_eval.html#index_i"},
 {text:"l",url:"namespacemembers_eval.html#index_l"},
 {text:"m",url:"namespacemembers_eval.html#index_m"},

@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:href="../../d7/d4e/classRapidJsonDocument.html#a082a19bfa4fdfefec6044553b58279ab" target="_top" xlink:title=" ">
+<g id="a_node3"><a xlink:href="../../d7/d4e/classRapidJsonDocument.html#a20649f43f5133d19b530579f9dc4b0c6" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="203,-0.5 203,-30.5 324,-30.5 324,-0.5 203,-0.5"/>
 <text text-anchor="start" x="211" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">RapidJsonDocument::</text>
 <text text-anchor="middle" x="263.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">getOrigin</text>

@@ -23,7 +23,7 @@
   <td id="projectlogo"><img alt="Logo" src="../../JODA.png"/></td>
   <td id="projectalign" style="padding-left: 0.5em;">
    <div id="projectname">JODA
-   &#160;<span id="projectnumber">0.12.4(7513c15)</span>
+   &#160;<span id="projectnumber">0.13.0(46cf767)</span>
    </div>
    <div id="projectbrief">JSON On-Demand Analysis</div>
   </td>
@@ -66,7 +66,8 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-types">Public Types</a> &#124;
-<a href="#pub-methods">Public Member Functions</a>  </div>
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-static-methods">Static Public Member Functions</a>  </div>
   <div class="headertitle">
 <div class="title">FileOrigin Class Reference</div>  </div>
 </div><!--header-->
@@ -120,8 +121,8 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a34cd410b83f38d12fb38af8c43d19fd7 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4f06dafb0edcb05b1ef0832a8995421b inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a4f06dafb0edcb05b1ef0832a8995421b">isReparsable</a> () const override</td></tr>
 <tr class="separator:a4f06dafb0edcb05b1ef0832a8995421b inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6f5c9b1321b6a843b9155c95b33fc45b inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a6f5c9b1321b6a843b9155c95b33fc45b">~IDPositionOrigin</a> () override=default</td></tr>
-<tr class="separator:a6f5c9b1321b6a843b9155c95b33fc45b inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a81a3fa189af95eb7fefab35baa88ad20 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a81a3fa189af95eb7fefab35baa88ad20">~IDPositionOrigin</a> () override=default</td></tr>
+<tr class="separator:a81a3fa189af95eb7fefab35baa88ad20 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a182920b8b1cf91c10915ad160a5e3cf1 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">long&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a182920b8b1cf91c10915ad160a5e3cf1">getStart</a> () const</td></tr>
 <tr class="separator:a182920b8b1cf91c10915ad160a5e3cf1 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6cf70206d4a67fff81836ba1a06610b4 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a6cf70206d4a67fff81836ba1a06610b4">setStart</a> (long <a class="el" href="../../d8/de0/classIDPositionOrigin.html#ac7d46d69ef54d2491a430e3876edccbf">start</a>)</td></tr>
@@ -134,21 +135,30 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a167d0af116f6c4a795b7e786708105c1 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8d4ce91ad875fed1827085ecd9be461b inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a8d4ce91ad875fed1827085ecd9be461b">setIndex</a> (int <a class="el" href="../../d8/de0/classIDPositionOrigin.html#a12e2db35fdd569402d4140ed15a53298">index</a>)</td></tr>
 <tr class="separator:a8d4ce91ad875fed1827085ecd9be461b inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abe36ddd218a05287e45d2d94187cc429 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#abe36ddd218a05287e45d2d94187cc429">operator&lt;</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const override</td></tr>
-<tr class="separator:abe36ddd218a05287e45d2d94187cc429 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c8403b6d0995aa641e3e7aa1d0f4a17 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a4c8403b6d0995aa641e3e7aa1d0f4a17">operator==</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const override</td></tr>
-<tr class="separator:a4c8403b6d0995aa641e3e7aa1d0f4a17 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa451d00bbabf6741714338e3e6b4c4c inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#afa451d00bbabf6741714338e3e6b4c4c">operator&lt;</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const override final</td></tr>
+<tr class="separator:afa451d00bbabf6741714338e3e6b4c4c inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2461fda6417aaeab35b5aafa8f4ad14d inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#a2461fda6417aaeab35b5aafa8f4ad14d">operator&lt;</a> (const <a class="el" href="../../d8/de0/classIDPositionOrigin.html">IDPositionOrigin</a> &amp;other) const</td></tr>
+<tr class="separator:a2461fda6417aaeab35b5aafa8f4ad14d inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1f9db947f720f1ea80a0d8d0f07f8b7 inherit pub_methods_classIDPositionOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d8/de0/classIDPositionOrigin.html#ab1f9db947f720f1ea80a0d8d0f07f8b7">operator==</a> (const <a class="el" href="../../d8/de0/classIDPositionOrigin.html">IDPositionOrigin</a> &amp;other) const</td></tr>
+<tr class="separator:ab1f9db947f720f1ea80a0d8d0f07f8b7 inherit pub_methods_classIDPositionOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classIOrigin"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classIOrigin')"><img src="../../closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a></td></tr>
 <tr class="memitem:aeba21fb48a997941829cb66ca02e0809 inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#aeba21fb48a997941829cb66ca02e0809">~IOrigin</a> ()=default</td></tr>
 <tr class="separator:aeba21fb48a997941829cb66ca02e0809 inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3ab5257f5cd2b432b7724e465fee12be inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#a3ab5257f5cd2b432b7724e465fee12be">operator!=</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const</td></tr>
-<tr class="separator:a3ab5257f5cd2b432b7724e465fee12be inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad75bc58715e44719d114b2b643c6b7f9 inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#ad75bc58715e44719d114b2b643c6b7f9">operator==</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const</td></tr>
+<tr class="separator:ad75bc58715e44719d114b2b643c6b7f9 inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afad2084ebd6ab9d1e5653aea0bae79ac inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#afad2084ebd6ab9d1e5653aea0bae79ac">operator&lt;=</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const</td></tr>
 <tr class="separator:afad2084ebd6ab9d1e5653aea0bae79ac inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a03229593482e2389c2ad0b0b6b6c6a2f inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#a03229593482e2389c2ad0b0b6b6c6a2f">operator&gt;</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const</td></tr>
 <tr class="separator:a03229593482e2389c2ad0b0b6b6c6a2f inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a11ecac461310f7d93d1d9dac14fa8afe inherit pub_methods_classIOrigin"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d6/d7a/classIOrigin.html#a11ecac461310f7d93d1d9dac14fa8afe">operator&gt;=</a> (const <a class="el" href="../../d6/d7a/classIOrigin.html">IOrigin</a> &amp;x) const</td></tr>
 <tr class="separator:a11ecac461310f7d93d1d9dac14fa8afe inherit pub_methods_classIOrigin"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="pub-static-methods"></a>
+Static Public Member Functions</h2></td></tr>
+<tr class="memitem:ac6b575f1ee18bc1cec0da7e31198e874"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">ParseInterval</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d42/classFileOrigin.html#ac6b575f1ee18bc1cec0da7e31198e874">mergeIntervals</a> (std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">ParseInterval</a> &gt; &amp;&amp;intervals)</td></tr>
+<tr class="separator:ac6b575f1ee18bc1cec0da7e31198e874"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36cf3be8866ae066538faaca95c2b4aa"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; std::unique_ptr&lt; <a class="el" href="../../d6/d09/RJFwd_8h.html#a2036fb956bf74db7eb01ea8b6c6aabe4">RJDocument</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="../../d1/d42/classFileOrigin.html#a36cf3be8866ae066538faaca95c2b4aa">parseIntervals</a> (<a class="el" href="../../d6/d09/RJFwd_8h.html#acb491065508f7ba01bbec5ef42159f0c">RJMemoryPoolAlloc</a> &amp;alloc, std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">ParseInterval</a> &gt; &amp;&amp;intervals)</td></tr>
+<tr class="separator:a36cf3be8866ae066538faaca95c2b4aa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
@@ -371,6 +381,101 @@ Here is the call graph for this function:</div>
 
 </div>
 </div>
+<a id="ac6b575f1ee18bc1cec0da7e31198e874"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac6b575f1ee18bc1cec0da7e31198e874">&#9670;&nbsp;</a></span>mergeIntervals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">FileOrigin::ParseInterval</a> &gt; FileOrigin::mergeIntervals </td>
+          <td>(</td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">ParseInterval</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>intervals</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Merges a list of ParseIntervals to the minimal possible list </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">intervals</td><td>the list of intervals to merge </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the merged list </dd></dl>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="../../d1/d42/classFileOrigin_ac6b575f1ee18bc1cec0da7e31198e874_icgraph.svg" width="100%" height="480"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
+<a id="a36cf3be8866ae066538faaca95c2b4aa"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36cf3be8866ae066538faaca95c2b4aa">&#9670;&nbsp;</a></span>parseIntervals()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; std::unique_ptr&lt; <a class="el" href="../../d6/d09/RJFwd_8h.html#a2036fb956bf74db7eb01ea8b6c6aabe4">RJDocument</a> &gt; &gt; FileOrigin::parseIntervals </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="../../d6/d09/RJFwd_8h.html#acb491065508f7ba01bbec5ef42159f0c">RJMemoryPoolAlloc</a> &amp;&#160;</td>
+          <td class="paramname"><em>alloc</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">std::vector&lt; <a class="el" href="../../d1/d42/classFileOrigin.html#ac7ae0cc8b43cc72ce3cb7c4002fd09f0">ParseInterval</a> &gt; &amp;&amp;&#160;</td>
+          <td class="paramname"><em>intervals</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Parses a list of ParseIntervals to a list of RJDocuments </p><dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">alloc</td><td>The memory allocator to use </td></tr>
+    <tr><td class="paramname">intervals</td><td>the list of intervals to parse </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>the list of parsed documents </dd></dl>
+<div class="dynheader">
+Here is the call graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><iframe scrolling="no" frameborder="0" src="../../d1/d42/classFileOrigin_a36cf3be8866ae066538faaca95c2b4aa_cgraph.svg" width="414" height="38"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe>
+</div>
+</div>
+<div class="dynheader">
+Here is the caller graph for this function:</div>
+<div class="dyncontent">
+<div class="center"><div class="zoom"><iframe scrolling="no" frameborder="0" src="../../d1/d42/classFileOrigin_a36cf3be8866ae066538faaca95c2b4aa_icgraph.svg" width="100%" height="480"><p><b>This browser is not able to show SVG: try Firefox, Chrome, Safari, or Opera instead.</b></p></iframe></div>
+</div>
+</div>
+
+</div>
+</div>
 <a id="a0016d990bf1fed498a85a28d1e4e7b32"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0016d990bf1fed498a85a28d1e4e7b32">&#9670;&nbsp;</a></span>reparse()</h2>
 
@@ -441,8 +546,8 @@ Here is the call graph for this function:</div>
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>/home/nico/projects/JODA-gh/libs/joda/core/modules/storage/document/include/joda/document/<a class="el" href="../../df/dd3/FileOrigin_8h_source.html">FileOrigin.h</a></li>
-<li>/home/nico/projects/JODA-gh/libs/joda/core/modules/storage/document/src/origin/<a class="el" href="../../df/d33/FileOrigin_8cpp.html">FileOrigin.cpp</a></li>
+<li>/home/nico/projects/tmp-joda-dirs/JODA-gh/libs/joda/core/modules/storage/document/include/joda/document/<a class="el" href="../../df/dd3/FileOrigin_8h_source.html">FileOrigin.h</a></li>
+<li>/home/nico/projects/tmp-joda-dirs/JODA-gh/libs/joda/core/modules/storage/document/src/origin/<a class="el" href="../../df/d33/FileOrigin_8cpp.html">FileOrigin.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
