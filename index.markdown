@@ -18,11 +18,11 @@ If you are just getting started, check out the following resources:
 </div> 
 
 
-## Latest Release
+## Latest Release - {{site.github.latest_release.tag_name}}
 
 The latest release can always be found on [GitHub](https://github.com/JODA-Explore/JODA/releases).
 
-### {{site.github.latest_release.tag_name}} - {{site.github.latest_release.name}} ({{site.github.latest_release.published_at | date: "%d-%m-%Y"}})
+### {{site.github.latest_release.name}} ({{site.github.latest_release.published_at | date: "%d-%m-%Y"}})
 
 {{site.github.latest_release.body}}
 
