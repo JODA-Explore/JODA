@@ -2,6 +2,14 @@
 
 ---
 <img id="logo" src="assets/img/JODA.svg" alt="JODA" />
+<div class="small-logo-container">
+<div class="small-logo-row">
+<a class="small-logo" href="https://dbis.cs.uni-kl.de/index.php/en/"><img  src="assets/img/dbislogo_default.svg" alt="DBIS Lab" /></a>
+<a class="small-logo" href="https://www.uni-kl.de/en/"><img  src="assets/img/TUKL_LOGO.svg" alt="TUK" /></a>
+</div>
+</div>
+
+
 ## What is JODA?
 JODA is an efficient data wrangling tool for semi-structured JSON datasets.
 It can handle every scale of data, from small-scale to big data.
