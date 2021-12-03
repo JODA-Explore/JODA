@@ -3,6 +3,7 @@
 
 $joda-color: rgb(70, 160, 70);
 $joda-highlight-color: rgb(128, 166, 67);
+$joda-highlight-alternate-color: rgb(0, 56, 31);
 $banner-background-color: $joda-color;
 
 @import "{{ site.theme }}";
@@ -20,6 +21,11 @@ html {background-color: $banner-background-color;}
 
 #footer_wrap {
   background: $banner-background-color;
+}
+
+#main_content_wrap {
+  border-top: 1px solid $joda-highlight-alternate-color;
+  border-bottom: 1px solid $joda-highlight-alternate-color;
 }
 
 #logo {
