@@ -3,7 +3,7 @@ title: Installation
 permalink: /install/
 ---
 
-<a href="/"><img id="logo" src="/assets/img/JODA.svg" alt="JODA" /></a>
+<a href="{{ '/' | relative_url }}"><img id="logo" src="assets/img/JODA.svg" alt="JODA" /></a>
 
 To install JODA you can choose between the following options:
 

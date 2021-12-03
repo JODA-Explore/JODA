@@ -3,7 +3,7 @@ title: Getting Started
 permalink: /getting-started/
 ---
 
-<a href="/"><img id="logo" src="/assets/img/JODA.svg" alt="JODA" /></a>
+<a href="{{ '/ | relative_url }}"><img id="logo" src="assets/img/JODA.svg" alt="JODA" /></a>
 
 
 In this guide, we'll use the web interface as a basis.
@@ -47,7 +47,7 @@ Collection documents cannot be viewed directly and must be queried first.
 
 The starting page of the web interface contains the essential information of the current data.
 
-<a href="/assets/img/JODA-Web-1.png"><img class="inline-image" src="/assets/img/JODA-Web-1.png" alt="JODA web interface index page" /></a>
+<a href="/assets/img/JODA-Web-1.png"><img class="inline-image" src="assets/img/JODA-Web-1.png" alt="JODA web interface index page" /></a>
 
 If you imported datasets during previous runs of JODA, they are shown at the top of the page with buttons to import them again or change the responsible queries immediately.
 
@@ -66,12 +66,12 @@ At the sidebar to the left, the different functions can be accessed.
 
 ### Query & Result
 
-<a href="/assets/img/JODA-Web-query.png"><img class="inline-image" src="/assets/img/JODA-Web-query.png" alt="JODA web interface index page" /></a>
+<a href="/assets/img/JODA-Web-query.png"><img class="inline-image" src="assets/img/JODA-Web-query.png" alt="JODA web interface index page" /></a>
 
 The query interface consists of a simple textbox and a button to execute the query.
 If the query is successful, we are shown the query result screen in which we can see the result size and basic execution statistics. 
 
-<a href="/assets/img/JODA-Web-query-stats.png"><img class="inline-image" src="/assets/img/JODA-Web-query-stats.png" alt="JODA web interface index page" /></a>
+<a href="/assets/img/JODA-Web-query-stats.png"><img class="inline-image" src="assets/img/JODA-Web-query-stats.png" alt="JODA web interface index page" /></a>
 
 From here, the result documents can either be downloaded, or viewed.
 When choosing to view the documents, each document can be browsed by using the buttons or left and right arrow keys.
@@ -79,7 +79,7 @@ Every document can also be copied to the clipboard, or downloaded.
 At the top, we can choose to download the result set, or to delete or keep it and return to the overview.
 If a document is in GeoJSON format, a map can be displayed to visualize the contents.
 
-<a href="/assets/img/JODA-Web-result.png"><img class="inline-image" src="/assets/img/JODA-Web-result.png" alt="JODA web interface index page" /></a>
+<a href="/assets/img/JODA-Web-result.png"><img class="inline-image" src="assets/img/JODA-Web-result.png" alt="JODA web interface index page" /></a>
 
 ### Analyze
 
@@ -87,7 +87,7 @@ The web interface can also show a summary over the structure of a collection, us
 Here the attributes of all documents in the collection are summarized and displayed in a graph.
 When hovering over a node, statistics about the type-distribution and existence of the attribute is shown.
 
-<a href="/assets/img/JODA-Web-analyze.png"><img class="inline-image" src="/assets/img/JODA-Web-analyze.png" alt="JODA web interface index page" /></a>
+<a href="/assets/img/JODA-Web-analyze.png"><img class="inline-image" src="assets/img/JODA-Web-analyze.png" alt="JODA web interface index page" /></a>
 
 ## Query Examples
 
