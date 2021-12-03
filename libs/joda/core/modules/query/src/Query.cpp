@@ -132,7 +132,7 @@ std::string joda::query::Query::toString() const {
 
   // STORE VAR
   if (exportDestination != nullptr) {
-    ret += exportDestination->toQueryString();
+    ret += " " + exportDestination->toQueryString();
   }
 
   // Delete

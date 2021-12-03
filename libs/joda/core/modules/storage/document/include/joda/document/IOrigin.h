@@ -59,9 +59,10 @@ class IOrigin {
     return typeid(*this).before(typeid(x));
   };
 
-  virtual bool operator!=(const IOrigin &x) const {
-    return typeid(*this) == typeid(x);
+  bool operator==(const IOrigin &x) const {
+    return false;
   };
+
 
   /*
    * Keep
@@ -74,9 +75,6 @@ class IOrigin {
 
   virtual bool operator>=(const IOrigin &x) const { return x <= *this; };
 
-  virtual bool operator==(const IOrigin &x) const {
-    return typeid(*this) == typeid(x);
-  };
 
  protected:
 };

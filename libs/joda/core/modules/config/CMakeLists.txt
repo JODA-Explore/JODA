@@ -28,5 +28,4 @@ target_link_libraries(joda-core-config-lib INTERFACE Boost::boost Boost::program
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-config-lib INTERFACE glog)
+target_link_libraries(joda-core-config-lib INTERFACE glog::glog)

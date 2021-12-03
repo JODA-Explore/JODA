@@ -26,5 +26,4 @@ target_include_directories(joda-core-concurrency-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-concurrency-lib INTERFACE glog)
+target_link_libraries(joda-core-concurrency-lib INTERFACE glog::glog)

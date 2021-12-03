@@ -22,8 +22,8 @@ unsigned long RapidJsonDocument::getId() const { return id; }
 DOC_ID RapidJsonDocument::getNewID() { return ++currID; }
 
 std::atomic_ulong RapidJsonDocument::currID{0};
-const IOrigin* const RapidJsonDocument::getOrigin() const {
-  return origin.get();
+const std::unique_ptr<const IOrigin>&  RapidJsonDocument::getOrigin() const {
+  return origin;
 }
 
 RapidJsonDocument::RapidJsonDocument(std::unique_ptr<RJDocument>&& json,
@@ -35,12 +35,6 @@ RapidJsonDocument::RapidJsonDocument(unsigned long id,
                                      std::unique_ptr<const IOrigin>&& origin)
     : id(id), origin(std::move(origin)), json(std::move(json)) {}
 
-RapidJsonDocument::RapidJsonDocument(RapidJsonDocument&& doc) noexcept
-    : id(doc.id),
-      origin(std::move(doc.origin)),
-      json(std::move(doc.json)),
-      view(std::move(doc.view)),
-      isView_(doc.isView_) {}
 
 void RapidJsonDocument::setJson(std::unique_ptr<RJDocument>&& json) {
   RapidJsonDocument::json = std::move(json);
@@ -50,15 +44,7 @@ void RapidJsonDocument::setOrigin(std::unique_ptr<const IOrigin>&& orig) {
   origin = std::move(orig);
 }
 
-RapidJsonDocument& RapidJsonDocument::operator=(
-    RapidJsonDocument&& other) noexcept {
-  id = other.id;
-  origin = std::move(other.origin);
-  json = std::move(other.json);
-  view = std::move(other.view);
-  isView_ = other.isView_;
-  return *this;
-}
+bool RapidJsonDocument::isValid() const { return json != nullptr; }
 
 bool RapidJsonDocument::isView() const { return isView_; }
 

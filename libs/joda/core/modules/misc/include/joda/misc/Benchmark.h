@@ -42,8 +42,8 @@ class Benchmark {
   explicit Benchmark(const std::string &file);
   Benchmark(const Benchmark &b) = delete;
   Benchmark &operator=(const Benchmark &b) = delete;
-  Benchmark(Benchmark &&b) = default;
-  Benchmark &operator=(Benchmark &&b) = default;
+  Benchmark(Benchmark &&b);
+  Benchmark &operator=(Benchmark &&b);
 
   /**
    * If the benchmark is stored on the filesystem, the file will be flushed and

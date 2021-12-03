@@ -8,10 +8,12 @@
 #include <joda/query/values/IValueProvider.h>
 #include <rapidjson/allocators.h>
 #include <rapidjson/fwd.h>
+
 #include <memory>
 #include <sstream>
 #include <string>
 #include <vector>
+
 #include "joda/misc/infix_iterator.h"
 
 namespace joda::query {
@@ -126,7 +128,24 @@ class IAggregator {
       throw WrongParameterCountException(params.size(), expected, getName());
     }
   }
+
+  void checkMinParamSize(unsigned int expected) {
+    if (params.size() < expected) {
+      throw WrongParameterCountException(params.size(), expected, getName(),
+                                         true);
+    }
+  }
+
   void checkParamType(unsigned int i, IValueType expected) {
+    if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {
+      throw WrongParameterTypeException(i, expected, getName());
+    }
+  }
+
+  void checkOptionalParamType(unsigned int i, IValueType expected) {
+    if(params.size() < i+1) {
+      return;
+    }
     if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {
       throw WrongParameterTypeException(i, expected, getName());
     }

@@ -95,10 +95,44 @@ class WrongParameterTypeException : public WrongParameterException {
  */
 class WrongParameterCountException : public WrongParameterException {
  public:
+  WrongParameterCountException(const std::string &name) {
+    whatStr = name + ": Wrong number of parameters";
+  };
   WrongParameterCountException(unsigned int count, unsigned int expected,
-                               const std::string &name) {
-    whatStr = name + ": Expected " + std::to_string(expected) +
+                               const std::string &name, bool min = false) {
+                                 
+    whatStr = name + ": Expected ";
+    if(min) {
+      whatStr += "at least ";
+    }
+    whatStr += std::to_string(expected) +
               " parameters, but got " + std::to_string(count);
+  }
+};
+
+/**
+ * Exception will be thrown if too many or too few parameters are passed to a
+ * function
+ */
+class MissingParameterException : public WrongParameterCountException {
+ public:
+  MissingParameterException(unsigned int i,
+                               const std::string &name) : WrongParameterCountException(name) {
+                                 
+    whatStr = name + ": Missing parameter " + std::to_string(i);
+  }
+};
+
+/**
+ * Exception will be thrown if too many or too few parameters are passed to a
+ * function
+ */
+class ConstParameterException : public WrongParameterException {
+ public:
+  ConstParameterException(unsigned int i,
+                               const std::string &name) {
+                                 
+    whatStr = name + ": Parameter " + std::to_string(i) + " has to be a constant.";
   }
 };
 
@@ -302,8 +336,35 @@ class IValueProvider {
     return false;
   }
 
+  /**
+   * Checks wether the number of parameters is exactly `expected`
+   * @param expected The expected number of parameters
+   * @throws WrongParameterCountException if number not as expected
+  **/
   void checkParamSize(unsigned int expected);
+
+   /**
+   * Checks wether the number of parameters is aat least `expected`
+   * @param expected The expected number of parameters
+   * @throws WrongParameterCountException if number is less than expected
+  **/
+  void checkMinParamSize(unsigned int expected); 
+  
+  /**
+   * Checks wether the parameter `i` is of type `expected`
+   * @param i The index of the parameter to check
+   * @param expected The expected type of the parameter
+   * @throws WrongParameterTypeException if type not as expected
+  **/
   void checkParamType(unsigned int i, IValueType expected);
+
+  /**
+   * Checks wether the parameter `i` is of type `expected` if it exists
+   * @param i The index of the parameter to check
+   * @param expected The expected type of the parameter
+   * @throws WrongParameterTypeException if type not as expected
+  **/
+  void checkOptionalParamType(unsigned int i, IValueType expected);
 
   std::vector<std::unique_ptr<IValueProvider>> duplicateParameters() const;
 

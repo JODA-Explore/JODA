@@ -38,16 +38,23 @@ class RapidJsonDocument {
   RapidJsonDocument(std::unique_ptr<RJDocument> &&json,
                     std::unique_ptr<const IOrigin> &&origin);
 
+  ~RapidJsonDocument() = default;
+
   /**
    * Move constructor
    * @param doc other document
    */
-  RapidJsonDocument(RapidJsonDocument &&doc) noexcept;
+  RapidJsonDocument(RapidJsonDocument &&doc) noexcept = default;
+  RapidJsonDocument &operator=(RapidJsonDocument &&other) noexcept = default;
+
+
   /**
    * Copy constructor
    * @param doc The RapidJsonDocument to copy from
    */
   RapidJsonDocument(const RapidJsonDocument &doc) = delete;
+  RapidJsonDocument &operator=(const RapidJsonDocument &other) = delete;
+
 
   /**
    * Creates an empty dummy RapidJsonDocument
@@ -88,6 +95,12 @@ class RapidJsonDocument {
    */
   unsigned long getId() const;
 
+   /**
+   *
+   * @return true, if the document contains a valid json document
+   */
+  bool isValid() const;
+
   /**
    *
    * @return true, if the document is a view
@@ -100,10 +113,9 @@ class RapidJsonDocument {
 
   RJValue const *Get(const RJPointer &ptr) const;
 
-  const IOrigin *const getOrigin() const;
+  const std::unique_ptr<const IOrigin>& getOrigin() const;
 
-  RapidJsonDocument &operator=(const RapidJsonDocument &other) = delete;
-  RapidJsonDocument &operator=(RapidJsonDocument &&other) noexcept;
+
 
   template <typename Handler>
   bool Accept(Handler &handler) const {

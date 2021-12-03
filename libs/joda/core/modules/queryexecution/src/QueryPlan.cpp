@@ -142,14 +142,27 @@ unsigned long QueryPlan::executeQuery(Benchmark* benchmark) {
       }
     }
 
+    // Estimate space required for query
     double factor = 1.0;
     if (q->canCreateView()) {
+      // Creating views is estimated with 0.1 of normal space
       factor = 0.1;
     }
+
+    // Ensure = old parsed size (if evicted)
+    unsigned long long toEnsure = load->parsedSize();
+    auto estimated = load->estimatedSize();
+    if (toEnsure > estimated) {
+      // If past size is larger than the current size,
+      // we have to reparse the difference of the original set
+      toEnsure -= estimated;
+    } else {
+      // If the current size is larger or equal, everything is already parsed
+      toEnsure = 0;
+    }
+    // Ensure the size for reparsing the LOAD dataset + for creating a new one
     storageCollection.ensureSpace(
-        static_cast<unsigned long long>(load->parsedSize() -
-                                        load->estimatedSize()) +
-            static_cast<unsigned long long>(factor * load->parsedSize()),
+        toEnsure + static_cast<unsigned long long>(factor * load->parsedSize()),
         load);
 
     if (q->hasAggregators()) {
@@ -185,6 +198,7 @@ unsigned long QueryPlan::executeQuery(Benchmark* benchmark) {
       auto* storeDestination =
           dynamic_cast<StorageExport*>(exportDestination.get());
       if (storeDestination != nullptr) {
+        storeDestination->getStore()->addQueryString(q->toString()+";");
         resultID = storeDestination->getTemporaryResultID();
         /*
          * Check for delta dependencies
@@ -315,6 +329,10 @@ QueryPlan::QueryPlan(const std::shared_ptr<joda::query::Query>& q)
 
   if (load == nullptr) {
     load = StorageCollection::getInstance().getOrAddStorage(loadVar);
+  }
+
+  if(!q->getImportSources().empty() || loadJoin != nullptr) {
+    load->addQueryString(q->toString()+";");
   }
 
   CHECK(load != nullptr);

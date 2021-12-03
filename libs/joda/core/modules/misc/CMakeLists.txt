@@ -36,5 +36,5 @@ target_include_directories(joda-core-misc-lib INTERFACE ${RAPIDJSON_INCLUDE_DIRS
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-misc-lib INTERFACE glog)
+
+target_link_libraries(joda-core-misc-lib INTERFACE glog::glog)

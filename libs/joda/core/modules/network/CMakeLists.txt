@@ -39,8 +39,8 @@ target_link_libraries(joda-core-network-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-network-lib INTERFACE glog)
+
+target_link_libraries(joda-core-network-lib INTERFACE glog::glog)
 
 #########################################################
 #

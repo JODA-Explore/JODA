@@ -35,7 +35,6 @@ target_include_directories(joda-core-${NAME}-lib
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-${NAME}-lib INTERFACE glog)
+target_link_libraries(joda-core-${NAME}-lib INTERFACE glog::glog)
 EOF
 ) > ${NAME}/CMakeLists.txt

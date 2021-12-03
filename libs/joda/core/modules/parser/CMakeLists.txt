@@ -49,8 +49,8 @@ target_include_directories(joda-core-parser-lib INTERFACE ${RAPIDJSON_INCLUDE_DI
 # GLOG
 #
 #########################################################
-find_package(glog REQUIRED)
-target_link_libraries(joda-core-parser-lib INTERFACE glog)
+
+target_link_libraries(joda-core-parser-lib INTERFACE glog::glog)
 
 if (BUILD_WEBIMPORT MATCHES ON)
     set(cpprestsdk_DIR /usr/lib/${CMAKE_LIBRARY_ARCHITECTURE}/cmake/)

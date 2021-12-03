@@ -6,6 +6,8 @@
 #include <joda/misc/MemoryUtility.h>
 #include <joda/network/JodaServer.h>
 #include <joda/storage/collection/StorageCollection.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 void joda::network::apiv2::JodaSourceRequest::registerEndpoint(
     const std::string& prefix, httplib::Server& server) {
@@ -96,18 +98,21 @@ void joda::network::apiv2::JodaSourceRequest::sendTemporaries(
 
 std::string joda::network::apiv2::JodaSourceRequest::storageToJSON(
     const JSONStorage& storage, unsigned long id) {
-  std::string ret = "{";
+  auto doc = RJDocument(rapidjson::kObjectType);
+
   if (id >= JODA_STORE_VALID_ID_START) {
-    ret += R"("id":)" + std::to_string(id) + ",";
+    doc.AddMember("id", id, doc.GetAllocator());
   } else {
-    ret += R"("name":")" + storage.getName() + "\",";
+    doc.AddMember("name", storage.getName(), doc.GetAllocator());
   }
-  ret += R"("documents":)" + std::to_string(storage.size()) + ",";
-  ret += R"("container":)" + std::to_string(storage.contSize()) + ",";
-  ret += R"("memory":)" + std::to_string(storage.estimatedSize()) + ",";
-  ret += R"("memory-str":")" +
-         MemoryUtility::MemorySize(storage.estimatedSize()).getHumanReadable() +
-         "\"";
-  ret += "}";
-  return ret;
+  doc.AddMember("query", storage.getQueryString(), doc.GetAllocator());
+  doc.AddMember("documents",storage.size(), doc.GetAllocator());
+  doc.AddMember("container", storage.contSize(), doc.GetAllocator());
+  doc.AddMember("memory", storage.estimatedSize(), doc.GetAllocator());
+  doc.AddMember("memory-str",MemoryUtility::MemorySize(storage.estimatedSize()).getHumanReadable(), doc.GetAllocator());
+
+  rapidjson::StringBuffer buffer;
+  rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+  doc.Accept(writer);
+  return buffer.GetString();
 }

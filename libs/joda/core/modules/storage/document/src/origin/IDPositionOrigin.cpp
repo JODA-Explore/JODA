@@ -29,23 +29,23 @@ IDPositionOrigin::IDPositionOrigin(FILEID id, long start, long end, int index)
     : id(id), start(start), end(end), index(index) {}
 
 bool IDPositionOrigin::operator<(const IOrigin& x) const {
-  if (typeid(*this) == typeid(x)) {
-    const auto& other = dynamic_cast<const IDPositionOrigin&>(
-        x);  // Static cast, as type is already checked to be the same
-    if (id < other.id) {
-      return true;
-    }
-    return start < other.start;
+  if(typeid(*this).before(typeid(x))) return true;
+  auto* const other = dynamic_cast<const IDPositionOrigin*>(&x);
+  if (other != nullptr) {
+    this->operator<(*other);
   }
-  return IOrigin::operator<(x);
+  return false;
 }
 
-bool IDPositionOrigin::operator==(const IOrigin& x) const {
-  if (typeid(*this) == typeid(x)) {
-    const auto& other = dynamic_cast<const IDPositionOrigin&>(
-        x);  // Static cast, as type is already checked to be the same
-    return id == other.id && start == other.start && end == other.end &&
-           index == other.index;
+bool IDPositionOrigin::operator<(const IDPositionOrigin& other) const {
+  if (id < other.id) {
+    return true;
   }
-  return IOrigin::operator==(x);
+  return start < other.start;
+}
+
+bool IDPositionOrigin::operator==(const IDPositionOrigin& other) const {
+  return id == other.id && start == other.start && end == other.end &&
+           index == other.index;
+
 }
