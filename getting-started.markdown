@@ -36,7 +36,7 @@ With `STORE` the resulting collection can either be stored in another internal c
 Finally, `DELETE` removes a collection from the internal memory.
 The complete language reference is available here:
 <div class="btn-group">
-  <a href="/language/" class="button">Language Reference</a>
+  <a href="{{ '/language/' | relative_url }}" class="button">Language Reference</a>
 </div>
 
 Collection documents cannot be viewed directly and must be queried first.
