@@ -22,16 +22,7 @@ If you are just getting started, check out the following resources:
 
 The latest release can always be found on [GitHub](https://github.com/JODA-Explore/JODA/releases).
 
-### 0.12.4
-#### Added
-- Ability to use caches of subpredicates (e.g. A && B can use a cached result of "A" )
-  
-#### Changed
-- Improve reparsing of containers if documents have been deleted
-- Improve logging of web-API and storage
-  
-#### Fixed
-- Aggregation functions with 0 parameters 
-- Crashes if documents are requested to be reparsed multiple times
-- Broken delta trees with reparsing
-- Wrong aggregation with negative floats in ATTSTAT
+### {{site.github.latest_release.tag_name}} - {{site.github.latest_release.name}} ({{site.github.latest_release.published_at | date: "%d-%m-%Y"}})
+
+{{site.github.latest_release.body}}
+
