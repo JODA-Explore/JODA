@@ -11,7 +11,7 @@ To install JODA you can choose between the following options:
 The easiest way to install JODA is to use public Docker images.
 The main image contains the JODA executable and JODA-client program.
 An additional image is available for the JODA web interface.
-The images can be found on DockerHub:
+The images can be found in the GitHub container repository:
 
 <div class="btn-group">
   <a href="https://github.com/JODA-Explore/JODA/pkgs/container/JODA%2Fjoda" class="button">JODA Image</a>
