@@ -14,14 +14,14 @@ An additional image is available for the JODA web interface.
 The images can be found on DockerHub:
 
 <div class="btn-group">
-  <a href="https://hub.docker.com/r/nicotin/joda" class="button">JODA Image</a>
-  <a href="https://hub.docker.com/r/nicotin/joda-web" class="button">JODA Web Image</a>
+  <a href="https://github.com/JODA-Explore/JODA/pkgs/container/JODA%2Fjoda" class="button">JODA Image</a>
+  <a href="https://github.com/orgs/JODA-Explore/packages/container/package/joda-web" class="button">JODA Web Image</a>
 </div> 
 
 Starting a JODA server is as simple as running the image:
 
 ```bash
-docker run -p 5632:5632 --name joda nicotin/joda 
+docker run -p 5632:5632 --name joda ghcr.io/joda-explore/joda/joda:latest 
 ```
 
 This will start a JODA server listening on port 5632.
@@ -34,7 +34,7 @@ docker exec -it joda joda-client --address localhost --port 5632
 If no server is needed and only local execution is required, JODA can also be started as a standalone CLI:
 
 ```bash
-docker run -it nicotin/joda -c
+docker run -it ghcr.io/joda-explore/joda/joda:latest -c
 ```
 You are now in a JODA shell. Type` help;` to get a list of available commands.
 
@@ -54,13 +54,13 @@ services:
     volumes:
 #     - <Path-To-Data-Firectory>:/data:rw  # Optional directory, if access to local datasets is desired.
       - /etc/localtime:/etc/localtime:ro
-    image: nicotin/joda:latest
+    image: ghcr.io/joda-explore/joda/joda:latest
   joda-web:
     container_name: joda-web
     restart: always
     ports:
       - "8080:8080"
-    image: nicotin/joda-web:latest
+    image: ghcr.io/joda-explore/joda-web:latest
     depends_on:
       - joda
     command: "http://joda:5632"
