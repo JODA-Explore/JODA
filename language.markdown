@@ -6,6 +6,21 @@ permalink: /language/
 <a href="{{ site.baseurl }}/"><img id="logo" src="{{ '/assets/img/JODA.svg' | relative_url }}" alt="JODA" /></a>
 
 
+## Quick Navigation
+<div class="btn-group">
+  <a href="#load" class="button">LOAD</a>
+  <a href="#choose-optional" class="button">CHOOSE</a>
+  <a href="#as-optional" class="button">AS</a>
+  <a href="#agg-optional" class="button">AGG</a>
+  <a href="#store-optional" class="button">STORE</a>
+</div> 
+
+<div class="btn-group">
+  <a href="#misc" class="button">Misc</a>
+  <a href="{{ '/functions' | relative_url }}" class="button">Function Reference</a>
+</div> 
+
+
 ## Syntax
 The basic syntax of queries is:
 
@@ -317,91 +332,15 @@ This can be achieved by combining these two queries:
 
 ## Misc
 ### Functions
-##### Metadata-/File-Functions
-- (String) `FILENAME()`: Returns the filename (with full path),
-or "\[PROJECTION]" if the document was projected.
-- (Int) `FILEPOSSTART()`: Returns the starting position of the document, within it's file.
-- (Int) `FILEPOSEND()`: Returns the end position of the document, within it's file.
-- (Int) `ID()`: Returns the internal ID of the document.
 
+JODA supports many functions. 
+These can be used everywhere in queries where JSON values are expected, e.g., in `CHOOSE`, `AGG`, and `AS` clauses.
+Functions can also be nested into each other.
 
-
-##### Type-Functions
-- (String) `TYPE(Any)`: Returns the type of the given attribute
-("OBJECT","ARRAY","NUMBER","STRING","BOOL","NULL");
-- (Bool) `EXISTS(Any)`: Checks if the given attribute exists.
-- (Bool) `ISX(Any)`: Checks if the given attribute has type X:
-    - `ISNULL`
-    - `ISBOOL`
-    - `ISNUMBER`
-    - `ISSTRING`
-    - `ISOBJECT`
-    - `ISARRAY`
-  
-##### Casting-Functions
-- (Number) `INT(Any)`: Returns the integer representation of the value. Floats are truncated, Strings are parsed as numbers if possible, and Boolean is converted to {1,0}.
-- (Number) `FLOAT(Any)`: Returns the float representation of the value. Strings are parsed as numbers if possible, and Boolean is converted to {1,0}.
-- (String) `STRING(Any)`: Returns the string representation of the value. Only works for non-object/array values.
-
-##### String-Functions
-- (Number) `LEN(String)`: Returns the length of the string.
-- (String) `LOWER(String)`: Returns the string in lowercase.
-- (String) `UPPER(String)`: Returns the string in uppercase.
-- (String) `LTRIM(String)`: Trims spaces to the left of the string.
-- (String) `RTRIM(String)`: Trims spaces to the right of the string.
-- (String) `CONCAT(String,String)`: Concatenates two strings.
-- (Bool) `SCONTAINS(String,String)`: Returns true if first string contains the second.
-- (Bool) `STARTSWITH(String,String)`: Returns true if first string starts with the second.
-- (Number) `FINDSTR(String,String)`: Returns the position of the second string in the first string, or -1 if it is not contained.
-- (String) `SUBSTR(String,Number,Number)`: Returns a substring of the given string. The first number is the starting position of the substring, the second (optional) number is the length of the substring. If the second is not given, everything until the end is returned.
-- (Bool) `REGEX(String,String)`: Returns true if first string matches the regular expression defined in the second.
-- (Array(String)) `REGEX_EXTRACT(String,String)`: Returns a list of strings within the first parameter, matched by the regular expression in the second.
-- (String) `REGEX_REPLACE(String,String,String)`: Replaces all matches, within the first string, of the regular expression, defined in the second parameter, with the third string.
-
-##### Array-Functions
-- (Number) `SIZE(Array)`: Returns the size of the array.
-- (Bool) `IN(Any,Array)`: Checks if parameter 1 is contained in the array given by parameter 2.
-
-##### Object-Functions
-- (Number) `MEMCOUNT(Object)`: Returns the number of members.
-- (Array(String)) `LISTATTRIBUTES(Object)`: Returns all members in the given object.
-
-
-##### Mathematical-Functions
-- (Number) `SUM(Number, Number)`: Calculates the sum of all arguments.
-- (Number) `SUB(Number, Number)`: Subtracts the arguments.
-- (Number) `PROD(Number, Number)`: Calculates the product of all arguments.
-- (Number) `DIV(Number, Number)`: Divides the arguments.
-- (Number) `MOD(Number, Number)`: Calculates the modulus.
-- (Number) `POW(Number, Number)`: Calculates the power.
-- (Number) `ABS(Number)`: Calculates the absolute.
-- (Number) `CEIL(Number)`: Calculates the ceiling.
-- (Number) `FLOOR(Number)`: Calculates the floor.
-- (Number) `TRUNC(Number)`: Truncates the value.
-- (Number) `ROUND(Number)`: Round the value.
-- (Number) `SQRT(Number)`: Calculates the square root
-- (Number) `DEGREES(Number)`: Radians to degrees.
-- (Number) `RADIANS(Number)`: Degrees to radians.
-
-##### Trigonometric-Functions
-- (Number) `ACOS(Number)`:	inverse cosine
-- (Number) `ASIN(Number)`:	inverse sine
-- (Number) `ATAN(Number)`:	inverse tangent
-- (Number) `ATAN2(Number, Number)`:	inverse tangent of y/x
-- (Number) `COS(Number)`:	cosine
-- (Number) `SIN(Number)`:	sine
-- (Number) `TAN(Number)`:	tangent
-
-##### Mathematical-Constants
-- (Number) `PI()`: Returns PI
-
-##### Time-Functions
-- (Number) `NOW()`: Returns the UNIX timestamp in milliseconds.
-
-##### Misc-Functions
-- (Number) `SEQNUM()`: Returns a sequential number between 0 and the number of documents.
-    - Multiple `SEQNUM()` calls within one query each return a number in the range independently from each other. (e.g.: `... AS ('/seq1':SEQNUM()),('/seq2':SEQNUM())` could result in `{"seq1":1,"seq2":3}`.
-- (Number) `HASH(Any)`: Returns the hash of the value. 
+An exhausive list of functions can be found here:
+<div class="btn-group">
+  <a href="{{ '/functions' | relative_url }}" class="button">Functions</a>
+</div> 
 
 #### Parameters
 The parameters are defined as:
