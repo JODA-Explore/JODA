@@ -109,3 +109,32 @@ h1, h2, h3, h4 {
     background-color: $joda-highlight-color;
     text-decoration: none;
   } 
+
+
+   
+  //  _______    _     _           
+  // |__   __|  | |   | |          
+  //    | | __ _| |__ | | ___  ___ 
+  //    | |/ _` | '_ \| |/ _ \/ __|
+  //    | | (_| | |_) | |  __/\__ \
+  //    |_|\__,_|_.__/|_|\___||___/
+  
+  table {
+    margin-left: auto;
+    margin-right: auto;
+  }
+                                
+  th{
+    background: $joda-highlight-color;
+    color: white;
+  }
+
+  tr:hover {background-color: #ddd;}
+
+  tr:nth-child(even){background-color: #f2f2f2;}
+
+  td, th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+  
