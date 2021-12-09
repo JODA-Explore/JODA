@@ -1,6 +1,6 @@
 ---
 title: Index
-permalink: /functions
+permalink: /functions/
 ---
 # Mathematical
 

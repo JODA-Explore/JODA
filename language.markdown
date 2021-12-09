@@ -17,7 +17,7 @@ permalink: /language/
 
 <div class="btn-group">
   <a href="#misc" class="button">Misc</a>
-  <a href="{{ '/functions' | relative_url }}" class="button">Function Reference</a>
+  <a href="{{ '/functions/' | relative_url }}" class="button">Function Reference</a>
 </div> 
 
 
@@ -339,7 +339,7 @@ Functions can also be nested into each other.
 
 An exhausive list of functions can be found here:
 <div class="btn-group">
-  <a href="{{ '/functions' | relative_url }}" class="button">Functions</a>
+  <a href="{{ '/functions/' | relative_url }}" class="button">Functions</a>
 </div> 
 
 #### Parameters
