@@ -1,11 +1,11 @@
 <map id="joda::network::JodaAPIException" name="joda::network::JodaAPIException">
 <area shape="rect" id="node1" title=" " alt="" coords="355,177,587,203"/>
-<area shape="rect" id="node4" href="$db/dbe/classjoda_1_1network_1_1apiv2_1_1JodaAPIVersionException.html" title=" " alt="" coords="661,5,852,47"/>
-<area shape="rect" id="node5" href="$d3/d62/classjoda_1_1network_1_1apiv2_1_1JodaQueryException.html" title=" " alt="" coords="676,71,837,112"/>
-<area shape="rect" id="node6" href="$db/de9/classjoda_1_1network_1_1apiv2_1_1JodaQuerySkippedException.html" title=" " alt="" coords="650,136,863,177"/>
-<area shape="rect" id="node7" href="$d8/da3/classjoda_1_1network_1_1apiv2_1_1JodaQueryUnkownErrorException.html" title=" " alt="" coords="635,201,879,243"/>
-<area shape="rect" id="node8" href="$d3/d77/classjoda_1_1network_1_1JodaInvalidParameterException.html" title=" " alt="" coords="661,267,852,308"/>
-<area shape="rect" id="node9" href="$d1/d9f/classjoda_1_1network_1_1JodaMissingParameterException.html" title=" " alt="" coords="658,332,855,373"/>
-<area shape="rect" id="node2" title="STL class." alt="" coords="168,177,307,203"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="5,177,120,203"/>
+<area shape="rect" id="node4" href="$d3/d77/classjoda_1_1network_1_1JodaInvalidParameterException.html" title=" " alt="" coords="661,5,852,47"/>
+<area shape="rect" id="node5" href="$d1/d9f/classjoda_1_1network_1_1JodaMissingParameterException.html" title=" " alt="" coords="658,71,855,112"/>
+<area shape="rect" id="node6" href="$db/dbe/classjoda_1_1network_1_1apiv2_1_1JodaAPIVersionException.html" title=" " alt="" coords="661,136,852,177"/>
+<area shape="rect" id="node7" href="$d3/d62/classjoda_1_1network_1_1apiv2_1_1JodaQueryException.html" title=" " alt="" coords="676,201,837,243"/>
+<area shape="rect" id="node8" href="$db/de9/classjoda_1_1network_1_1apiv2_1_1JodaQuerySkippedException.html" title=" " alt="" coords="650,267,863,308"/>
+<area shape="rect" id="node9" href="$d8/da3/classjoda_1_1network_1_1apiv2_1_1JodaQueryUnkownErrorException.html" title=" " alt="" coords="635,332,879,373"/>
+<area shape="rect" id="node2" title=" " alt="" coords="168,177,307,203"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,177,120,203"/>
 </map>

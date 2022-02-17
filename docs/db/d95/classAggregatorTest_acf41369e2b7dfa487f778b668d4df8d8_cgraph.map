@@ -1,8 +1,6 @@
 <map id="AggregatorTest::testAgg" name="AggregatorTest::testAgg">
-<area shape="rect" id="node1" title=" " alt="" coords="5,63,184,90"/>
-<area shape="rect" id="node2" href="$db/d95/classAggregatorTest.html#a35a96c737597a6e28f57b378131eda72" title=" " alt="" coords="232,63,411,90"/>
-<area shape="rect" id="node3" href="$db/d95/classAggregatorTest.html#a03ea9a2446c186efec4b91b3f63425c3" title=" " alt="" coords="466,13,661,39"/>
-<area shape="rect" id="node5" href="$db/d95/classAggregatorTest.html#aedd08b05bbedbe69a67844fb82b25868" title=" " alt="" coords="459,63,668,90"/>
-<area shape="rect" id="node6" href="$d0/d07/classjoda_1_1query_1_1IAggregator.html#ae0c720ce16d8a2fe202911f3e4f8a503" title=" " alt="" coords="474,115,653,156"/>
-<area shape="rect" id="node4" href="$d0/d07/classjoda_1_1query_1_1IAggregator.html#add967060d8262992eb3ab02d17936d19" title=" " alt="" coords="716,5,895,47"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,31,184,57"/>
+<area shape="rect" id="node2" href="$db/d95/classAggregatorTest.html#a35a96c737597a6e28f57b378131eda72" title=" " alt="" coords="232,31,411,57"/>
+<area shape="rect" id="node3" href="$db/d95/classAggregatorTest.html#a03ea9a2446c186efec4b91b3f63425c3" title=" " alt="" coords="466,5,661,32"/>
+<area shape="rect" id="node4" href="$db/d95/classAggregatorTest.html#aedd08b05bbedbe69a67844fb82b25868" title=" " alt="" coords="459,56,668,83"/>
 </map>

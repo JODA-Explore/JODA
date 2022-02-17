@@ -87,7 +87,7 @@ var sectionId = 'dynsection-0';
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="120,-61 120,-80 212,-80 212,-61 120,-61"/>
 <text text-anchor="middle" x="166" y="-68" font-family="Helvetica,sans-Serif" font-size="10.00">std::stack&lt; T &gt;</text>
 </a>
@@ -122,7 +122,7 @@ var sectionId = 'dynsection-0';
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:title="STL class.">
+<g id="a_node5"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="430.5,-6 430.5,-25 495.5,-25 495.5,-6 430.5,-6"/>
 <text text-anchor="middle" x="463" y="-13" font-family="Helvetica,sans-Serif" font-size="10.00">std::string</text>
 </a>
@@ -138,10 +138,10 @@ var sectionId = 'dynsection-0';
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:title="STL class.">
+<g id="a_node6"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="114,-0.5 114,-30.5 218,-30.5 218,-0.5 114,-0.5"/>
 <text text-anchor="start" x="122" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::basic_string&lt;</text>
-<text text-anchor="middle" x="166" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00"> char &gt;</text>
+<text text-anchor="middle" x="166" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00"> Char &gt;</text>
 </a>
 </g>
 </g>

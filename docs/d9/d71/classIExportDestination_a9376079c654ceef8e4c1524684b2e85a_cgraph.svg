@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 647;
+var viewWidth = 802;
 var viewHeight = 166;
 var sectionId = 'dynsection-2';
 </script>
@@ -54,7 +54,7 @@ var sectionId = 'dynsection-2';
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>IExportDestination::consume</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-161.5 643,-161.5 643,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-161.5 798,-161.5 798,4 -4,4"/>
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
@@ -81,33 +81,33 @@ var sectionId = 'dynsection-2';
 <path fill="none" stroke="midnightblue" d="M101.58,-63C115.41,-67.41 130.7,-72.28 145.08,-76.86"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="144.28,-80.28 154.87,-79.98 146.4,-73.61 144.28,-80.28"/>
 </g>
-<!-- Node7 -->
-<g id="node7" class="node">
-<title>Node7</title>
-<g id="a_node7"><a xlink:href="../../d8/df5/classRecurringTimer.html#a801137531764b8bb55ca162656019bdb" target="_top" xlink:title=" ">
+<!-- Node8 -->
+<g id="node8" class="node">
+<title>Node8</title>
+<g id="a_node8"><a xlink:href="../../d8/df5/classRecurringTimer.html#a801137531764b8bb55ca162656019bdb" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="143,-38.5 143,-57.5 263,-57.5 263,-38.5 143,-38.5"/>
 <text text-anchor="middle" x="203" y="-45.5" font-family="Helvetica,sans-Serif" font-size="10.00">RecurringTimer::start</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node7 -->
-<g id="edge7" class="edge">
-<title>Node1&#45;&gt;Node7</title>
+<!-- Node1&#45;&gt;Node8 -->
+<g id="edge8" class="edge">
+<title>Node1&#45;&gt;Node8</title>
 <path fill="none" stroke="midnightblue" d="M107.33,-48C115.5,-48 124.05,-48 132.51,-48"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="132.77,-51.5 142.77,-48 132.77,-44.5 132.77,-51.5"/>
 </g>
-<!-- Node9 -->
-<g id="node9" class="node">
-<title>Node9</title>
-<g id="a_node9"><a xlink:href="../../d8/df5/classRecurringTimer.html#a0534a5c3a55473c15b027325f06cd260" target="_top" xlink:title=" ">
+<!-- Node10 -->
+<g id="node10" class="node">
+<title>Node10</title>
+<g id="a_node10"><a xlink:href="../../d8/df5/classRecurringTimer.html#a0534a5c3a55473c15b027325f06cd260" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="143.5,-0.5 143.5,-19.5 262.5,-19.5 262.5,-0.5 143.5,-0.5"/>
 <text text-anchor="middle" x="203" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">RecurringTimer::stop</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node9 -->
-<g id="edge9" class="edge">
-<title>Node1&#45;&gt;Node9</title>
+<!-- Node1&#45;&gt;Node10 -->
+<g id="edge10" class="edge">
+<title>Node1&#45;&gt;Node10</title>
 <path fill="none" stroke="midnightblue" d="M107.33,-34.39C122.93,-30.37 139.89,-26 155.08,-22.09"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="155.97,-25.47 164.78,-19.59 154.23,-18.69 155.97,-25.47"/>
 </g>
@@ -181,24 +181,40 @@ var sectionId = 'dynsection-2';
 <path fill="none" stroke="midnightblue" d="M432.08,-52.24C440.42,-52.01 449.09,-51.78 457.78,-51.55"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="458.06,-55.04 467.97,-51.27 457.88,-48.04 458.06,-55.04"/>
 </g>
-<!-- Node8 -->
-<g id="node8" class="node">
-<title>Node8</title>
-<g id="a_node8"><a xlink:href="../../d8/df5/classRecurringTimer.html#ac4fab3b01f921bf79af39c0a65c787ea" target="_top" xlink:title=" ">
+<!-- Node7 -->
+<g id="node7" class="node">
+<title>Node7</title>
+<g id="a_node7"><a xlink:href="../../d6/d0f/namespacemoodycamel_1_1details.html#a40f7377af074d1cd282e22f75674c59d" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="675,-34 675,-64 794,-64 794,-34 675,-34"/>
+<text text-anchor="start" x="683" y="-52" font-family="Helvetica,sans-Serif" font-size="10.00">moodycamel::details</text>
+<text text-anchor="middle" x="734.5" y="-41" font-family="Helvetica,sans-Serif" font-size="10.00">::likely</text>
+</a>
+</g>
+</g>
+<!-- Node6&#45;&gt;Node7 -->
+<g id="edge7" class="edge">
+<title>Node6&#45;&gt;Node7</title>
+<path fill="none" stroke="midnightblue" d="M639.02,-49C647.64,-49 656.33,-49 664.75,-49"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="664.88,-52.5 674.88,-49 664.88,-45.5 664.88,-52.5"/>
+</g>
+<!-- Node9 -->
+<g id="node9" class="node">
+<title>Node9</title>
+<g id="a_node9"><a xlink:href="../../d8/df5/classRecurringTimer.html#ac4fab3b01f921bf79af39c0a65c787ea" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="306.5,-0.5 306.5,-19.5 424.5,-19.5 424.5,-0.5 306.5,-0.5"/>
 <text text-anchor="middle" x="365.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">RecurringTimer::now</text>
 </a>
 </g>
 </g>
-<!-- Node7&#45;&gt;Node8 -->
-<g id="edge8" class="edge">
-<title>Node7&#45;&gt;Node8</title>
+<!-- Node8&#45;&gt;Node9 -->
+<g id="edge9" class="edge">
+<title>Node8&#45;&gt;Node9</title>
 <path fill="none" stroke="midnightblue" d="M244.5,-38.41C265.68,-33.4 291.8,-27.21 314.26,-21.89"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="315.37,-25.23 324.29,-19.52 313.75,-18.42 315.37,-25.23"/>
 </g>
-<!-- Node9&#45;&gt;Node8 -->
-<g id="edge10" class="edge">
-<title>Node9&#45;&gt;Node8</title>
+<!-- Node10&#45;&gt;Node9 -->
+<g id="edge11" class="edge">
+<title>Node10&#45;&gt;Node9</title>
 <path fill="none" stroke="midnightblue" d="M262.85,-10C273.74,-10 285.2,-10 296.34,-10"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="296.46,-13.5 306.46,-10 296.46,-6.5 296.46,-13.5"/>
 </g>

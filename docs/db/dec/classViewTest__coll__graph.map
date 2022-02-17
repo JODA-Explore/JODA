@@ -1,10 +1,10 @@
 <map id="ViewTest" name="ViewTest">
-<area shape="rect" id="node1" title=" " alt="" coords="155,288,235,315"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,199,53,225"/>
-<area shape="rect" id="node3" href="$dd/d47/classViewStructure.html" title=" " alt="" coords="78,199,191,225"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="365,109,451,136"/>
-<area shape="rect" id="node6" title=" " alt="" coords="216,199,403,225"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="339,5,477,47"/>
-<area shape="rect" id="node7" title="STL class." alt="" coords="170,109,299,136"/>
-<area shape="rect" id="node8" title=" " alt="" coords="215,13,254,39"/>
+<area shape="rect" id="node1" title=" " alt="" coords="208,288,288,315"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,199,107,225"/>
+<area shape="rect" id="node3" href="$dd/d47/classViewStructure.html" title=" " alt="" coords="131,199,245,225"/>
+<area shape="rect" id="node4" title=" " alt="" coords="418,109,505,136"/>
+<area shape="rect" id="node6" title=" " alt="" coords="269,199,456,225"/>
+<area shape="rect" id="node5" title=" " alt="" coords="392,5,531,47"/>
+<area shape="rect" id="node7" title=" " alt="" coords="223,109,353,136"/>
+<area shape="rect" id="node8" title=" " alt="" coords="269,13,307,39"/>
 </map>

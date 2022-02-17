@@ -46,7 +46,7 @@ if (edges && edges.length) {
         </defs>
 
 <script type="text/javascript">
-var viewWidth = 615;
+var viewWidth = 770;
 var viewHeight = 39;
 var sectionId = 'dynsection-17';
 </script>
@@ -54,7 +54,7 @@ var sectionId = 'dynsection-17';
 <svg id="graph" class="graph">
 <g id="viewport">
 <title>moodycamel::BlockingConcurrentQueue::wait_dequeue_timed</title>
-<polygon fill="white" stroke="transparent" points="-4,4 -4,-35 611,-35 611,4 -4,4"/>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-35 766,-35 766,4 -4,4"/>
 <!-- Node1 -->
 <g id="node1" class="node">
 <title>Node1</title>
@@ -96,6 +96,22 @@ var sectionId = 'dynsection-17';
 <title>Node2&#45;&gt;Node3</title>
 <path fill="none" stroke="midnightblue" d="M400.19,-15.5C408.6,-15.5 417.14,-15.5 425.59,-15.5"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="425.84,-19 435.84,-15.5 425.84,-12 425.84,-19"/>
+</g>
+<!-- Node4 -->
+<g id="node4" class="node">
+<title>Node4</title>
+<g id="a_node4"><a xlink:href="../../d6/d0f/namespacemoodycamel_1_1details.html#a40f7377af074d1cd282e22f75674c59d" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="643,-0.5 643,-30.5 762,-30.5 762,-0.5 643,-0.5"/>
+<text text-anchor="start" x="651" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">moodycamel::details</text>
+<text text-anchor="middle" x="702.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">::likely</text>
+</a>
+</g>
+</g>
+<!-- Node3&#45;&gt;Node4 -->
+<g id="edge3" class="edge">
+<title>Node3&#45;&gt;Node4</title>
+<path fill="none" stroke="midnightblue" d="M607.02,-15.5C615.64,-15.5 624.33,-15.5 632.75,-15.5"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="632.88,-19 642.88,-15.5 632.88,-12 632.88,-19"/>
 </g>
 </g>
 </svg>

@@ -22,8 +22,8 @@
 <g id="node2" class="node">
 <title>Node2</title>
 <g id="a_node2"><a xlink:title=" ">
-<polygon fill="white" stroke="#bfbfbf" points="40,-56.5 40,-75.5 76,-75.5 76,-56.5 40,-56.5"/>
-<text text-anchor="middle" x="58" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">Test</text>
+<polygon fill="white" stroke="#bfbfbf" points="20,-56.5 20,-75.5 96,-75.5 96,-56.5 20,-56.5"/>
+<text text-anchor="middle" x="58" y="-63.5" font-family="Helvetica,sans-Serif" font-size="10.00">testing::Test</text>
 </a>
 </g>
 </g>

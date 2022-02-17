@@ -1,8 +1,10 @@
 <map id="moodycamel::BlockingReaderWriterQueue::wait_dequeue_timed" name="moodycamel::BlockingReaderWriterQueue::wait_dequeue_timed">
-<area shape="rect" id="node1" title=" " alt="" coords="5,39,253,80"/>
-<area shape="rect" id="node2" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#ae7ada3411e98c5d1aab09ec6945a6a9e" title=" " alt="" coords="309,5,510,47"/>
-<area shape="rect" id="node3" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a9098a9e78b1782399c32783c4c5031a3" title=" " alt="" coords="301,71,517,112"/>
-<area shape="rect" id="node4" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a5b68a21a86def468f6f7676162e7417a" title=" " alt="" coords="565,63,752,119"/>
-<area shape="rect" id="node5" href="$dc/d66/classmoodycamel_1_1weak__atomic.html#a8852716d0fae8add8a794d82f6623ef6" title=" " alt="" coords="800,37,1003,79"/>
-<area shape="rect" id="node6" href="$dc/d66/classmoodycamel_1_1weak__atomic.html#a50e62633b557a82c043b2f59d7ac4c68" title=" " alt="" coords="800,103,1003,144"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,123,253,164"/>
+<area shape="rect" id="node2" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#ae7ada3411e98c5d1aab09ec6945a6a9e" title=" " alt="" coords="309,77,510,119"/>
+<area shape="rect" id="node6" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a9098a9e78b1782399c32783c4c5031a3" title=" " alt="" coords="301,155,517,196"/>
+<area shape="rect" id="node3" href="$db/dc8/namespacemoodycamel.html#ac79319754b39eda6c5519aee144f0ea2" title=" " alt="" coords="573,5,745,47"/>
+<area shape="rect" id="node4" href="$db/dc8/namespacemoodycamel.html#a959b29a846ef87a90719aabacd25d4d1" title=" " alt="" coords="583,71,734,98"/>
+<area shape="rect" id="node5" href="$dc/d66/classmoodycamel_1_1weak__atomic.html#a50e62633b557a82c043b2f59d7ac4c68" title=" " alt="" coords="800,115,1003,156"/>
+<area shape="rect" id="node7" href="$da/d30/classmoodycamel_1_1spsc__sema_1_1LightweightSemaphore.html#a5b68a21a86def468f6f7676162e7417a" title=" " alt="" coords="565,173,752,229"/>
+<area shape="rect" id="node8" href="$dc/d66/classmoodycamel_1_1weak__atomic.html#a8852716d0fae8add8a794d82f6623ef6" title=" " alt="" coords="800,180,1003,221"/>
 </map>

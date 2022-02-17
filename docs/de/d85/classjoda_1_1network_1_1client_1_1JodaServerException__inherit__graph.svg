@@ -116,7 +116,7 @@ var sectionId = 'dynsection-0';
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:title="STL class.">
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="122,-55 122,-74 226,-74 226,-55 122,-55"/>
 <text text-anchor="middle" x="174" y="-62" font-family="Helvetica,sans-Serif" font-size="10.00">std::runtime_error</text>
 </a>
@@ -131,7 +131,7 @@ var sectionId = 'dynsection-0';
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="0,-55 0,-74 86,-74 86,-55 0,-55"/>
 <text text-anchor="middle" x="43" y="-62" font-family="Helvetica,sans-Serif" font-size="10.00">std::exception</text>
 </a>

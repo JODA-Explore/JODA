@@ -1,15 +1,12 @@
 <map id="joda::query::IValueProvider::toString" name="joda::query::IValueProvider::toString">
-<area shape="rect" id="node1" title=" " alt="" coords="515,253,711,294"/>
-<area shape="rect" id="node2" href="$de/d0b/classValueTest.html#ab4676b49cde85e1ae5c6352f470d0020" title=" " alt="" coords="263,5,455,32"/>
-<area shape="rect" id="node3" href="$d4/df5/classjoda_1_1query_1_1IValueProvider.html#adcdfbf4b1416d38d843977219793c399" title=" " alt="" coords="261,57,457,98"/>
-<area shape="rect" id="node5" href="$da/d91/classStorageCollection.html#a6e29c4548ae3acafde0e4ef0fb6a441b" title=" " alt="" coords="286,122,431,163"/>
-<area shape="rect" id="node8" href="$db/d82/classjoda_1_1query_1_1BinaryNumberProvider.html#a37969973c4627dbbd1ae357a73ee888b" title=" " alt="" coords="261,187,457,229"/>
-<area shape="rect" id="node9" href="$d7/ddd/classjoda_1_1query_1_1BinaryStringProvider.html#a96a5fee56254e203613a16ab2e165b6d" title=" " alt="" coords="267,253,450,294"/>
-<area shape="rect" id="node10" href="$df/d80/classjoda_1_1query_1_1TemplateProvider.html#a83b79d24ecfaba4f750fc891afc281df" title=" " alt="" coords="251,318,467,359"/>
-<area shape="rect" id="node11" href="$d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#a61daf18c3fdb8c5b13de340f1f182aeb" title=" " alt="" coords="262,383,455,425"/>
-<area shape="rect" id="node12" href="$d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#abfdc93ac700cf50374f5c7d0c1c89c2d" title=" " alt="" coords="265,449,452,490"/>
-<area shape="rect" id="node13" href="$df/dc9/classjoda_1_1query_1_1UnaryStringProvider.html#a56e23b8000b44d8232a92f6982bc1c74" title=" " alt="" coords="269,514,448,555"/>
-<area shape="rect" id="node4" href="$df/df8/classjoda_1_1query_1_1ValToPredicate.html#a38e8512563462b89b8a4cd9db56eefe3" title=" " alt="" coords="5,57,203,98"/>
-<area shape="rect" id="node6" href="$da/d91/classStorageCollection.html#aaef3f44a8d24f533bd2ce3f5210e3e32" title=" " alt="" coords="31,122,177,163"/>
-<area shape="rect" id="node7" href="$da/d91/classStorageCollection.html#afdb551a2d1b47e9a9e6c3c3e276cfe94" title=" " alt="" coords="31,187,177,229"/>
+<area shape="rect" id="node1" title=" " alt="" coords="463,233,659,275"/>
+<area shape="rect" id="node2" href="$da/d91/classStorageCollection.html#a6e29c4548ae3acafde0e4ef0fb6a441b" title=" " alt="" coords="234,37,379,79"/>
+<area shape="rect" id="node5" href="$db/d82/classjoda_1_1query_1_1BinaryNumberProvider.html#a37969973c4627dbbd1ae357a73ee888b" title=" " alt="" coords="209,103,405,144"/>
+<area shape="rect" id="node6" href="$d7/ddd/classjoda_1_1query_1_1BinaryStringProvider.html#a96a5fee56254e203613a16ab2e165b6d" title=" " alt="" coords="215,168,398,209"/>
+<area shape="rect" id="node7" href="$df/d80/classjoda_1_1query_1_1TemplateProvider.html#a83b79d24ecfaba4f750fc891afc281df" title=" " alt="" coords="199,233,415,275"/>
+<area shape="rect" id="node8" href="$d3/d31/classjoda_1_1query_1_1UnaryNumberProvider.html#a61daf18c3fdb8c5b13de340f1f182aeb" title=" " alt="" coords="210,299,403,340"/>
+<area shape="rect" id="node9" href="$d9/d28/classjoda_1_1query_1_1UnaryPointerAcceptProvider.html#abfdc93ac700cf50374f5c7d0c1c89c2d" title=" " alt="" coords="213,364,400,405"/>
+<area shape="rect" id="node10" href="$df/dc9/classjoda_1_1query_1_1UnaryStringProvider.html#a56e23b8000b44d8232a92f6982bc1c74" title=" " alt="" coords="217,429,396,471"/>
+<area shape="rect" id="node3" href="$da/d91/classStorageCollection.html#aaef3f44a8d24f533bd2ce3f5210e3e32" title=" " alt="" coords="5,5,151,47"/>
+<area shape="rect" id="node4" href="$da/d91/classStorageCollection.html#afdb551a2d1b47e9a9e6c3c3e276cfe94" title=" " alt="" coords="5,71,151,112"/>
 </map>

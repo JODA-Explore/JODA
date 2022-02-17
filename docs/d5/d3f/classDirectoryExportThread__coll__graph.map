@@ -1,7 +1,5 @@
 <map id="DirectoryExportThread" name="DirectoryExportThread">
-<area shape="rect" id="node1" title=" " alt="" coords="79,305,249,332"/>
-<area shape="rect" id="node2" href="$db/de4/classIWorkerThread.html" title=" " alt="" coords="50,215,278,256"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="31,103,118,130"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="5,5,144,47"/>
-<area shape="rect" id="node5" href="$db/de4/classIWorkerThread.html" title=" " alt="" coords="143,96,361,137"/>
+<area shape="rect" id="node1" title=" " alt="" coords="35,215,204,241"/>
+<area shape="rect" id="node2" href="$db/de4/classIWorkerThread.html" title=" " alt="" coords="5,124,233,165"/>
+<area shape="rect" id="node3" href="$db/de4/classIWorkerThread.html" title=" " alt="" coords="10,5,229,47"/>
 </map>

@@ -21,10 +21,10 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="../../db/dbe/classjoda_1_1network_1_1apiv2_1_1JodaAPIVersionException.html" target="_top" xlink:title=" ">
+<g id="a_node4"><a xlink:href="../../d3/d77/classjoda_1_1network_1_1JodaInvalidParameterException.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="492,-245.5 492,-275.5 635,-275.5 635,-245.5 492,-245.5"/>
-<text text-anchor="start" x="500" y="-263.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
-<text text-anchor="middle" x="563.5" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaAPIVersionException</text>
+<text text-anchor="start" x="500" y="-263.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::JodaInvalid</text>
+<text text-anchor="middle" x="563.5" y="-252.5" font-family="Helvetica,sans-Serif" font-size="10.00">ParameterException</text>
 </a>
 </g>
 </g>
@@ -37,58 +37,58 @@
 <!-- Node5 -->
 <g id="node5" class="node">
 <title>Node5</title>
-<g id="a_node5"><a xlink:href="../../d3/d62/classjoda_1_1network_1_1apiv2_1_1JodaQueryException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="503,-196.5 503,-226.5 624,-226.5 624,-196.5 503,-196.5"/>
-<text text-anchor="start" x="511" y="-214.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
-<text text-anchor="middle" x="563.5" y="-203.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQueryException</text>
+<g id="a_node5"><a xlink:href="../../d1/d9f/classjoda_1_1network_1_1JodaMissingParameterException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="489.5,-196.5 489.5,-226.5 637.5,-226.5 637.5,-196.5 489.5,-196.5"/>
+<text text-anchor="start" x="497.5" y="-214.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::JodaMissing</text>
+<text text-anchor="middle" x="563.5" y="-203.5" font-family="Helvetica,sans-Serif" font-size="10.00">ParameterException</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node5 -->
 <g id="edge4" class="edge">
 <title>Node1&#45;&gt;Node5</title>
-<path fill="none" stroke="midnightblue" d="M380.28,-151.2C404.72,-161.93 440.15,-176.8 472,-187.5 481.86,-190.81 492.45,-193.97 502.78,-196.84"/>
+<path fill="none" stroke="midnightblue" d="M380.28,-151.2C404.72,-161.93 440.15,-176.8 472,-187.5 481.4,-190.66 491.46,-193.67 501.33,-196.43"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="381.41,-147.87 370.84,-147.01 378.57,-154.27 381.41,-147.87"/>
 </g>
 <!-- Node6 -->
 <g id="node6" class="node">
 <title>Node6</title>
-<g id="a_node6"><a xlink:href="../../db/de9/classjoda_1_1network_1_1apiv2_1_1JodaQuerySkippedException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="483.5,-147.5 483.5,-177.5 643.5,-177.5 643.5,-147.5 483.5,-147.5"/>
-<text text-anchor="start" x="491.5" y="-165.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
-<text text-anchor="middle" x="563.5" y="-154.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQuerySkippedException</text>
+<g id="a_node6"><a xlink:href="../../db/dbe/classjoda_1_1network_1_1apiv2_1_1JodaAPIVersionException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="492,-147.5 492,-177.5 635,-177.5 635,-147.5 492,-147.5"/>
+<text text-anchor="start" x="500" y="-165.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
+<text text-anchor="middle" x="563.5" y="-154.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaAPIVersionException</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node6 -->
 <g id="edge5" class="edge">
 <title>Node1&#45;&gt;Node6</title>
-<path fill="none" stroke="midnightblue" d="M441.07,-148.21C455.08,-149.86 469.46,-151.55 483.19,-153.17"/>
+<path fill="none" stroke="midnightblue" d="M440.9,-148.19C457.95,-150.2 475.54,-152.27 491.85,-154.19"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="441.28,-144.72 430.94,-147.02 440.47,-151.67 441.28,-144.72"/>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="../../d8/da3/classjoda_1_1network_1_1apiv2_1_1JodaQueryUnkownErrorException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="472,-98.5 472,-128.5 655,-128.5 655,-98.5 472,-98.5"/>
-<text text-anchor="start" x="480" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
-<text text-anchor="middle" x="563.5" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQueryUnkownErrorException</text>
+<g id="a_node7"><a xlink:href="../../d3/d62/classjoda_1_1network_1_1apiv2_1_1JodaQueryException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="503,-98.5 503,-128.5 624,-128.5 624,-98.5 503,-98.5"/>
+<text text-anchor="start" x="511" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
+<text text-anchor="middle" x="563.5" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQueryException</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node7 -->
 <g id="edge6" class="edge">
 <title>Node1&#45;&gt;Node7</title>
-<path fill="none" stroke="midnightblue" d="M444.44,-126.83C453.49,-125.81 462.66,-124.78 471.67,-123.76"/>
+<path fill="none" stroke="midnightblue" d="M444.31,-126.85C464.21,-124.6 484.68,-122.29 502.87,-120.23"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="443.83,-123.38 434.29,-127.98 444.62,-130.34 443.83,-123.38"/>
 </g>
 <!-- Node8 -->
 <g id="node8" class="node">
 <title>Node8</title>
-<g id="a_node8"><a xlink:href="../../d3/d77/classjoda_1_1network_1_1JodaInvalidParameterException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="492,-49.5 492,-79.5 635,-79.5 635,-49.5 492,-49.5"/>
-<text text-anchor="start" x="500" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::JodaInvalid</text>
-<text text-anchor="middle" x="563.5" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00">ParameterException</text>
+<g id="a_node8"><a xlink:href="../../db/de9/classjoda_1_1network_1_1apiv2_1_1JodaQuerySkippedException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="483.5,-49.5 483.5,-79.5 643.5,-79.5 643.5,-49.5 483.5,-49.5"/>
+<text text-anchor="start" x="491.5" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
+<text text-anchor="middle" x="563.5" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQuerySkippedException</text>
 </a>
 </g>
 </g>
@@ -101,10 +101,10 @@
 <!-- Node9 -->
 <g id="node9" class="node">
 <title>Node9</title>
-<g id="a_node9"><a xlink:href="../../d1/d9f/classjoda_1_1network_1_1JodaMissingParameterException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="489.5,-0.5 489.5,-30.5 637.5,-30.5 637.5,-0.5 489.5,-0.5"/>
-<text text-anchor="start" x="497.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::JodaMissing</text>
-<text text-anchor="middle" x="563.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">ParameterException</text>
+<g id="a_node9"><a xlink:href="../../d8/da3/classjoda_1_1network_1_1apiv2_1_1JodaQueryUnkownErrorException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="472,-0.5 472,-30.5 655,-30.5 655,-0.5 472,-0.5"/>
+<text text-anchor="start" x="480" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::network::apiv2</text>
+<text text-anchor="middle" x="563.5" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">::JodaQueryUnkownErrorException</text>
 </a>
 </g>
 </g>
@@ -117,7 +117,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:title="STL class.">
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="122,-128 122,-147 226,-147 226,-128 122,-128"/>
 <text text-anchor="middle" x="174" y="-135" font-family="Helvetica,sans-Serif" font-size="10.00">std::runtime_error</text>
 </a>
@@ -132,7 +132,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="0,-128 0,-147 86,-147 86,-128 0,-128"/>
 <text text-anchor="middle" x="43" y="-135" font-family="Helvetica,sans-Serif" font-size="10.00">std::exception</text>
 </a>

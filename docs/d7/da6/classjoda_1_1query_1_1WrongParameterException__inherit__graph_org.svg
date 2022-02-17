@@ -38,42 +38,42 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:href="../../db/d92/classjoda_1_1query_1_1values_1_1IncompatibleTypeException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="316.5,-98.5 316.5,-128.5 473.5,-128.5 473.5,-98.5 316.5,-98.5"/>
-<text text-anchor="start" x="324.5" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::values</text>
-<text text-anchor="middle" x="395" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00">::IncompatibleTypeException</text>
+<g id="a_node4"><a xlink:href="../../d8/d38/classjoda_1_1query_1_1WrongParameterCountException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="316,-98.5 316,-128.5 474,-128.5 474,-98.5 316,-98.5"/>
+<text text-anchor="start" x="324" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::WrongParameter</text>
+<text text-anchor="middle" x="395" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00">CountException</text>
 </a>
 </g>
 </g>
 <!-- Node1&#45;&gt;Node4 -->
 <g id="edge3" class="edge">
 <title>Node1&#45;&gt;Node4</title>
-<path fill="none" stroke="midnightblue" d="M290.24,-99.99C298.93,-101.12 307.71,-102.26 316.29,-103.38"/>
+<path fill="none" stroke="midnightblue" d="M290.15,-99.98C298.77,-101.1 307.47,-102.23 315.98,-103.34"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="290.46,-96.49 280.09,-98.67 289.56,-103.43 290.46,-96.49"/>
 </g>
-<!-- Node5 -->
-<g id="node5" class="node">
-<title>Node5</title>
-<g id="a_node5"><a xlink:href="../../d8/d38/classjoda_1_1query_1_1WrongParameterCountException.html" target="_top" xlink:title=" ">
+<!-- Node6 -->
+<g id="node6" class="node">
+<title>Node6</title>
+<g id="a_node6"><a xlink:href="../../db/d12/classjoda_1_1query_1_1WrongParameterTypeException.html" target="_top" xlink:title=" ">
 <polygon fill="white" stroke="black" points="316,-49.5 316,-79.5 474,-79.5 474,-49.5 316,-49.5"/>
 <text text-anchor="start" x="324" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::WrongParameter</text>
-<text text-anchor="middle" x="395" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00">CountException</text>
+<text text-anchor="middle" x="395" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00">TypeException</text>
 </a>
 </g>
 </g>
-<!-- Node1&#45;&gt;Node5 -->
-<g id="edge4" class="edge">
-<title>Node1&#45;&gt;Node5</title>
+<!-- Node1&#45;&gt;Node6 -->
+<g id="edge5" class="edge">
+<title>Node1&#45;&gt;Node6</title>
 <path fill="none" stroke="midnightblue" d="M290.15,-77.48C298.77,-76.4 307.47,-75.32 315.98,-74.25"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="289.58,-74.02 280.09,-78.74 290.45,-80.97 289.58,-74.02"/>
 </g>
 <!-- Node7 -->
 <g id="node7" class="node">
 <title>Node7</title>
-<g id="a_node7"><a xlink:href="../../db/d12/classjoda_1_1query_1_1WrongParameterTypeException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="316,-0.5 316,-30.5 474,-30.5 474,-0.5 316,-0.5"/>
-<text text-anchor="start" x="324" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::WrongParameter</text>
-<text text-anchor="middle" x="395" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">TypeException</text>
+<g id="a_node7"><a xlink:href="../../db/d92/classjoda_1_1query_1_1values_1_1IncompatibleTypeException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="316.5,-0.5 316.5,-30.5 473.5,-30.5 473.5,-0.5 316.5,-0.5"/>
+<text text-anchor="start" x="324.5" y="-18.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::values</text>
+<text text-anchor="middle" x="395" y="-7.5" font-family="Helvetica,sans-Serif" font-size="10.00">::IncompatibleTypeException</text>
 </a>
 </g>
 </g>
@@ -86,7 +86,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:title="STL class.">
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="0,-79 0,-98 86,-98 86,-79 0,-79"/>
 <text text-anchor="middle" x="43" y="-86" font-family="Helvetica,sans-Serif" font-size="10.00">std::exception</text>
 </a>
@@ -98,21 +98,21 @@
 <path fill="none" stroke="midnightblue" d="M96.39,-88.5C104.64,-88.5 113.31,-88.5 121.98,-88.5"/>
 <polygon fill="midnightblue" stroke="midnightblue" points="96.22,-85 86.22,-88.5 96.22,-92 96.22,-85"/>
 </g>
-<!-- Node6 -->
-<g id="node6" class="node">
-<title>Node6</title>
-<g id="a_node6"><a xlink:href="../../df/dbd/classjoda_1_1query_1_1MissingParameterException.html" target="_top" xlink:title=" ">
-<polygon fill="white" stroke="black" points="510,-49.5 510,-79.5 674,-79.5 674,-49.5 510,-49.5"/>
-<text text-anchor="start" x="518" y="-67.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::MissingParameter</text>
-<text text-anchor="middle" x="592" y="-56.5" font-family="Helvetica,sans-Serif" font-size="10.00">Exception</text>
+<!-- Node5 -->
+<g id="node5" class="node">
+<title>Node5</title>
+<g id="a_node5"><a xlink:href="../../df/dbd/classjoda_1_1query_1_1MissingParameterException.html" target="_top" xlink:title=" ">
+<polygon fill="white" stroke="black" points="510,-98.5 510,-128.5 674,-128.5 674,-98.5 510,-98.5"/>
+<text text-anchor="start" x="518" y="-116.5" font-family="Helvetica,sans-Serif" font-size="10.00">joda::query::MissingParameter</text>
+<text text-anchor="middle" x="592" y="-105.5" font-family="Helvetica,sans-Serif" font-size="10.00">Exception</text>
 </a>
 </g>
 </g>
-<!-- Node5&#45;&gt;Node6 -->
-<g id="edge5" class="edge">
-<title>Node5&#45;&gt;Node6</title>
-<path fill="none" stroke="midnightblue" d="M484.19,-64.5C492.76,-64.5 501.43,-64.5 509.92,-64.5"/>
-<polygon fill="midnightblue" stroke="midnightblue" points="484.19,-61 474.19,-64.5 484.19,-68 484.19,-61"/>
+<!-- Node4&#45;&gt;Node5 -->
+<g id="edge4" class="edge">
+<title>Node4&#45;&gt;Node5</title>
+<path fill="none" stroke="midnightblue" d="M484.19,-113.5C492.76,-113.5 501.43,-113.5 509.92,-113.5"/>
+<polygon fill="midnightblue" stroke="midnightblue" points="484.19,-110 474.19,-113.5 484.19,-117 484.19,-110"/>
 </g>
 </g>
 </svg>

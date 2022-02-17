@@ -1,12 +1,9 @@
 <map id="joda::query::ValToPredicate" name="joda::query::ValToPredicate">
-<area shape="rect" id="node1" title=" " alt="" coords="1029,13,1227,40"/>
-<area shape="rect" id="node2" href="$dc/d49/classjoda_1_1query_1_1Predicate.html" title=" " alt="" coords="695,36,858,63"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="293,23,379,49"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="5,15,144,57"/>
-<area shape="rect" id="node5" title=" " alt="" coords="685,87,868,129"/>
-<area shape="rect" id="node7" title=" " alt="" coords="995,154,1261,195"/>
-<area shape="rect" id="node6" href="$d4/df5/classjoda_1_1query_1_1IValueProvider.html" title=" " alt="" coords="1363,127,1559,153"/>
-<area shape="rect" id="node8" title="STL class." alt="" coords="479,159,608,185"/>
-<area shape="rect" id="node9" title=" " alt="" coords="55,109,94,136"/>
-<area shape="rect" id="node10" title="STL class." alt="" coords="257,97,415,124"/>
+<area shape="rect" id="node1" title=" " alt="" coords="68,303,265,329"/>
+<area shape="rect" id="node2" href="$dc/d49/classjoda_1_1query_1_1Predicate.html" title=" " alt="" coords="85,206,248,233"/>
+<area shape="rect" id="node3" title=" " alt="" coords="31,109,118,136"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,5,144,47"/>
+<area shape="rect" id="node5" title=" " alt="" coords="273,199,455,240"/>
+<area shape="rect" id="node6" title=" " alt="" coords="285,109,443,136"/>
+<area shape="rect" id="node7" title=" " alt="" coords="345,13,383,39"/>
 </map>

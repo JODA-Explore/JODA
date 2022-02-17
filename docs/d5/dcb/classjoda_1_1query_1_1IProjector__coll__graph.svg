@@ -21,7 +21,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:title="STL class.">
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="29,-67.5 29,-86.5 94,-86.5 94,-67.5 29,-67.5"/>
 <text text-anchor="middle" x="61.5" y="-74.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::string</text>
 </a>
@@ -37,10 +37,10 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="9.5,-124.5 9.5,-154.5 113.5,-154.5 113.5,-124.5 9.5,-124.5"/>
 <text text-anchor="start" x="17.5" y="-142.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::basic_string&lt;</text>
-<text text-anchor="middle" x="61.5" y="-131.5" font-family="Helvetica,sans-Serif" font-size="10.00"> char &gt;</text>
+<text text-anchor="middle" x="61.5" y="-131.5" font-family="Helvetica,sans-Serif" font-size="10.00"> Char &gt;</text>
 </a>
 </g>
 </g>

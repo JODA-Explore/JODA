@@ -1,9 +1,14 @@
 <map id="moodycamel::fence" name="moodycamel::fence">
-<area shape="rect" id="node1" title=" " alt="" coords="335,181,485,207"/>
-<area shape="rect" id="node2" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a5283c4e023da9032319290a9a0d07865" title=" " alt="" coords="45,5,247,47"/>
-<area shape="rect" id="node3" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a0e5b8df7c82c81339d0996528b2a0b59" title=" " alt="" coords="45,71,247,112"/>
-<area shape="rect" id="node4" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a3df98a0b69b7ee0b301e0e8f2ce02811" title=" " alt="" coords="11,136,281,177"/>
-<area shape="rect" id="node5" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a00457f03809aefe322053415eaba9d8e" title=" " alt="" coords="45,202,247,258"/>
-<area shape="rect" id="node6" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#ae7ada3411e98c5d1aab09ec6945a6a9e" title=" " alt="" coords="35,283,257,324"/>
-<area shape="rect" id="node7" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#aeb0f99a4ee76afa8f93f13a8a5017ea5" title=" " alt="" coords="5,348,287,389"/>
+<area shape="rect" id="node1" title=" " alt="" coords="560,177,711,203"/>
+<area shape="rect" id="node2" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a5283c4e023da9032319290a9a0d07865" title=" " alt="" coords="306,5,507,47"/>
+<area shape="rect" id="node4" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a0e5b8df7c82c81339d0996528b2a0b59" title=" " alt="" coords="306,71,507,112"/>
+<area shape="rect" id="node6" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a3df98a0b69b7ee0b301e0e8f2ce02811" title=" " alt="" coords="306,136,507,177"/>
+<area shape="rect" id="node7" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#a00457f03809aefe322053415eaba9d8e" title=" " alt="" coords="306,201,507,243"/>
+<area shape="rect" id="node8" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#ae7ada3411e98c5d1aab09ec6945a6a9e" title=" " alt="" coords="306,267,507,308"/>
+<area shape="rect" id="node12" href="$da/d5a/classmoodycamel_1_1ReaderWriterQueue.html#aeb0f99a4ee76afa8f93f13a8a5017ea5" title=" " alt="" coords="301,332,512,373"/>
+<area shape="rect" id="node3" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a3dfe3b5290221233dc44ad1740138f2a" title=" " alt="" coords="21,5,238,47"/>
+<area shape="rect" id="node5" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a29d109d74bcbbefce705b5c8894f9855" title=" " alt="" coords="21,71,238,112"/>
+<area shape="rect" id="node9" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a991df0aff00ce8a7c341e9fdd577f9f8" title=" " alt="" coords="21,201,238,243"/>
+<area shape="rect" id="node10" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a4616457ce44d363d52b068001c31ae36" title=" " alt="" coords="21,267,238,308"/>
+<area shape="rect" id="node11" href="$dc/d3e/classmoodycamel_1_1BlockingReaderWriterQueue.html#a9d8e2851b594285ea6b6a7a342249ead" title=" " alt="" coords="5,332,253,373"/>
 </map>

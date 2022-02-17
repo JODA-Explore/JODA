@@ -68,7 +68,7 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:title="STL class.">
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="182.5,-145.5 182.5,-164.5 282.5,-164.5 282.5,-145.5 182.5,-145.5"/>
 <text text-anchor="middle" x="232.5" y="-152.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::atomic&lt; T &gt;</text>
 </a>

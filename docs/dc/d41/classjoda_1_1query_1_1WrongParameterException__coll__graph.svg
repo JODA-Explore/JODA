@@ -22,7 +22,7 @@
 <!-- Node2 -->
 <g id="node2" class="node">
 <title>Node2</title>
-<g id="a_node2"><a xlink:title="STL class.">
+<g id="a_node2"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="20,-78.5 20,-97.5 106,-97.5 106,-78.5 20,-78.5"/>
 <text text-anchor="middle" x="63" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::exception</text>
 </a>
@@ -37,7 +37,7 @@
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="124.5,-78.5 124.5,-97.5 189.5,-97.5 189.5,-78.5 124.5,-78.5"/>
 <text text-anchor="middle" x="157" y="-85.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::string</text>
 </a>
@@ -53,10 +53,10 @@
 <!-- Node4 -->
 <g id="node4" class="node">
 <title>Node4</title>
-<g id="a_node4"><a xlink:title="STL class.">
+<g id="a_node4"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="105,-135.5 105,-165.5 209,-165.5 209,-135.5 105,-135.5"/>
 <text text-anchor="start" x="113" y="-153.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::basic_string&lt;</text>
-<text text-anchor="middle" x="157" y="-142.5" font-family="Helvetica,sans-Serif" font-size="10.00"> char &gt;</text>
+<text text-anchor="middle" x="157" y="-142.5" font-family="Helvetica,sans-Serif" font-size="10.00"> Char &gt;</text>
 </a>
 </g>
 </g>

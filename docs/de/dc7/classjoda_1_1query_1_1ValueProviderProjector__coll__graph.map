@@ -1,13 +1,10 @@
 <map id="joda::query::ValueProviderProjector" name="joda::query::ValueProviderProjector">
-<area shape="rect" id="node1" title=" " alt="" coords="1032,75,1224,116"/>
-<area shape="rect" id="node2" href="$d9/dbb/classjoda_1_1query_1_1IProjector.html" title=" " alt="" coords="695,57,859,83"/>
-<area shape="rect" id="node3" title="STL class." alt="" coords="293,13,379,39"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="5,5,144,47"/>
-<area shape="rect" id="node5" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html" title=" " alt="" coords="679,107,874,134"/>
-<area shape="rect" id="node6" title=" " alt="" coords="685,187,868,228"/>
-<area shape="rect" id="node8" title=" " alt="" coords="995,255,1261,296"/>
-<area shape="rect" id="node7" href="$d4/df5/classjoda_1_1query_1_1IValueProvider.html" title=" " alt="" coords="1363,227,1559,254"/>
-<area shape="rect" id="node9" title="STL class." alt="" coords="479,265,608,291"/>
-<area shape="rect" id="node10" title=" " alt="" coords="55,237,94,263"/>
-<area shape="rect" id="node11" title="STL class." alt="" coords="257,209,415,235"/>
+<area shape="rect" id="node1" title=" " alt="" coords="933,75,1125,116"/>
+<area shape="rect" id="node2" href="$d9/dbb/classjoda_1_1query_1_1IProjector.html" title=" " alt="" coords="645,57,809,83"/>
+<area shape="rect" id="node3" title=" " alt="" coords="250,13,337,39"/>
+<area shape="rect" id="node4" title=" " alt="" coords="5,5,144,47"/>
+<area shape="rect" id="node5" href="$dc/d0b/classjoda_1_1query_1_1ValueAccepter.html" title=" " alt="" coords="629,107,824,134"/>
+<area shape="rect" id="node6" title=" " alt="" coords="635,159,818,200"/>
+<area shape="rect" id="node7" title=" " alt="" coords="215,166,372,193"/>
+<area shape="rect" id="node8" title=" " alt="" coords="55,166,94,193"/>
 </map>

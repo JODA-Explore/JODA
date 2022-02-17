@@ -1,21 +1,35 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node1" title=" " alt="" coords="5,535,48,562"/>
-<area shape="rect" id="node2" href="$d0/d7b/structjoda_1_1queryparsing_1_1grammar_1_1aggKeywords.html" title=" " alt="" coords="110,5,295,47"/>
-<area shape="rect" id="node3" href="$dc/d21/structjoda_1_1queryparsing_1_1grammar_1_1atomExp.html" title=" " alt="" coords="125,71,281,112"/>
-<area shape="rect" id="node4" href="$d0/d92/structjoda_1_1queryparsing_1_1grammar_1_1boolAtom.html" title=" " alt="" coords="122,136,283,177"/>
-<area shape="rect" id="node5" href="$db/da9/structjoda_1_1queryparsing_1_1grammar_1_1compare.html" title=" " alt="" coords="125,201,280,243"/>
-<area shape="rect" id="node6" href="$da/d40/structjoda_1_1queryparsing_1_1grammar_1_1funcParamRule.html" title=" " alt="" coords="105,267,301,308"/>
-<area shape="rect" id="node7" href="$d3/d14/structjoda_1_1queryparsing_1_1grammar_1_1groupIdent.html" title=" " alt="" coords="119,332,287,373"/>
-<area shape="rect" id="node8" href="$d2/d5c/structjoda_1_1queryparsing_1_1grammar_1_1listContent.html" title=" " alt="" coords="118,397,287,439"/>
-<area shape="rect" id="node9" href="$d4/d6f/structjoda_1_1queryparsing_1_1grammar_1_1loadFilesKWs.html" title=" " alt="" coords="111,463,295,504"/>
-<area shape="rect" id="node10" href="$de/d9d/structjoda_1_1queryparsing_1_1grammar_1_1loadImportSource.html" title=" " alt="" coords="96,528,309,569"/>
-<area shape="rect" id="node11" href="$d0/d0c/structjoda_1_1queryparsing_1_1grammar_1_1nullAtom.html" title=" " alt="" coords="124,593,281,635"/>
-<area shape="rect" id="node12" href="$de/d91/structjoda_1_1queryparsing_1_1grammar_1_1numberAtom.html" title=" " alt="" coords="111,659,294,700"/>
-<area shape="rect" id="node13" href="$d5/d82/structjoda_1_1queryparsing_1_1grammar_1_1projectFrom.html" title=" " alt="" coords="115,724,291,765"/>
-<area shape="rect" id="node14" href="$d8/df7/structjoda_1_1queryparsing_1_1grammar_1_1projectSingleExp.html" title=" " alt="" coords="99,789,306,831"/>
-<area shape="rect" id="node15" href="$d2/d2a/structjoda_1_1queryparsing_1_1grammar_1_1ptrFunc.html" title=" " alt="" coords="129,855,276,896"/>
-<area shape="rect" id="node16" href="$d7/d85/structjoda_1_1queryparsing_1_1grammar_1_1setProjectionKW.html" title=" " alt="" coords="101,920,305,961"/>
-<area shape="rect" id="node17" href="$d5/d59/structjoda_1_1queryparsing_1_1grammar_1_1setProjectParam.html" title=" " alt="" coords="101,985,305,1027"/>
-<area shape="rect" id="node18" href="$dd/d3b/structjoda_1_1queryparsing_1_1grammar_1_1varExp.html" title=" " alt="" coords="131,1051,274,1092"/>
-<area shape="rect" id="node19" href="$d4/ddc/structjoda_1_1queryparsing_1_1grammar_1_1atomFunc.html" title=" " alt="" coords="357,1051,520,1092"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,1026,120,1053"/>
+<area shape="rect" id="node2" href="$d1/d5a/structjoda_1_1queryparsing_1_1grammar_1_1aggFrom.html" title=" " alt="" coords="224,5,379,47"/>
+<area shape="rect" id="node3" href="$d2/db3/structjoda_1_1queryparsing_1_1grammar_1_1aggGrouped.html" title=" " alt="" coords="213,71,390,112"/>
+<area shape="rect" id="node4" href="$d5/d99/structjoda_1_1queryparsing_1_1grammar_1_1aggSingleExp.html" title=" " alt="" coords="208,136,395,177"/>
+<area shape="rect" id="node5" href="$d4/d3a/structjoda_1_1queryparsing_1_1grammar_1_1andExp.html" title=" " alt="" coords="228,201,375,243"/>
+<area shape="rect" id="node6" href="$dd/dd0/structjoda_1_1queryparsing_1_1grammar_1_1andSymbol.html" title=" " alt="" coords="216,267,387,308"/>
+<area shape="rect" id="node7" href="$d7/d89/structjoda_1_1queryparsing_1_1grammar_1_1compareExp.html" title=" " alt="" coords="212,332,391,373"/>
+<area shape="rect" id="node8" href="$dc/dcb/structjoda_1_1queryparsing_1_1grammar_1_1equal.html" title=" " alt="" coords="230,397,373,439"/>
+<area shape="rect" id="node9" href="$d8/d76/structjoda_1_1queryparsing_1_1grammar_1_1escapedToken.html" title=" " alt="" coords="207,463,396,504"/>
+<area shape="rect" id="node10" href="$d9/d67/structjoda_1_1queryparsing_1_1grammar_1_1floatNumber.html" title=" " alt="" coords="212,528,391,569"/>
+<area shape="rect" id="node11" href="$d2/d44/structjoda_1_1queryparsing_1_1grammar_1_1gt.html" title=" " alt="" coords="230,593,373,635"/>
+<area shape="rect" id="node12" href="$d1/d17/structjoda_1_1queryparsing_1_1grammar_1_1intNumber.html" title=" " alt="" coords="218,659,385,700"/>
+<area shape="rect" id="node13" href="$dc/ddf/structjoda_1_1queryparsing_1_1grammar_1_1loadAndSampleCommand.html" title=" " alt="" coords="168,724,435,765"/>
+<area shape="rect" id="node14" href="$d6/d28/structjoda_1_1queryparsing_1_1grammar_1_1loadCommand.html" title=" " alt="" coords="205,789,398,831"/>
+<area shape="rect" id="node15" href="$db/dfa/structjoda_1_1queryparsing_1_1grammar_1_1loadFilesCommand.html" title=" " alt="" coords="190,855,413,896"/>
+<area shape="rect" id="node16" href="$dd/d84/structjoda_1_1queryparsing_1_1grammar_1_1loadFilesliteral.html" title=" " alt="" coords="204,920,399,961"/>
+<area shape="rect" id="node17" href="$d0/d93/structjoda_1_1queryparsing_1_1grammar_1_1loadGroupedCommand.html" title=" " alt="" coords="177,985,425,1027"/>
+<area shape="rect" id="node18" href="$d0/d6a/structjoda_1_1queryparsing_1_1grammar_1_1loadImportSources.html" title=" " alt="" coords="191,1051,411,1092"/>
+<area shape="rect" id="node19" href="$d0/d0e/structjoda_1_1queryparsing_1_1grammar_1_1lt.html" title=" " alt="" coords="230,1116,373,1157"/>
+<area shape="rect" id="node20" href="$d5/d8d/structjoda_1_1queryparsing_1_1grammar_1_1orExp.html" title=" " alt="" coords="230,1181,373,1223"/>
+<area shape="rect" id="node21" href="$d4/d46/structjoda_1_1queryparsing_1_1grammar_1_1orSymbol.html" title=" " alt="" coords="221,1247,381,1288"/>
+<area shape="rect" id="node22" href="$d4/d53/structjoda_1_1queryparsing_1_1grammar_1_1projectTupleExp.html" title=" " alt="" coords="201,1312,402,1353"/>
+<area shape="rect" id="node23" href="$d2/d7b/structjoda_1_1queryparsing_1_1grammar_1_1qexp.html" title=" " alt="" coords="230,1377,373,1419"/>
+<area shape="rect" id="node24" href="$db/de1/structjoda_1_1queryparsing_1_1grammar_1_1queryCommand.html" title=" " alt="" coords="200,1443,403,1484"/>
+<area shape="rect" id="node25" href="$d7/d91/structjoda_1_1queryparsing_1_1grammar_1_1realFunc.html" title=" " alt="" coords="225,1508,378,1549"/>
+<area shape="rect" id="node26" href="$d7/dd7/structjoda_1_1queryparsing_1_1grammar_1_1sampleNum.html" title=" " alt="" coords="213,1573,390,1615"/>
+<area shape="rect" id="node27" href="$d1/db9/structjoda_1_1queryparsing_1_1grammar_1_1storeAsFileCommand.html" title=" " alt="" coords="183,1639,420,1680"/>
+<area shape="rect" id="node28" href="$d9/dc7/structjoda_1_1queryparsing_1_1grammar_1_1storeAsFilesCommand.html" title=" " alt="" coords="179,1704,423,1745"/>
+<area shape="rect" id="node29" href="$dd/dd2/structjoda_1_1queryparsing_1_1grammar_1_1storeAsGroupCommand.html" title=" " alt="" coords="175,1769,428,1811"/>
+<area shape="rect" id="node30" href="$d5/d1e/structjoda_1_1queryparsing_1_1grammar_1_1storeFileliteral.html" title=" " alt="" coords="205,1835,397,1876"/>
+<area shape="rect" id="node31" href="$d4/de2/structjoda_1_1queryparsing_1_1grammar_1_1storeFilesliteral.html" title=" " alt="" coords="202,1900,401,1941"/>
+<area shape="rect" id="node32" href="$d9/dd8/structjoda_1_1queryparsing_1_1grammar_1_1stringAtom.html" title=" " alt="" coords="216,1965,387,2007"/>
+<area shape="rect" id="node33" href="$d0/d86/structjoda_1_1queryparsing_1_1grammar_1_1unaryExp.html" title=" " alt="" coords="222,2031,381,2072"/>
 </map>

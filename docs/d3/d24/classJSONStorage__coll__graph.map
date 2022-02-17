@@ -1,12 +1,11 @@
 <map id="JSONStorage" name="JSONStorage">
-<area shape="rect" id="node1" title=" " alt="" coords="396,433,500,460"/>
-<area shape="rect" id="node2" title=" " alt="" coords="191,300,377,341"/>
-<area shape="rect" id="node3" title=" " alt="" coords="18,203,262,230"/>
-<area shape="rect" id="node4" href="$d6/de9/classJSONContainer.html" title=" " alt="" coords="5,95,123,121"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="147,95,304,121"/>
-<area shape="rect" id="node6" title=" " alt="" coords="265,5,303,32"/>
-<area shape="rect" id="node7" title="STL class." alt="" coords="277,145,406,172"/>
-<area shape="rect" id="node8" title="STL class." alt="" coords="402,307,494,334"/>
-<area shape="rect" id="node9" title="STL class." alt="" coords="546,307,633,334"/>
-<area shape="rect" id="node10" title="STL class." alt="" coords="520,196,659,237"/>
+<area shape="rect" id="node1" title=" " alt="" coords="377,433,481,460"/>
+<area shape="rect" id="node2" title=" " alt="" coords="171,300,358,341"/>
+<area shape="rect" id="node3" title=" " alt="" coords="5,203,249,230"/>
+<area shape="rect" id="node4" title=" " alt="" coords="77,95,234,121"/>
+<area shape="rect" id="node5" title=" " alt="" coords="216,5,255,32"/>
+<area shape="rect" id="node6" title=" " alt="" coords="249,145,379,172"/>
+<area shape="rect" id="node7" title=" " alt="" coords="383,307,475,334"/>
+<area shape="rect" id="node8" title=" " alt="" coords="527,307,613,334"/>
+<area shape="rect" id="node9" title=" " alt="" coords="501,196,639,237"/>
 </map>

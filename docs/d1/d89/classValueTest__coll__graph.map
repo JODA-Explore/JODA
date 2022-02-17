@@ -1,12 +1,10 @@
 <map id="ValueTest" name="ValueTest">
-<area shape="rect" id="node1" title=" " alt="" coords="985,71,1069,97"/>
-<area shape="rect" id="node2" title=" " alt="" coords="809,45,857,72"/>
-<area shape="rect" id="node3" href="$d7/d4e/classRapidJsonDocument.html" title=" " alt="" coords="756,96,909,123"/>
-<area shape="rect" id="node4" title=" " alt="" coords="467,30,637,71"/>
-<area shape="rect" id="node5" href="$d6/d7a/classIOrigin.html" title=" " alt="" coords="161,5,226,32"/>
-<area shape="rect" id="node6" title="STL class." alt="" coords="115,96,272,123"/>
-<area shape="rect" id="node8" title=" " alt="" coords="437,96,667,123"/>
-<area shape="rect" id="node9" title=" " alt="" coords="443,147,661,173"/>
-<area shape="rect" id="node7" title=" " alt="" coords="5,96,44,123"/>
-<area shape="rect" id="node10" href="$d5/d9d/classViewLayer.html" title=" " alt="" coords="148,187,239,213"/>
+<area shape="rect" id="node1" title=" " alt="" coords="985,46,1069,73"/>
+<area shape="rect" id="node2" title=" " alt="" coords="782,21,883,47"/>
+<area shape="rect" id="node3" href="$d7/d4e/classRapidJsonDocument.html" title=" " alt="" coords="756,71,909,98"/>
+<area shape="rect" id="node4" title=" " alt="" coords="467,5,637,47"/>
+<area shape="rect" id="node5" title=" " alt="" coords="115,71,272,98"/>
+<area shape="rect" id="node7" title=" " alt="" coords="437,71,667,98"/>
+<area shape="rect" id="node8" title=" " alt="" coords="443,122,661,149"/>
+<area shape="rect" id="node6" title=" " alt="" coords="5,71,44,98"/>
 </map>

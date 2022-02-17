@@ -1,9 +1,4 @@
 <map id="joda::docparsing::ReaderParser::parse" name="joda::docparsing::ReaderParser::parse">
-<area shape="rect" id="node1" title=" " alt="" coords="5,50,188,91"/>
-<area shape="rect" id="node2" href="$dd/d1e/structJODA__CONTAINER__QUEUE_3_01JODA__JSON__CONTAINER__FLAG_01_4.html#a8fa9c7590cd168dc44aa135e6948eeb6" title=" " alt="" coords="251,5,443,61"/>
-<area shape="rect" id="node3" href="$d2/dcc/classJSONStorage.html#a21a6cf9c042c26be09da293387871cb0" title=" " alt="" coords="236,86,459,127"/>
-<area shape="rect" id="node4" href="$d1/d30/structJODA__SHARED__QUEUE.html#aa46e31bf2003b52b17f54522a8ec2e1c" title=" " alt="" coords="757,27,935,69"/>
-<area shape="rect" id="node5" href="$d1/d30/structJODA__SHARED__QUEUE.html#a85346f08f256c2b939e9fef99004d2cf" title=" " alt="" coords="507,86,684,127"/>
-<area shape="rect" id="node7" href="$d6/de9/classJSONContainer.html#aff361f24e550af9c8898fdb6b7d893e6" title=" " alt="" coords="520,152,671,179"/>
-<area shape="rect" id="node6" href="$d8/dc8/classmoodycamel_1_1ConcurrentQueue.html#a1895c8a6120aef578fe01db53879517b" title=" " alt="" coords="732,93,960,134"/>
+<area shape="rect" id="node1" title=" " alt="" coords="5,13,188,54"/>
+<area shape="rect" id="node2" href="$dd/d1e/structJODA__CONTAINER__QUEUE_3_01JODA__JSON__CONTAINER__FLAG_01_4.html#a8fa9c7590cd168dc44aa135e6948eeb6" title=" " alt="" coords="236,5,428,61"/>
 </map>

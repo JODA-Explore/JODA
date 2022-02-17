@@ -1,9 +1,9 @@
 <map id="RJPathTest" name="RJPathTest">
-<area shape="rect" id="node1" title=" " alt="" coords="6,288,95,315"/>
-<area shape="rect" id="node2" title=" " alt="" coords="5,199,53,225"/>
-<area shape="rect" id="node3" title=" " alt="" coords="77,199,264,225"/>
-<area shape="rect" id="node4" title="STL class." alt="" coords="58,109,145,136"/>
-<area shape="rect" id="node5" title="STL class." alt="" coords="32,5,171,47"/>
-<area shape="rect" id="node6" title="STL class." alt="" coords="169,109,298,136"/>
-<area shape="rect" id="node7" title=" " alt="" coords="214,13,253,39"/>
+<area shape="rect" id="node1" title=" " alt="" coords="33,288,122,315"/>
+<area shape="rect" id="node2" title=" " alt="" coords="5,199,107,225"/>
+<area shape="rect" id="node3" title=" " alt="" coords="131,199,317,225"/>
+<area shape="rect" id="node4" title=" " alt="" coords="111,109,198,136"/>
+<area shape="rect" id="node5" title=" " alt="" coords="85,5,224,47"/>
+<area shape="rect" id="node6" title=" " alt="" coords="222,109,351,136"/>
+<area shape="rect" id="node7" title=" " alt="" coords="267,13,306,39"/>
 </map>

@@ -85,7 +85,7 @@ var sectionId = 'dynsection-0';
 <!-- Node3 -->
 <g id="node3" class="node">
 <title>Node3</title>
-<g id="a_node3"><a xlink:title="STL class.">
+<g id="a_node3"><a xlink:title=" ">
 <polygon fill="white" stroke="#bfbfbf" points="117.5,-110.5 117.5,-129.5 217.5,-129.5 217.5,-110.5 117.5,-110.5"/>
 <text text-anchor="middle" x="167.5" y="-117.5" font-family="Helvetica,sans-Serif" font-size="10.00">std::atomic&lt; T &gt;</text>
 </a>
@@ -196,9 +196,9 @@ var sectionId = 'dynsection-0';
 <title>Node8&#45;&gt;Node1</title>
 <path fill="none" stroke="#9a32cd" stroke-dasharray="5,2" d="M618.47,-63.35C652.51,-59.36 693.48,-57.31 730,-63 739.28,-64.45 748.94,-66.74 758.26,-69.39"/>
 <polygon fill="#9a32cd" stroke="#9a32cd" points="617.62,-59.92 608.14,-64.64 618.49,-66.87 617.62,-59.92"/>
-<text text-anchor="middle" x="691.5" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00"> registered</text>
-<text text-anchor="middle" x="691.5" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">finished</text>
-<text text-anchor="middle" x="691.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">inQueue</text>
+<text text-anchor="middle" x="691.5" y="-88" font-family="Helvetica,sans-Serif" font-size="10.00"> finished</text>
+<text text-anchor="middle" x="691.5" y="-77" font-family="Helvetica,sans-Serif" font-size="10.00">inQueue</text>
+<text text-anchor="middle" x="691.5" y="-66" font-family="Helvetica,sans-Serif" font-size="10.00">registered</text>
 </g>
 </g>
 </svg>
