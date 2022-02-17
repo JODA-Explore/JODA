@@ -3,14 +3,21 @@
 
 #### Added
 
-
 #### Changed
-
-
 #### Fixed
 
 
 ## 0.13.X
+
+### 0.13.1 - Minor Fiyes
+#### Changed
+- `STRING(x)` now has a second optional boolean flag. If enabled, the values will be converted to JSON strings (also Object and Array values)
+
+#### Fixed
+- Queries containing ';' in strings not being parsed correctly
+- Missing ca-certificates package in docker containers
+- Wrong behavior with documents with atomic roots in delta trees
+- `NOW()` and `PI()` accepting arbitrary parameters
 
 ### 0.13.0 - Improved Analytics and Reparsing
 

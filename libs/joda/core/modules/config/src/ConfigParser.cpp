@@ -15,7 +15,7 @@ namespace fs = std::experimental::filesystem;
 const po::options_description ConfigParser::getCMDOptions() {
   po::options_description options("Commandline");
   options.add_options()("help,h", "Show help")("version,v", "Show version")(
-      "dump-config", "Sumps current config")(
+      "dump-config", "Dumps current config")(
       "query,q", po::value<std::vector<std::string>>(),
       "Query to execute and then quit")(
       "queryfile,f", po::value<std::string>(),
@@ -143,7 +143,10 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
                                po::value<int>()->default_value(0),
                                "Max size of history. 0 for unlimited")(
           "history.persistent", po::value<bool>()->default_value(persistent),
-          "Keep persistent history file?");
+          "Keep persistent history file?")
+      ("dump-functions", "Dumps the names of all implemented functions (IValueProviders)")
+          ;
+
 
   return options;
 }

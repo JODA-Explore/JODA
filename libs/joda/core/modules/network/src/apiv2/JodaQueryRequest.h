@@ -40,7 +40,6 @@ class JodaQueryRequest {
                                     const std::string &message,
                                     const Benchmark * = nullptr);
 
-  static std::vector<std::string> splitQueries(const std::string &query);
 };
 
 class JodaQueryException : public JodaAPIException {

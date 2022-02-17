@@ -12,15 +12,9 @@
 
 JODA is an in-memory vertically scalable data processor for semi-structured data, with an initial emphasis on JSON datasets.
 It can be used to efficiently filter, transform, and aggregate a large set of JSON documents.
+Please visit the [project website](https://joda-explore.github.io/JODA/) to learn more about what JODA is and how it can be used.
 
 - [Installation](#installation)
-  - [Docker](#docker)
-  - [Packages](#packages)
-  - [Precompiled](#precompiled)
-    - [Requirements](#requirements)
-  - [Compiling](#compiling)
-    - [Requirements](#requirements-1)
-    - [Commands](#commands)
 - [Program Flags](#program-flags)
 - [CLI Commands](#cli-commands)
 - [Queries](#queries)
@@ -65,67 +59,8 @@ It can be used to efficiently filter, transform, and aggregate a large set of JS
 
 # Installation
 
-## Docker
-The easiest way to get JODA up and running is to use our Docker image available in the GitHub registry.
+Detailed installation instructions can be found on the [project website](https://joda-explore.github.io/JODA/install/).
 
-
-## Packages
-Packages to use with distro package managers are currently built for:
-- Debian Bullseye
-- Ubuntu 20.04
-
-## Precompiled
-Precompiled binary executables are can be downloaded from the release section on this repo.
-
-### Requirements
-To be able to use the main software, the following packages have to be installed:
-
-- C++ Rest SDK (Debian Bullseye: libssl1)
-- SSL Lib (Debian Bullseye: libssl1.1 )
-- Readline (Debian Bullseye: libreadline8)
-- NCurses (Debian: libncursesw6)
-
-
-Example:
-
-    apt-get update
-    apt-get install libjemalloc2 libcpprest libssl1.1 libreadline8 libncursesw6 libgoogle-glog0v5
-
-## Compiling
-The program can alternatively be compiled from the sources.
-
-### Requirements
-To be able to compile the main software, the following packages have to be installed:
-
-
-- Jemalloc: (Optional Enhances performance.)  (Debian: libjemalloc-dev)
-- Boost: The basic boost package + modules `system` , `regex` and `iostreams` (Debian: libboost-dev, libboost-system-dev, libboost-regex-dev, libboost-iostreams-dev)
-- NCurses: (Debian: libncursesw5-dev)
-- Readline (Debian Buster: libreadline-dev)
-  
-For optional support for `FROM URL` imports, the following packages are also required:
-
-- cpprest: C++ REST client (Debian: libcpprest-dev)
-- OpenSSL: OpenSSL for SSL support (Debian: libssl-dev)
-To use the included client for server/client mode the following additional package is needed:
-
-
-Example:
-
-    apt-get update
-    apt-get install libssl-dev libcpprest-dev libjemalloc-dev libboost-dev libboost-system-dev libboost-regex-dev libboost-program-options-dev libncurses5-dev libncursesw5-dev libreadline-dev
-
-
-### Commands
-
-To compile the program in Release mode, the following commands can be used.
-
-    git clone https://github.com/JODA-Explore/JODA.git
-    cd JODA
-    mkdir build && cd build
-    cmake -DCMAKE_BUILD_TYPE=Release ..
-    make
-    make install
 
 # Program Flags
 These are options that may be supplied to the program during invokation.

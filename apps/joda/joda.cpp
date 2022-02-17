@@ -9,6 +9,7 @@
 #include <joda/network/JodaServer.h>
 #include <joda/storage/collection/StorageCollection.h>
 #include <joda/version.h>
+#include <joda/queryparsing/QueryParser.h>
 
 #include <fstream>
 #include <iostream>
@@ -53,6 +54,7 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
+
   try {
     ConfigParser::setConfig(options);
   } catch (const std::exception& e) {
@@ -72,6 +74,11 @@ int main(int argc, char* argv[]) {
 
   if (options.count("dump-config")) {
     ConfigParser::dumpConfig();
+    return 0;
+  }
+
+  if (options.count("dump-functions")) {
+    std::cout << joda::queryparsing::QueryParser::getFunctionNames() << std::endl;
     return 0;
   }
 

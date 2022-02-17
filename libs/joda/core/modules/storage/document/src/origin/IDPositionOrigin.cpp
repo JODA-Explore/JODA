@@ -32,7 +32,7 @@ bool IDPositionOrigin::operator<(const IOrigin& x) const {
   if(typeid(*this).before(typeid(x))) return true;
   auto* const other = dynamic_cast<const IDPositionOrigin*>(&x);
   if (other != nullptr) {
-    this->operator<(*other);
+   return this->operator<(*other);
   }
   return false;
 }

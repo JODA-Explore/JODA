@@ -13,6 +13,7 @@
 #include <mutex>
 #include <unordered_map>
 #include <variant>
+#include <optional>
 #include "ObjectIterator.h"
 #include "ViewCursor.h"
 #include "ViewStructure.h"

@@ -27,6 +27,10 @@ namespace joda::queryparsing::grammar {
 template <typename Rule>
 struct queryAction : tao::pegtl::nothing<Rule> {};
 
+template <typename Rule>
+struct queriesAction : tao::pegtl::nothing<Rule> {};
+
+
 }  // namespace joda::queryparsing::grammar
 
 #include "Literals.h"
@@ -78,6 +82,20 @@ struct queryCommand
           tao::pegtl::eof> {};
 
 struct query : tao::pegtl::must<queryCommand> {};
+
+struct single_query : tao::pegtl::state<
+              queryState,
+              tao::pegtl::action<
+                  queryAction, queryCommand>> {};
+
+struct query_separator : tao::pegtl::one<';'> {};
+
+struct query_list : tao::pegtl::list_tail<single_query, query_separator,
+                                                       tao::pegtl::space> {};
+
+struct queries : tao::pegtl::must<query_list,tao::pegtl::star<tao::pegtl::space>,
+          tao::pegtl::eof> {};
+
 
 }  // namespace joda::queryparsing::grammar
 #endif  // PARSER_GRAMMAR_H_H

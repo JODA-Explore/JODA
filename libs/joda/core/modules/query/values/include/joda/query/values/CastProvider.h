@@ -5,6 +5,9 @@
 #include "IValueProvider.h"
 #include "ParameterPack.h"
 #include "TemplateProvider.h"
+#include <joda/misc/RJFwd.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 
 
  
@@ -66,7 +69,7 @@ class IntCastHandler {
   bool String(const Ch *str, rapidjson::SizeType length, bool copy) {
     try {
       val = RJValue((int64_t)std::stoll({str, length}));
-    } catch (std::exception e) {
+    } catch (const std::exception& e) {
       val = RJValue();
     }
 
@@ -198,7 +201,7 @@ class FloatCastHandler {
   bool String(const Ch *str, rapidjson::SizeType length, bool copy) {
     try {
       val = RJValue(std::stod({str, length}));
-    } catch (std::exception e) {
+    } catch (const std::exception& e) {
       val = RJValue();
     }
 
@@ -357,11 +360,14 @@ class StringCastHandler {
   RJValue val;
 };
 
+struct DefaultBool {
+  static auto constexpr value = false;
+};
 class StringCastCalculator {
  public:
   // Parameters
   typedef values::AnyParameter<0> P0;
-  typedef values::NoParameter<1> P1;
+  typedef values::OptionalWithDefaultParameter<1,values::BoolParameter<1>,DefaultBool> P1;
   typedef values::NoParameter<2> P2;
   typedef values::NoParameter<3> P3;
   typedef values::NoParameter<4> P4;
@@ -389,9 +395,18 @@ class StringCastCalculator {
       const std::vector<std::unique_ptr<IValueProvider>> &parameters,
       const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
     auto accepter = P0::extractValue(parameters, json, alloc);
-    StringCastHandler handler(&alloc);
-    accepter.Accept(json, alloc, handler);
-    return handler.getValue();
+    auto complex = P1::extractValue(parameters, json, alloc);
+    if (complex){
+      rapidjson::StringBuffer buff;
+      rapidjson::Writer<rapidjson::StringBuffer> writer(buff);
+      accepter.Accept(json, alloc, writer);
+      return RJValue(buff.GetString(),alloc);
+    }else{
+      StringCastHandler handler(&alloc);
+      accepter.Accept(json, alloc, handler);
+      return handler.getValue();
+    }
+
   };
 };
 

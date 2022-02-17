@@ -1137,6 +1137,9 @@ void JSONContainer::setViews() {
     materializedAttributes.clear();
     materializedAttributes.emplace_back("");
     for (auto& doc : docs) {
+      if(!(doc.getJson()->IsObject() || doc.getJson()->IsArray())) {
+        continue;
+      }
       doc.setView(std::make_unique<ViewLayer>(doc.getJson().get(),
                                                   &materializedAttributes,
                                                   nullptr, viewStruc.get()));

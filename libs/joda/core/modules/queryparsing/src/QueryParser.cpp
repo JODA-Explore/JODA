@@ -38,6 +38,34 @@ std::shared_ptr<joda::query::Query> joda::queryparsing::QueryParser::parse(
   return nullptr;
 }
 
+std::vector<std::shared_ptr<joda::query::Query>> joda::queryparsing::QueryParser::parseMultiple(const std::string& str){
+  std::string tmp;
+  tao::pegtl::memory_input<> in(str, str);
+  grammar::queriesState qs;
+
+  std::vector<std::shared_ptr<joda::query::Query>> queries;
+  try {
+     // Check for correct result
+    if (tao::pegtl::parse<grammar::queries, grammar::queriesAction,
+                          grammar::query_control>(in, qs)) {
+      // Optimize
+      for (auto& q : qs.q) {
+         query::StaticEvalVisitor sev;
+         q->getPredicate()->accept(sev);
+         q->setPredicate(sev.getPred());
+      }
+      return qs.q;
+    }
+  } catch (tao::pegtl::parse_error& e) {
+    lastError = std::make_unique<tao::pegtl::parse_error>(e);
+    LOG(ERROR) << "Error parsing query: " << e.what();
+  }
+
+  return queries;
+}
+
+
+
 const std::string joda::queryparsing::QueryParser::getLastError() const {
   if (lastError == nullptr) return "";
   return lastError->what();

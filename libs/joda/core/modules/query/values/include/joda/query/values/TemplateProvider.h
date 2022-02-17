@@ -78,7 +78,7 @@ class TemplateProvider : public joda::query::IValueProvider {
                        RJMemoryPoolAlloc &alloc) const override {
     try {
       return Calc::calculate(state, params, json, alloc);
-    }catch(values::IncompatibleTypeException e){
+    }catch(const values::IncompatibleTypeException& e){
       return RJValue();
     }
   };

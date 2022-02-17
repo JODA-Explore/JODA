@@ -25,7 +25,11 @@ class ConstantNumber : public AtomProvider<typename Calc::AtomType> {
  public:
   explicit ConstantNumber(
       std::vector<std::unique_ptr<IValueProvider>> &&parameters)
-      : AtomProvider<typename Calc::AtomType>(Calc::value()) {}
+      : AtomProvider<typename Calc::AtomType>(Calc::value()) {
+        if (parameters.size() != 0) {
+          throw WrongParameterCountException(parameters.size(), 0, getName());
+        }
+      }
 
   explicit ConstantNumber()
       : AtomProvider<typename Calc::AtomType>(Calc::value()) {}

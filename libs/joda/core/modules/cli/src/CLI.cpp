@@ -218,12 +218,15 @@ void joda::cli::CLI::listResults() {
 
 void joda::cli::CLI::query(std::string& query) {
   joda::queryparsing::QueryParser qp;
-  auto q = qp.parse(query);
-  if (q == nullptr) {
+  auto qs = qp.parseMultiple(query);
+  if (qs.empty()) {
     std::cerr << qp.getLastErrorColor() << "\n";
   } else {
-    executeQuery(q);
+    for (auto& q : qs) {
+      executeQuery(q);
+    }
   }
+
 }
 void joda::cli::CLI::executeNonInteractiveQuery(
     std::shared_ptr<query::Query>& query, bool printResult) {

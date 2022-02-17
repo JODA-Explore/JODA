@@ -136,6 +136,9 @@ bool ViewCursor::isShared(const std::string& currPointer) const {
     baseCursor = baseCursor->previousCursor;
   }
   const ViewCursor* iCursor = this;
+  if (iCursor == baseCursor) {
+    return false;
+  }
   while (iCursor != baseCursor->previousCursor) {
     for (const auto& viewPath : *iCursor->viewPaths) {
       if (viewPath.find(currPointer) == 0) {

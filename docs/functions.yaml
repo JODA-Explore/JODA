@@ -1,0 +1,1049 @@
+ABS:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -25.5
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** |x|'
+  short-description: Calculates the absolute value of a number
+ACOS:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number in the range [-1,1]
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** ACOS(x)'
+  short-description: Calculates the arccosine of the given number
+ASIN:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number in the range [-1,1]
+    name: x
+    optional: false
+    type: Number
+  output: '**Number: ASIN(x)**'
+  short-description: Calculates the arcsine of the given number
+ATAN:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: '**Number: ATAN(x)**'
+  short-description: Calculates the arctangent of the given number
+ATAN2:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 1
+    - 1
+  - input:
+    - -1
+    - -1
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:* ATAN2(x,y)*'
+  short-description: Calculates the ATAN2 of the given number
+CEIL:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: "**Number:** \u2308x\u2309"
+  short-description: Calculates the ceiling of the given (floating point) number
+COS:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 90
+  - input:
+    - -180
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** COS(x)'
+  short-description: Calculates the cosine of the given number
+DEGREES:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 0.4
+  - input:
+    - 0.8
+  input-parameters:
+  - description: Input radians
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** x * (180/PI())'
+  short-description: Converts the given radians to degrees
+DIV:
+  category: Mathematical
+  description: If both numbers are integers, integer division is used. Otherwise the
+    normal floating point division is used
+  examples:
+  - input:
+    - 10
+    - 3
+  - input:
+    - 10.0
+    - 3
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x/y'
+  short-description: Divides x by y
+EXISTS:
+  category: Type
+  description: ''
+  examples:
+  - document: '{"doc": 1}'
+    input:
+    - '''/doc'''
+  - document: '{"doc": 1}'
+    input:
+    - '''/array'''
+  input-parameters:
+  - description: The attribute to check for existence
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True if it exists, false otherwise'
+  short-description: Checks if the given attribute exists.
+FILENAME:
+  category: Metadata
+  description: ''
+  examples:
+  - input: []
+  input-parameters: []
+  output: '**String:** The name of the file'
+  short-description: Returns the filename (with full path), or "[PROJECTION]" if the
+    document was projected
+FILEPOSEND:
+  category: Metadata
+  description: ''
+  examples:
+  - document: "{\"doc1\":1} \n{\"doc2\":2}"
+    input: []
+  input-parameters: []
+  output: '**Number:** The end position of the document'
+  short-description: Returns the end position of the document, within the file.
+FILEPOSSTART:
+  category: Metadata
+  description: ''
+  examples:
+  - document: "{\"doc1\":1} \n{\"doc2\":2}"
+    input: []
+  input-parameters: []
+  output: '**Number:** The starting position of the document'
+  short-description: Returns the starting position of the document, within the file.
+FINDSTR:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - Hello World
+    - World
+  - input:
+    - Hello World
+    - John
+  input-parameters:
+  - description: String to search in
+    name: str
+    optional: false
+    type: String
+  - description: String to search for
+    name: substr
+    optional: false
+    type: String
+  output: '**Number:** offset of `substr` in `str` or -1 '
+  short-description: Returns the position of the second string in the first string,
+    or -1 if it is not contained.
+FLOAT:
+  category: Mathematical
+  description: ''
+  examples:
+  - document: '1
+
+      -4
+
+      5.6
+
+      "  -123.3543  "
+
+      true
+
+      false'
+    input:
+    - ''''''
+  input-parameters:
+  - description: Value to convert to float
+    name: x
+    optional: false
+    type: Any
+  output: '**Number:** The floating point representation of the given value.
+
+    **Nothing:** if it can not be converted '
+  short-description: Casts the given value to floating point
+FLOOR:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: "**Number:** \u230Ax\u230B"
+  short-description: Calculates the floor of the given (floating point) number
+HASH:
+  category: Misc
+  description: In case of arrays or objects, the hash is calculated for the complete
+    subtree. Hence, the hash value can be used to check jsonify objects for equality.
+  examples:
+  - document: '1
+
+      -4
+
+      5.6
+
+      "  -123.3543  "
+
+      true
+
+      false
+
+      [1,2,3]
+
+      {"doc":1} '
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Number:** a hash number, representing the underlying value'
+  short-description: Computes a hash value of the given value
+ID:
+  category: Metadata
+  description: ''
+  examples:
+  - input: []
+  input-parameters: []
+  output: '**Number:**'
+  short-description: Returns the internal unique ID of the document.
+IN:
+  category: Array
+  description: The `element` value can only be an atomic value (Number, String, Bool,
+    Null)
+  examples:
+  - document: '[1,2,"String"]'
+    input:
+    - String
+    - ''''''
+  - document: '{"arr":[1,2,"String"]}'
+    input:
+    - 3
+    - '''/arr'''
+  input-parameters:
+  - description: ''
+    name: element
+    optional: false
+    type: Any (Atomic)
+  - description: ''
+    name: array
+    optional: false
+    type: Array
+  output: '**Bool:**'
+  short-description: Checks wether the `element` is contained in the `array`
+INT:
+  category: Cast
+  description: ''
+  examples:
+  - document: '1
+
+      5.3
+
+      5.6
+
+      "  -123  "
+
+      true
+
+      false'
+    input:
+    - ''''''
+  input-parameters:
+  - description: Value to convert to integer
+    name: x
+    optional: false
+    type: Any
+  output: '**Number:** The integer point representation of the given value.
+
+    **Nothing:** if it can not be converted.'
+  short-description: Casts/Parses the given value to integer
+ISARRAY:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of type array
+ISBOOL:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of type Bool
+ISNULL:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of type null
+ISNUMBER:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of numerical type
+ISOBJECT:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of type object
+ISSTRING:
+  category: Type
+  description: ''
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** True/False depending on check'
+  short-description: Checks wether the attribute is of type string
+LEN:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - Hello World
+  - input:
+    - Hello
+  input-parameters:
+  - description: String to check the length of
+    name: str
+    optional: false
+    type: String
+  output: '**Number:** The length of the given string'
+  short-description: Returns the length of the passed string
+LISTATTRIBUTES:
+  category: Object
+  description: ''
+  examples:
+  - document: '{"a":1, "b":{"c": true}}'
+    input:
+    - ''''''
+  - document: '{"a":1, "b":{"c": true}}'
+    input:
+    - '''/b'''
+  input-parameters:
+  - description: ''
+    name: obj
+    optional: false
+    type: Object
+  output: '**Array[String]:**'
+  short-description: Returns a list of all member names in the given object
+LOWER:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - '  StRiNg  '
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  output: '**String:** UTF-8 lower-case representation of string'
+  short-description: Converts the given string to lower case
+LTRIM:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - '  StRiNg  '
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  output: '**String:** `str` without whitespace to the left'
+  short-description: Trims all whitespace to the left of the string
+MEMCOUNT:
+  category: Object
+  description: ''
+  examples:
+  - document: '{"a":1, "b":{"c": true}}'
+    input:
+    - ''''''
+  - document: '{"a":1, "b":{"c": true}}'
+    input:
+    - '''/b'''
+  input-parameters:
+  - description: ''
+    name: obj
+    optional: false
+    type: Object
+  output: '**Number:** Number of sttributes'
+  short-description: Returns the number of members in the object
+MOD:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 3
+    - 2
+  - input:
+    - -40
+    - 7
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x % y'
+  short-description: Returns the remainder of the division of `x` by `y`
+NOW:
+  category: Metadata
+  description: ''
+  examples:
+  - input: []
+  input-parameters: []
+  output: '**Number:** UNIX timestamp in ms'
+  short-description: Returns the current UNIX timestamp in milliseconds
+PI:
+  category: Mathematical
+  description: ''
+  examples:
+  - input: []
+  input-parameters: []
+  output: "**Number:** \u03C0"
+  short-description: Constant of the number pi.
+POW:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 2
+    - 4
+  - input:
+    - 3
+    - -1
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x ^ y'
+  short-description: Calculates `x` to the power of `y`
+PROD:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 2
+    - 4
+  - input:
+    - -3
+    - 2
+  - input:
+    - 0.1
+    - 400
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x * y'
+  short-description: Multiplies `x` with `y`
+RADIANS:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 10
+  - input:
+    - 45
+  input-parameters:
+  - description: Input degrees
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** radian'
+  short-description: Converts the given degrees to radians
+REGEX:
+  category: String
+  description: 'Note: "\" have to be escaped in JODA strings'
+  examples:
+  - input:
+    - dogsitter
+    - sitter$
+  - input:
+    - '345345'
+    - \\d+
+  input-parameters:
+  - description: String to match
+    name: str
+    optional: false
+    type: String
+  - description: Regular expression
+    name: regexp
+    optional: false
+    type: String
+  output: '**Bool:** True if `str` matches `regexp`. false otherwise'
+  short-description: Checks wether `str` matches the regular expression `regexp`
+REGEX_EXTRACT:
+  category: String
+  description: 'Note: "\" have to be escaped in JODA strings'
+  examples:
+  - input:
+    - 'Number: 345345 Other: 2343'
+    - (\\d+)
+  input-parameters:
+  - description: String to match
+    name: str
+    optional: false
+    type: String
+  - description: Regular expression
+    name: regexp
+    optional: false
+    type: String
+  output: '**Array[String]:** A list of all matches'
+  short-description: Matches all `regexp` in `str` and returns them.
+REGEX_REPLACE:
+  category: String
+  description: 'Note: "\" have to be escaped in JODA strings'
+  examples:
+  - input:
+    - 'Number: 345345 Other: 2343'
+    - (\\d+)
+    - <number>
+  input-parameters:
+  - description: String in which to replace
+    name: str
+    optional: false
+    type: String
+  - description: Regular expression
+    name: regexp
+    optional: false
+    type: String
+  - description: String with which to replace
+    name: replace
+    optional: false
+    type: String
+  output: '**String:** `str` with all matches replaced by `replace`'
+  short-description: Replaces all matches of `regexp` in `str` with `replace`
+ROUND:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - -0.9
+  - input:
+    - 0.3
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** round(x)'
+  short-description: Rounds the given (floating point) number to the nearest integer
+    number
+RTRIM:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - '  StRiNg  '
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  output: '**String:** `str` without whitespace to the right'
+  short-description: Trims all whitespace to the right of the string
+SCONTAINS:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - dogsitter
+    - dog
+  - input:
+    - dogsitter
+    - cat
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  - description: ''
+    name: substr
+    optional: false
+    type: String
+  output: '**Bool:** True if `str` contains `substr`'
+  short-description: Checks wether `str` contains `substr`
+SEQNUM:
+  category: Misc
+  description: 'Note: due to the multi-threaded nature of JODA, the documents will
+    not necessarily be in order. But it is guaranteed that for N documents every document
+    gets a unique number in [0,N-1]
+
+    Multiple calls of this function in a single query will return the values independently
+    of each other.
+
+    ```joda
+
+    LOAD tmp AS (''/1'': SEGNUM()), (''/2'': SEGNUM())
+
+    ```
+
+    may result in `[1,43]` '
+  examples:
+  - document: '1
+
+      -4
+
+      5.6
+
+      "  -123.3543  "
+
+      true
+
+      false'
+  input: []
+  input-parameters: []
+  output: '**Number:** a sequential number in [0,#Documents-1]'
+  short-description: Returns a sequential number for every document in the collection
+SIN:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 90
+  - input:
+    - -180
+  input-parameters:
+  - description: Input Number
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** SIN(x)'
+  short-description: Calculates the sine of the given number
+SIZE:
+  category: Array
+  description: ''
+  examples:
+  - document: '[1,2,3]'
+    input:
+    - ''''''
+  - document: '[1,2,3,4,"String"]'
+    input:
+    - ''''''
+  input-parameters:
+  - description: ''
+    name: arr
+    optional: false
+    type: Array
+  output: '**Number:** Size of the array'
+  short-description: Returns the size of the array
+SQRT:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 16
+  - input:
+    - 42
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  output: "**Number:** \u221Ax"
+  short-description: Calculates the square root of `x`
+STARTSWITH:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - dogsitter
+    - dog
+  - input:
+    - dogsitter
+    - sitter
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  - description: ''
+    name: substr
+    optional: false
+    type: String
+  output: '**Bool:** True if `str` starts with `substr`'
+  short-description: Checks wether `str` starts with `substr`
+STRING:
+  category: Cast
+  description: 'If `jsonify` is false, only atomic values will be stringified.
+
+    If it is enabled, also Object and Array values can be stringified.
+
+    With `jsonify` enabled, the string representation of floating point numbers can
+    be different, as the JSON backend handles them differently from the normal stringify
+    backend. '
+  examples:
+  - input:
+    - 1
+  - input:
+    - -5.4
+  - input:
+    - -5.4
+    - true
+  - input:
+    - true
+  - input:
+    - null
+  - document: '{"doc":1}'
+    input:
+    - ''''''
+    - true
+  - document: '[1,2,3,"String", null]'
+    input:
+    - ''''''
+    - true
+  input-parameters:
+  - description: Value to convert
+    name: x
+    optional: false
+    type: Any
+  - description: 'Converts the values into valid JSON strings, if true. (Default:
+      `false`)'
+    name: jsonify
+    optional: true
+    type: Bool
+  output: '**String:** The string representation of the value'
+  short-description: Converts an atomic value to their string representation
+SUB:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 3
+    - 1
+  - input:
+    - -5
+    - 12.4
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x - y'
+  short-description: Subtracts `x` from `y`
+SUBSTR:
+  category: String
+  description: If `end` is not supplied, the substring is returned until the end of
+    `str`
+  examples:
+  - input:
+    - Hello World
+    - 6
+  - input:
+    - Hello World
+    - 3
+    - 5
+  input-parameters:
+  - description: String to extract from
+    name: str
+    optional: false
+    type: String
+  - description: Start position to extract from
+    name: start
+    optional: false
+    type: Number
+  - description: 'Number of characters to extract (Default: end of `str`)'
+    name: length
+    optional: true
+    type: Number
+  output: '**String:** `str`[`start`:`start`+`end`]'
+  short-description: Returns a substring of `str` from `start` with `end` characters.
+SUM:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 1
+    - 2
+  - input:
+    - -5
+    - 2
+  - input:
+    - 2.5
+    - 1
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  - description: ''
+    name: y
+    optional: false
+    type: Number
+  output: '**Number:** x + y'
+  short-description: Calculates the sum of `x` and `y`
+TAN:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 90
+  - input:
+    - 10
+  - input:
+    - -15
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** tan(x)'
+  short-description: Calculates the tangent of x
+TRUNC:
+  category: Mathematical
+  description: ''
+  examples:
+  - input:
+    - 1.5
+  - input:
+    - 1.1
+  - input:
+    - -1.9
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Number
+  output: '**Number:** trunc(x)'
+  short-description: Truncates the floating point number
+TYPE:
+  category: Type
+  description: "The type may be any of the following: \n- OBJECT\n- ARRAY\n- NUMBER\n\
+    - STRING\n- BOOL\n- NULL\n"
+  examples:
+  - document: '[1,2]
+
+      {"doc":1}
+
+      1
+
+      "String"
+
+      true
+
+      null'
+    input:
+    - ''''''
+  input-parameters: []
+  output: '**String:** The string name of the type'
+  short-description: Returns the type of the given attribute
+UPPER:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - '  StRiNg  '
+  input-parameters:
+  - description: ''
+    name: str
+    optional: false
+    type: String
+  output: '**String:** UTF-8 upper-case representation of string'
+  short-description: Converts the given string to upper case

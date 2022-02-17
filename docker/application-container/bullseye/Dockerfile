@@ -8,7 +8,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 COPY *.deb .
 
 #Install JODA
-RUN apt-get update && apt install --no-install-recommends -y ./*.deb && apt-get clean && rm -rf /var/lib/apt/lists/*
+RUN apt-get update && apt install --no-install-recommends -y ./*.deb && apt-get clean && apt-get install --no-install-recommends -y ca-certificates && rm -rf /var/lib/apt/lists/*
 
 # Copy config
 COPY docker/application-container/bullseye/joda.conf joda.conf

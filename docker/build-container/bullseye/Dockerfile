@@ -5,6 +5,7 @@ LABEL maintainer="Nico Schaefer <n_schaefer11@cs.uni-kl.de>"
 ARG BUILD_PACKAGES="build-essential software-properties-common git gcovr cmake ca-certificates wget gcc g++ make file graphviz"
 ARG DEPENDENCY_PACKAGES="libgoogle-perftools-dev libboost-dev libboost-program-options-dev libboost-regex-dev libboost-system-dev libcpprest-dev libjemalloc-dev libncurses5-dev libncursesw5-dev libreadline-dev libssl-dev"
 
+
 ENV DEBIAN_FRONTEND=noninteractive 
 
 # Install build tools

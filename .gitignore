@@ -92,6 +92,8 @@ CTestTestfile.cmake
 /build/
 /docs/doxygen/documentation/
 /docs/doxygen/Doxyfile
+/docs/tmp.json
+/docs/functions/
 /libs/joda/core/include/joda/version.h
 /doc/
 
@@ -100,5 +102,7 @@ CTestTestfile.cmake
 .vscode/
 
 lib/
+
+**/node_modules
 
 

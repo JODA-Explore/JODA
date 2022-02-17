@@ -25,6 +25,15 @@ class QueryParser {
   std::shared_ptr<query::Query> parse(const std::string& str);
 
   /**
+   * Parses the given input string into one or multiple Query objects.
+   * If an error occurs, it is logged, stored, and a empty list is returned.
+   * @param str the input textual representation
+   * @return A list of Query pointers if the input was valid, empty list if not.
+   */
+  std::vector<std::shared_ptr<query::Query>> parseMultiple(const std::string& str);
+
+
+  /**
    * Returns the current error message, if parsing did not succeed.
    * An empty string is returned of no error happened
    * @return

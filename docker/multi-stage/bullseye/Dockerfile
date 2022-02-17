@@ -31,7 +31,7 @@ RUN mkdir -p build && cd build && cmake -DCMAKE_BUILD_TYPE=Release .. && make -j
 FROM debian:bullseye
 # Dockerfile author / maintainer
 LABEL maintainer="Nico Schaefer <n_schaefer11@cs.uni-kl.de>"
-ARG DEPENDENCY_PACKAGES="libjemalloc2 libcpprest libssl1.1 libreadline8 libncursesw6 libgoogle-glog0v5"
+ARG DEPENDENCY_PACKAGES="libjemalloc2 ca-certificates libcpprest libssl1.1 libreadline8 libncursesw6 libgoogle-glog0v5"
 
 ENV DEBIAN_FRONTEND=noninteractive 
 

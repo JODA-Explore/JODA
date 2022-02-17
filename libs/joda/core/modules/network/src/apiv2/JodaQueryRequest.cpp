@@ -9,6 +9,7 @@
 #include <joda/queryparsing/QueryParser.h>
 #include <joda/storage/collection/StorageCollection.h>
 #include "joda/network/JodaServer.h"
+#include <boost/algorithm/string.hpp>
 
 void joda::network::apiv2::JodaQueryRequest::registerEndpoint(
     const std::string& prefix, httplib::Server& server) {
@@ -32,17 +33,6 @@ void joda::network::apiv2::JodaQueryRequest::registerEndpoint(
   });
 }
 
-std::vector<std::string> joda::network::apiv2::JodaQueryRequest::splitQueries(
-    const std::string& query) {
-  // https://thispointer.com/how-to-split-a-string-in-c/
-  std::stringstream ss(query);
-  std::string item;
-  std::vector<std::string> splittedStrings;
-  while (std::getline(ss, item, ';')) {
-    splittedStrings.push_back(item);
-  }
-  return splittedStrings;
-}
 
 void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request& req,
                                                    httplib::Response& res) {
@@ -52,19 +42,18 @@ void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request& req,
   }
   LOG(INFO) << "Got query: " << q->second;
 
-  auto querystrings = splitQueries(q->second);
-
-  LOG(INFO) << "Got " << querystrings.size() << " queries.";
+  std::string queries_string = q->second;
+  boost::algorithm::trim(queries_string); // remove leading and following whitespace
 
   queryparsing::QueryParser parser;
-  std::vector<std::shared_ptr<query::Query>> queries;
-  for (const auto& q : querystrings) {
-    auto query = parser.parse(q);
-    if (query == nullptr) {
-      throw(JodaQueryException(parser.getLastError()));
-    }
-    queries.push_back(std::move(query));
+  if(queries_string.back() == ';'){
+    queries_string = queries_string.substr(0, queries_string.size() - 1);
   }
+  auto queries = parser.parseMultiple(queries_string);
+  if(queries.empty()){
+    throw(JodaQueryException(parser.getLastError()));
+  }
+
 
   Benchmark bench(config::benchfile);
   unsigned long result;

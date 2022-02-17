@@ -117,9 +117,7 @@ void QueryThread::work() {
       select_timer.stop();
       size_t selCount = 0;
       bool skip = false;
-      if (selectResult == nullptr || selectResult->empty() ||
-          std::all_of(selectResult->begin(), selectResult->end(),
-                      [](bool i) { return !i; })) {
+      if (selectResult == nullptr || selectResult->empty()) {
         skip = true;
       } else {
         selCount = std::count(selectResult->begin(), selectResult->end(), true);
@@ -140,8 +138,7 @@ void QueryThread::work() {
       bool isSelected = false;
       if (hasToProject()) {
         double contFill =
-            (static_cast<double>(
-                 std::count(selectResult->begin(), selectResult->end(), true)) /
+            (static_cast<double>(selCount) /
              pipelineCont->size());
         LOG(INFO) << "Starting Projection";
         project_timer.start();
