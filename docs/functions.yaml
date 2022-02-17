@@ -656,7 +656,7 @@ RADIANS:
   short-description: Converts the given degrees to radians
 REGEX:
   category: String
-  description: 'Note: "\" have to be escaped in JODA strings'
+  description: 'Note: "\\" have to be escaped in JODA strings'
   examples:
   - input:
     - dogsitter
@@ -677,7 +677,7 @@ REGEX:
   short-description: Checks wether `str` matches the regular expression `regexp`
 REGEX_EXTRACT:
   category: String
-  description: 'Note: "\" have to be escaped in JODA strings'
+  description: 'Note: "\\" have to be escaped in JODA strings'
   examples:
   - input:
     - 'Number: 345345 Other: 2343'
@@ -695,7 +695,7 @@ REGEX_EXTRACT:
   short-description: Matches all `regexp` in `str` and returns them.
 REGEX_REPLACE:
   category: String
-  description: 'Note: "\" have to be escaped in JODA strings'
+  description: 'Note: "\\" have to be escaped in JODA strings'
   examples:
   - input:
     - 'Number: 345345 Other: 2343'

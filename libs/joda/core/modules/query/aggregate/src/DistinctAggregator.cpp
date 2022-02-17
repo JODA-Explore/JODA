@@ -11,14 +11,15 @@ void joda::query::DistinctAggregator::merge(IAggregator* other) {
   assert(o != nullptr);
   assert(getName() == o->getName());
   assert(toPointer == o->toPointer);
-  strSet.insert(o->strSet.begin(), o->strSet.end());
-  numSet.insert(o->numSet.begin(), o->numSet.end());
+  strSet.merge(std::move(o->strSet));
+  numSet.merge(std::move(o->numSet));
   hasTrue |= o->hasTrue;
   hasFalse |= o->hasFalse;
 }
 RJValue joda::query::DistinctAggregator::terminate(RJMemoryPoolAlloc& alloc) {
   RJValue val;
   val.SetArray();
+  val.Reserve(strSet.size() + numSet.size() + 2, alloc);
   if (stringEnabled && !strSet.empty()) {
     for (auto&& str : strSet) {
       RJValue strVal;

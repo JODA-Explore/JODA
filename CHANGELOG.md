@@ -9,7 +9,7 @@
 
 ## 0.13.X
 
-### 0.13.1 - Minor Fiyes
+### 0.13.1 - Minor Fixes
 #### Changed
 - `STRING(x)` now has a second optional boolean flag. If enabled, the values will be converted to JSON strings (also Object and Array values)
 
