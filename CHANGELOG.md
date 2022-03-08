@@ -8,7 +8,9 @@
 
 
 ## 0.13.X
-
+### 0.13.2 - Hotfix
+#### Fixed
+- Rare crash with delta trees and STORE AS ... queries
 ### 0.13.1 - Minor Fixes
 #### Changed
 - `STRING(x)` now has a second optional boolean flag. If enabled, the values will be converted to JSON strings (also Object and Array values)

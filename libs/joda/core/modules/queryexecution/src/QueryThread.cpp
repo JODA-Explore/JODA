@@ -178,12 +178,14 @@ void QueryThread::work() {
           }
           copy_timer.stop();
         }
+        DCHECK(tmpCont != nullptr);
 
         project_timer.stop();
         pipelineCont = tmpCont.get();
         isSelected = true;
       }
 
+      DCHECK(pipelineCont != nullptr);
       auto tmpContScope = pipelineCont->useContInScope(false);
       if (pipelineCont->size() == 0) {
         DLOG(INFO) << "Empty container, skipping";
@@ -214,6 +216,7 @@ void QueryThread::work() {
       if (oqueue != nullptr) {
         LOG(INFO) << "Storing result";
         tmpCont->finalize();
+        tmpContScope.release();
         oqueue->send(*ptok, std::move(tmpCont));
       }
 
