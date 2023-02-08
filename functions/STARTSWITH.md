@@ -5,7 +5,7 @@ permalink: /functions/startswith
 
 # STARTSWITH - String
 
-Checks wether `str` starts with `substr`
+Checks whether `str` starts with `substr`
 
 ## Input parameters
 

@@ -5,7 +5,7 @@ permalink: /functions/isobject
 
 # ISOBJECT - Type
 
-Checks wether the attribute is of type object
+Checks whether the attribute is of type object
 
 ## Input parameters
 

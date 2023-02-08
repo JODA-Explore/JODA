@@ -9,7 +9,7 @@ Replaces all matches of `regexp` in `str` with `replace`
 
 ## Details
 
-Note: "\" have to be escaped in JODA strings
+Note: "\\" have to be escaped in JODA strings
 
 ## Input parameters
 

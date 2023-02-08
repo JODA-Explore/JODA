@@ -37,7 +37,7 @@ AS ('': FILEPOSSTART())
 #### Result
 ```json
 0
-11
+10
 ```
 
 

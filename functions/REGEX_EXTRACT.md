@@ -9,7 +9,7 @@ Matches all `regexp` in `str` and returns them.
 
 ## Details
 
-Note: "\" have to be escaped in JODA strings
+Note: "\\" have to be escaped in JODA strings
 
 ## Input parameters
 

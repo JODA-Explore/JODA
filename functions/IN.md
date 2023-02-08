@@ -5,7 +5,7 @@ permalink: /functions/in
 
 # IN - Array
 
-Checks wether the `element` is contained in the `array`
+Checks whether the `element` is contained in the `array`
 
 ## Details
 

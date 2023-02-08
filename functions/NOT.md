@@ -1,26 +1,30 @@
 ---
-title: ACOS
-permalink: /functions/acos
+title: NOT
+permalink: /functions/not
 ---
 
-# ACOS - Mathematical
+# NOT - Boolean Algebra
 
-Calculates the arccosine of the given number
+Negates the Boolean value
+
+## Details
+
+This function can also be written as `!<x>`.
 
 ## Input parameters
 
 | Name | Type | Optional | Description |
 | --- | --- | --- | --- |
-| `x` | Number | False | Input Number in the range [-1,1] |
+| `x` | Bool | False |  |
 
 ## Output
 
-**Number:** ACOS(x)
+**Bool:** `!<x>`
 
 ## Usage
 
 ```joda
-ACOS(<x>)
+NOT(<x>)
 ```
 
 ## Examples
@@ -31,11 +35,11 @@ ACOS(<x>)
 #### Query
 ```joda
 LOAD tmp
-AS ('': ACOS(-0.9))
+AS ('': NOT(true))
 ```
 #### Result
 ```json
-2.6905658417935308
+false
 ```
 
 
@@ -45,11 +49,11 @@ AS ('': ACOS(-0.9))
 #### Query
 ```joda
 LOAD tmp
-AS ('': ACOS(0.3))
+AS ('': NOT(false))
 ```
 #### Result
 ```json
-1.2661036727794992
+true
 ```
 
 

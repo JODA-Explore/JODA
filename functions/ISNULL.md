@@ -5,7 +5,7 @@ permalink: /functions/isnull
 
 # ISNULL - Type
 
-Checks wether the attribute is of type null
+Checks whether the attribute is of type null
 
 ## Input parameters
 

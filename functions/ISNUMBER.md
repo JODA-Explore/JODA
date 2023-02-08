@@ -5,7 +5,7 @@ permalink: /functions/isnumber
 
 # ISNUMBER - Type
 
-Checks wether the attribute is of numerical type
+Checks whether the attribute is of numerical type
 
 ## Input parameters
 

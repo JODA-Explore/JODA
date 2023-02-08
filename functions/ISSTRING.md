@@ -5,7 +5,7 @@ permalink: /functions/isstring
 
 # ISSTRING - Type
 
-Checks wether the attribute is of type string
+Checks whether the attribute is of type string
 
 ## Input parameters
 
