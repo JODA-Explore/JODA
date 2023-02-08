@@ -10,6 +10,7 @@ permalink: /language/
 <div class="btn-group">
   <a href="#load" class="button">LOAD</a>
   <a href="#choose-optional" class="button">CHOOSE</a>
+  <a href="#join-optional" class="button">JOIN</a>
   <a href="#as-optional" class="button">AS</a>
   <a href="#agg-optional" class="button">AGG</a>
   <a href="#store-optional" class="button">STORE</a>
@@ -25,12 +26,12 @@ permalink: /language/
 The basic syntax of queries is:
 
 ```joda
-LOAD     <COLLECTION>   (<SOURCES>)
+LOAD     (<COLLECTION>)   (<SOURCES>)
+(JOIN    <JOIN EXPRESSION>)
 (CHOOSE  <PRED>)
 (AS      <PROJ>)
 (AGG     <AGG>)
 (STORE   <COLLECTION>  | AS FILE "<FILE>" | AS FILES "<DIR>")
-(DELETE  <COLLECTION>)
 ```
 
 
@@ -43,6 +44,9 @@ for further usage in the following query, from variable `<COLLECTION>`.
 If `<COLLECTION>` already exists, the contents of `<SOURCES>` will be appended
 to it.
 
+If `<COLLECTION>` is omitted, the data is only parsed but not stored for later reuse.
+It will then be only available in the current query.
+
 `<SOURCES>` can be one or multiple single `<SOURCE>`, combined with `,`.
 
 Instead of `<SOURCES>`, data can also be imported by an ongoing group by with the
@@ -51,14 +55,16 @@ Instead of `<SOURCES>`, data can also be imported by an ongoing group by with th
 ### Sources
 Currently the following sources are implemented:
 
-`FROM FILE "<FILE>"` parses a single file in the path `<FILE>`. (Supports [sampling](#sampling))
+`FROM FILE "<FILE>"` parses a single file in the path `<FILE>`. 
  
-`FROM FILES "<DIR>"` parses all files in the directory `<DIR>`. (Supports [sampling](#sampling))
+`FROM FILES "<DIR>"` parses all files in the directory `<DIR>`. 
 
 `FROM URL "<URL>"` parses documents returned by a GET call to `<URL>`. 
 
+`FROM STREAM` (See [streaming](#streaming))
+
 #### Sampling
-Some sources may be sampled, to decrease memory footprint and/or improve query times.
+Sources may also be sampled, to decrease memory footprint and/or improve query times.
 
 To sample sources `SAMPLE X` has to be appended to a `<SOURCE>` command.
 `X` has to be a value between (0,1).
@@ -66,8 +72,59 @@ To sample sources `SAMPLE X` has to be appended to a `<SOURCE>` command.
 Keep in mind that sampling only skips documents in the sources.
 All results will only represent these sources.
 
-Currently, no further extrapolations are performed by the system to project aggregations
-like sums or similar functions.
+Currently, no further extrapolations are performed by the system to project aggregations like sums or similar functions.
+
+### JOIN (Optional)
+The loaded dataset can be joined with another dataset, using the `JOIN` command.
+
+After the `JOIN` keyword JODA expects either the name of a stored collection, or a sub-query surrounded by parentheses. 
+
+For example are the following two valid JOIN commands:
+```joda
+LOAD A JOIN B <condition>;
+LOAD A JOIN (LOAD FROM FILES ...) <condition>;
+```
+
+Each matching document pair is joined into a single document, where the top-level is an object with the following structure:
+```json
+{
+    "inner": <Document of A>,
+    "outer": <DOcument of B>
+}
+```
+
+Currently two types of joins are implemented, equality joins and theta joins.
+
+
+#### Equality Joins
+Equality-joins join every document that has the same value for a given key.
+Either one key for both sides, or one key for each side can be used.
+
+The equality join is performed using the `LOAD A JOIN B ON (<key>[, <key2>])` expression.
+
+For example are the following valid equality joins:
+```joda
+LOAD A JOIN B ON ('/user/id');
+LOAD A JOIN B ON ('/name', SUBSTR('/user',10));
+```
+
+#### Theta joins
+Theta-joins allow the user to join two datasets with an arbitrary predicate.
+For this to work, every combination of documents is first materialized as noted before with `inner` and `outer` attributes in one document.
+These can then be accessed in arbitrary predicates following the `WHERE` keyword:
+
+```joda
+LOAD users JOIN messages WHERE IN('/outer/text','/inner/name');
+```
+
+**Note:** Materializing every combination of documents may be feasible for small document sets, but can become very expensive for larger datasets.
+If possible, use the equality join.
+
+The smaller dataset should be the first one in the join for performance reasons.
+In future versions the optimizer may automatically switch the join partners.
+
+
+
 
 ### CHOOSE (Optional)
 `CHOOSE <PRED>` selects JSON documents according to the given predicates.
@@ -220,6 +277,16 @@ Aggregations can also be grouped by a specified value.
 **Note: ** Only atomic data types (string, number, boolean) can be used to group. 
 Arrays and objects are ignored.
 
+#### WINDOW
+Aggregations can also performed using a tumbling window, using the `AGG WINDOW (<#documents>) <AGG expressions>` expression.
+
+For every set number of documents the aggregation result is computed, returned and the aggregation reset for the next set.
+
+For example would the following query return multiple documents consiting only of the number `10`, except maybe for the last one:
+```joda
+LOAD A AGG WINDOW(10) ('':COUNT(''));
+```
+
 #### Examples
 With the following JSON input:
 ```json
@@ -261,9 +328,9 @@ AGG   ('/sum':SUM('/num')),
 
 `STORE AS FILE "<FILE>"` writes the result of the query to `<FILE>`.
 
+`STORE AS STREAM` writes the result into the output stream (See [streaming](#streaming)).
+
 `STORE GROUPED BY <SOURCE>` groupes the dataset. (See [Group-By](#group-by))
-### DELETE (Optional)
-`DELETE <VAR>` removes the result stored in `<VAR>`.
 
 
 ## Group By
@@ -331,6 +398,36 @@ This can be achieved by combining these two queries:
 ```
 
 ## Misc
+
+### Streaming
+JODA also supports continuous streaming of query results.
+If JODA is invoked with pre-set queries (e.g.: using the `-q` or `-f` CLI parameters) and without user interaction (started as a pipe, with `--noninteractive`, or from a non-interactive shell) the input will be streamed and the query evaluated continuously.
+
+In streaming mode additional import (LOAD command) and export (STORE command) sources are available for reading from or writing to the connected stream.
+
+For example is it possible to use the following query to filter and modify each JSON document passed to JODA:
+```joda
+LOAD FROM STREAM 
+CHOOSE '/num' > 10 
+AS ('':'/num')
+STORE AS STREAM;
+```
+
+The `FROM URL`, `FROM FILE`, `AS FILE` sources can also be used to connect to (web-)streams:
+
+```joda
+LOAD FROM URL https://api.stream.test
+...
+STORE AS FILE "/dev/null"
+```
+(Not that this specific example would do anything useful)
+
+#### Aggregation
+By default, JODA aggregation aggregates all incoming documents. 
+If an aggregation function is used, it will block until the input stream is closed (if it is closed at all).
+
+To make aggregations usable in a streaming environment we added the `WINDOW` functionality explained in the [AGG chapter](#agg-optional).
+
 ### Functions
 
 JODA supports many functions. 
