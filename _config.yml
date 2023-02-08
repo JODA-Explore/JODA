@@ -30,7 +30,6 @@ url: http://joda-explore.github.io
 theme: jekyll-theme-slate
 plugins:
   - jekyll-remote-theme
-  - jekyll-feed
 
 # Slate config
 
