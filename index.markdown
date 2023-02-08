@@ -4,8 +4,7 @@
 <img id="logo" src="assets/img/JODA.svg" alt="JODA" />
 <div class="small-logo-container">
 <div class="small-logo-row">
-<a class="small-logo" href="https://dbis.cs.uni-kl.de/index.php/en/"><img  src="assets/img/dbislogo.svg" alt="DBIS Lab" /></a>
-<a class="small-logo" href="https://www.uni-kl.de/en/"><img  src="assets/img/TUKL_LOGO.svg" alt="TUK" /></a>
+  <a class="small-logo" href="https://dbis.cs.uni-kl.de/index.php/en/"><img  src="assets/img/RPTU-Logo-Organisation-RGB.svg" alt="DBIS Lab" /></a>
 </div>
 </div>
 
