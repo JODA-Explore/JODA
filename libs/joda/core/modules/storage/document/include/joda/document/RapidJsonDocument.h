@@ -127,6 +127,12 @@ class RapidJsonDocument {
       return json->Accept(handler);
     }
   }
+  
+  // Implement generatpr
+  template <typename Handler>
+  bool operator()(Handler &handler) const {
+    return Accept(handler);
+  }
 
  protected:
   unsigned long id{};

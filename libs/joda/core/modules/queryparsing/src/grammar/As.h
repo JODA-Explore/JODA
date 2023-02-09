@@ -19,9 +19,9 @@ struct asExpAction : tao::pegtl::nothing<Rule> {};
  * Keywords
  */
 #ifndef __CLION_IDE__  // Prevent lag from expanding all macros
-struct asKW : TAOCPP_PEGTL_KEYWORD("AS") {};
+struct asKW : TAO_PEGTL_KEYWORD("AS") {};
 
-struct projectKW_ARRFLAT : TAOCPP_PEGTL_KEYWORD("FLATTEN") {};
+struct projectKW_ARRFLAT : TAO_PEGTL_KEYWORD("FLATTEN") {};
 struct projectKW_ALL : tao::pegtl::one<'*'> {};
 #endif
 

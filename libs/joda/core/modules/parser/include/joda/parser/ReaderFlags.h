@@ -15,6 +15,7 @@ enum class ReaderFlag : JODA_READER_FLAG_T {
   LINESEPERATED = (1u << 2u),
   BEAUTIFUL = (1u << 3u),
   URL = (1u << 4u),
+  STDSTREAM = (1u << 5u),
 
   // URL = (1 << 2),
   //..
@@ -79,6 +80,7 @@ inline std::ostream& operator<<(std::ostream& os, const ReaderFlag& flag) {
 #define JODA_JSON_FILE_BEAUTIFIED_READER_FLAG \
   (ReaderFlag::JSON | ReaderFlag::FILE | ReaderFlag::BEAUTIFUL)
 #define JODA_JSON_URL_READER_FLAG (ReaderFlag::JSON | ReaderFlag::URL)
+#define JODA_JSON_STDSTREAM_READER_FLAG (ReaderFlag::JSON | ReaderFlag::STDSTREAM)
 
 /*
  * Queue Traits
@@ -176,6 +178,36 @@ struct JODA_READER_QUEUE<JODA_JSON_URL_READER_FLAG> {
   }
 };
 
+
+struct StreamPayload {
+  bool stream;
+};
+
+// JSON Stream queue
+template <>
+struct JODA_READER_QUEUE<JODA_JSON_STDSTREAM_READER_FLAG> {
+  typedef StreamPayload payload_t;
+  typedef JODA_SHARED_QUEUE<payload_t, (JODA_FLAG_T)JODA_JSON_STDSTREAM_READER_FLAG>
+      queue_t;
+
+  static constexpr bool hasFlag(ReaderFlag flag) {
+    return (JODA_JSON_STDSTREAM_READER_FLAG) == flag;
+  }
+
+  static constexpr ReaderFlag getFlag() { return JODA_JSON_STDSTREAM_READER_FLAG; }
+
+  static std::unique_ptr<queue_t> getQueue() {
+    return std::make_unique<queue_t>();
+  }
+
+  static std::unique_ptr<queue_t> getQueue(size_t minCapacity,
+                                           size_t maxExplicitProducers,
+                                           size_t maxImplicitProducers = 0) {
+    return std::make_unique<queue_t>(minCapacity, maxExplicitProducers,
+                                     maxImplicitProducers);
+  }
+};
+
 /*
  * Used Reader Queues
  */
@@ -184,5 +216,6 @@ typedef JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>
 typedef JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>
     JsonFileBeautifiedReaderQueue;
 typedef JODA_READER_QUEUE<JODA_JSON_URL_READER_FLAG> JsonURLReaderQueue;
+typedef JODA_READER_QUEUE<JODA_JSON_STDSTREAM_READER_FLAG> JsonInStreamReaderQueue;
 
 #endif  // JODA_READERFLAGS_H

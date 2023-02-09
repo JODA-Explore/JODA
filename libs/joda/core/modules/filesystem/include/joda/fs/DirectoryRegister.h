@@ -80,6 +80,15 @@ class DirectoryRegister {
    * @return The path to the directory if successful; Nothing else
    */
   boost::optional<std::string> getTMPDir(const std::string& name);
+
+  /**
+   * Creates a new named directory in the configured temporary directory
+   * Does not fail if the directory already exists
+   * @param name The name of the directory to be created
+   * @return The path to the directory if successful; Nothing else
+   */
+  boost::optional<std::string> ensureTMPDir(const std::string& name);
+
   /**
    * Returns an arbitrary unique directory path.
    * This directory is not yet registered or created.

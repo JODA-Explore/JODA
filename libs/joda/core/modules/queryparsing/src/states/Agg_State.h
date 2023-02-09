@@ -18,7 +18,8 @@ enum aggFunction {
   MIN,
   MAX,
   COLLECT,
-  HISTOGRAM
+  HISTOGRAM,
+  CUSTOM
 };
 
 struct aggState {
@@ -32,6 +33,9 @@ struct aggState {
     for (auto &agg : aggs) {
       qs.q->addAggregator(std::move(agg));
     }
+    if (window){
+      qs.q->setAggWindowSize(windowSize);
+    }
   }
 
   inline bool putValProv(std::unique_ptr<joda::query::IValueProvider> &&val) {
@@ -44,10 +48,13 @@ struct aggState {
   std::vector<std::unique_ptr<joda::query::IValueProvider>> valprov;
   std::string toPointer;
   aggFunction aggfun;
+  std::string customAggName;
   std::vector<std::unique_ptr<joda::query::IAggregator>> aggs;
 
   std::unique_ptr<joda::query::IValueProvider> groupedByValue = nullptr;
   std::string groupAs{};
+  bool window = false;
+  uint64_t windowSize = 0;
 };
 }  // namespace joda::queryparsing::grammar
 

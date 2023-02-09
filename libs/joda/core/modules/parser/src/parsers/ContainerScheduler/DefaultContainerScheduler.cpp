@@ -20,42 +20,48 @@ joda::docparsing::DefaultContainerScheduler<meta>::createContainer(
 }
 
 template <>
-void joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(
+std::unique_ptr<JSONContainer> joda::docparsing::DefaultContainerScheduler<true>::scheduleDocument(
     ContainerIdentifier /*id*/, std::unique_ptr<RJDocument>&& doc,
     std::unique_ptr<IOrigin>&& origin, size_t size) {
+  std::unique_ptr<JSONContainer> tmpCont = nullptr;
   if (!(currentContainer->hasMetaSpace(size) ||
         currentContainer->size() == 0)) {
     currentContainer->metaFinalize();
     currentContainer->removeDocuments();
     DCHECK(currentContainer != nullptr);
-    queue->send(std::move(currentContainer));  // Enqueue
+    tmpCont = std::move(currentContainer);
     DCHECK(currentContainer == nullptr);
     currentContainer = createContainer(contSize);
     DCHECK(currentContainer != nullptr);
   }
   currentContainer->insertDoc(std::move(doc), std::move(origin));
+  return tmpCont;
 }
 
 template <>
-void joda::docparsing::DefaultContainerScheduler<false>::scheduleDocument(
+std::unique_ptr<JSONContainer> joda::docparsing::DefaultContainerScheduler<false>::scheduleDocument(
     ContainerIdentifier /*id*/, std::unique_ptr<RJDocument>&& doc,
     std::unique_ptr<IOrigin>&& origin, size_t size) {
+  std::unique_ptr<JSONContainer> tmpCont = nullptr;
   DCHECK(currentContainer != nullptr);
+  currentContainer->insertDoc(std::move(doc), std::move(origin));
   if (!(currentContainer->hasSpace(size) || currentContainer->size() == 0)) {
     currentContainer->finalize();
-    queue->send(std::move(currentContainer));  // Enqueue
+    tmpCont = std::move(currentContainer);
+
     DCHECK(currentContainer == nullptr);
     currentContainer = createContainer(contSize);
     DCHECK(currentContainer != nullptr);
   }
-  currentContainer->insertDoc(std::move(doc), std::move(origin));
+  
+  return tmpCont;
 }
 
 template <bool meta>
-joda::docparsing::DefaultContainerScheduler<meta>::DefaultContainerScheduler(
-    JsonContainerQueue::queue_t* queue, size_t contSize)
-    : queue(queue), contSize(contSize) {
+joda::docparsing::DefaultContainerScheduler<meta>::DefaultContainerScheduler(size_t contSize)
+    : contSize(contSize) {
   currentContainer = createContainer(contSize);
+  DCHECK(currentContainer != nullptr);
 }
 
 template <bool meta>
@@ -87,19 +93,20 @@ joda::docparsing::DefaultContainerScheduler<meta>::getNewDoc(
 }
 
 template <>
-void joda::docparsing::DefaultContainerScheduler<true>::finalize() {
+std::vector<std::unique_ptr<JSONContainer>> joda::docparsing::DefaultContainerScheduler<true>::finalize() {
   DCHECK(currentContainer != nullptr);
   if (currentContainer->size() > 0) {
     currentContainer->metaFinalize();
     currentContainer->removeDocuments();
-    queue->send(std::move(currentContainer));  // Enqueue
-    DCHECK(currentContainer == nullptr);
+    std::vector<std::unique_ptr<JSONContainer>> ret;
+    ret.emplace_back(std::move(currentContainer));
+    return ret;
   }
-  queue->producerFinished();
+  return {};
 }
 
 template <>
-void joda::docparsing::DefaultContainerScheduler<false>::finalize() {
+std::vector<std::unique_ptr<JSONContainer>> joda::docparsing::DefaultContainerScheduler<false>::finalize() {
   DCHECK(currentContainer != nullptr);
   if (currentContainer->size() > 0) {
     currentContainer->finalize();
@@ -107,11 +114,14 @@ void joda::docparsing::DefaultContainerScheduler<false>::finalize() {
                                // this case
       currentContainer->removeDocuments();
     }
-    queue->send(std::move(currentContainer));  // Enqueue
-    DCHECK(currentContainer == nullptr);
+
+    std::vector<std::unique_ptr<JSONContainer>> ret;
+    ret.emplace_back(std::move(currentContainer));
+    return ret;
   }
-  queue->producerFinished();
+  return {};
 }
+
 
 template class joda::docparsing::DefaultContainerScheduler<true>;
 template class joda::docparsing::DefaultContainerScheduler<false>;

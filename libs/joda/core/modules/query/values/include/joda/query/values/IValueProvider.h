@@ -63,29 +63,48 @@ class WrongParameterTypeException : public WrongParameterException {
                               const std::string &name) {
     whatStr = name + ": Parameter " + std::to_string(i) +
               " is of wrong type. Expected: ";
+    whatStr += getTypeName(expected);
+  }
+
+  WrongParameterTypeException(unsigned int i,
+                              const std::vector<IValueType> &expected,
+                              const std::string &name) {
+    whatStr = name + ": Parameter " + std::to_string(i) +
+              " is of wrong type. Expected: ";
+    whatStr += getTypeName(expected);
+  }
+
+ private:
+  std::string getTypeName(IValueType expected) const {
     switch (expected) {
       case IV_String:
-        whatStr += "String";
-        break;
+        return "String";
       case IV_Number:
-        whatStr += "Number";
-        break;
+        return "Number";
       case IV_Bool:
-        whatStr += "Bool";
-        break;
+        return "Bool";
       case IV_Object:
-        whatStr += "Object";
-        break;
+        return "Object";
       case IV_Array:
-        whatStr += "Array";
-        break;
+        return "Array";
       case IV_Any:
-        whatStr += "Any";
-        break;
+        return "Any";
       case IV_Null:
         DCHECK(false) << "Expected null parameter? O.o";
-        break;
     }
+    return "";
+  }
+  
+  std::string getTypeName(const std::vector<IValueType> &expected) const {
+    std::string ret = "[";
+    for (auto it = expected.begin(); it != expected.end(); ++it) {
+      if (it != expected.begin()) {
+        ret += ", ";
+      }
+      ret += getTypeName(*it);
+    }
+    ret += "]";
+    return ret;
   }
 };
 
@@ -100,13 +119,12 @@ class WrongParameterCountException : public WrongParameterException {
   };
   WrongParameterCountException(unsigned int count, unsigned int expected,
                                const std::string &name, bool min = false) {
-                                 
     whatStr = name + ": Expected ";
-    if(min) {
+    if (min) {
       whatStr += "at least ";
     }
-    whatStr += std::to_string(expected) +
-              " parameters, but got " + std::to_string(count);
+    whatStr += std::to_string(expected) + " parameters, but got " +
+               std::to_string(count);
   }
 };
 
@@ -116,9 +134,8 @@ class WrongParameterCountException : public WrongParameterException {
  */
 class MissingParameterException : public WrongParameterCountException {
  public:
-  MissingParameterException(unsigned int i,
-                               const std::string &name) : WrongParameterCountException(name) {
-                                 
+  MissingParameterException(unsigned int i, const std::string &name)
+      : WrongParameterCountException(name) {
     whatStr = name + ": Missing parameter " + std::to_string(i);
   }
 };
@@ -129,10 +146,9 @@ class MissingParameterException : public WrongParameterCountException {
  */
 class ConstParameterException : public WrongParameterException {
  public:
-  ConstParameterException(unsigned int i,
-                               const std::string &name) {
-                                 
-    whatStr = name + ": Parameter " + std::to_string(i) + " has to be a constant.";
+  ConstParameterException(unsigned int i, const std::string &name) {
+    whatStr =
+        name + ": Parameter " + std::to_string(i) + " has to be a constant.";
   }
 };
 
@@ -235,13 +251,20 @@ class IValueProvider {
     }
   }
 
+  virtual void prependAttributes(const std::string &prefix) {
+    for (auto &&param : params) {
+      param->prependAttributes(prefix);
+    }
+  }
+
   /**
    * Checks if two IValueProviders values are equal
    * @param other other IValueProvider to compare with
    * @param json  The RapidJsonDocument to (potentially) retrieve values from
    * @return True if the values are equal, false otherwise
    */
-  bool equal(IValueProvider *other, const RapidJsonDocument &json) const {
+  std::optional<bool> equal(IValueProvider *other,
+                            const RapidJsonDocument &json) const {
     RJMemoryPoolAlloc tmpAlloc;
     const RJValue *lhs;
     RJValue tmplhs;
@@ -254,7 +277,7 @@ class IValueProvider {
     } else {
       lhs = getValue(json, tmpAlloc);
     }
-    if (lhs == nullptr) return false;
+    if (lhs == nullptr) return std::nullopt;
     // Get Pointer to List
     if (other->isAtom()) {
       tmprhs = other->getAtomValue(json, tmpAlloc);
@@ -262,7 +285,71 @@ class IValueProvider {
     } else {
       rhs = other->getValue(json, tmpAlloc);
     }
-    if (rhs == nullptr) return false;
+    if (rhs == nullptr) return std::nullopt;
+
+    auto lhsType = lhs->GetType();
+    auto rhsType = rhs->GetType();
+    if (lhsType != rhsType) return false;  // If different types, false
+
+    if (lhsType == rapidjson::kTrueType && rhsType == rapidjson::kTrueType)
+      return true;
+    if (lhsType == rapidjson::kFalseType && rhsType == rapidjson::kFalseType)
+      return true;
+
+    if (lhsType == rapidjson::kNumberType &&
+        rhsType == rapidjson::kNumberType) {
+      if (lhs->IsUint64() && rhs->IsUint64())
+        return lhs->GetUint64() == rhs->GetUint64();
+      if (lhs->IsInt64() && rhs->IsInt64())
+        return lhs->GetInt64() == rhs->GetInt64();
+      return fabs(lhs->GetDouble() - rhs->GetDouble()) <
+             std::numeric_limits<double>::epsilon();
+    }
+
+    if (lhsType == rapidjson::kStringType &&
+        rhsType == rapidjson::kStringType) {
+      return strcmp(lhs->GetString(), rhs->GetString()) == 0;
+    }
+
+    if (lhsType == rapidjson::kNullType && rhsType == rapidjson::kNullType) {
+      return true;
+    }
+
+    return *lhs == *rhs;  // Deep equality check
+  }
+
+  /**
+   * Checks if two IValueProviders values are equal in two documents
+   * @param other other IValueProvider to compare with
+   * @param json  The RapidJsonDocument to retrieve values from this provider
+   * @param otherJson The RapidJsonDocument to retrieve values from the other
+   * provider
+   * @return True if the values are equal, false otherwise
+   */
+  std::optional<bool> equal(IValueProvider *other,
+                            const RapidJsonDocument &json,
+                            const RapidJsonDocument &otherJson) const {
+    RJMemoryPoolAlloc tmpAlloc;
+    const RJValue *lhs;
+    RJValue tmplhs;
+    const RJValue *rhs;
+    RJValue tmprhs;
+    // Get Pointer to value
+    if (isAtom()) {
+      tmplhs = getAtomValue(json, tmpAlloc);
+      lhs = &tmplhs;
+    } else {
+      lhs = getValue(json, tmpAlloc);
+    }
+    if (lhs == nullptr) return std::nullopt;
+    // Get Pointer to List
+    if (other->isAtom()) {
+      tmprhs = other->getAtomValue(otherJson, tmpAlloc);
+      rhs = &tmprhs;
+    } else {
+      rhs = other->getValue(otherJson, tmpAlloc);
+    }
+    if (rhs == nullptr) return std::nullopt;
 
     auto lhsType = lhs->GetType();
     auto rhsType = rhs->GetType();
@@ -313,7 +400,24 @@ class IValueProvider {
   };
 
   static void replaceConstSubexpressions(std::unique_ptr<IValueProvider> &val);
+
+  /**
+   * Tries to optimize the current IValueProvider.
+   * If no optimization can be done, nullptr is returned.
+   * @return A new IValueProvider if the optimization was successful, nullptr
+   * otherwise
+   */
+  virtual std::unique_ptr<IValueProvider> optimize();
+
   static bool constBoolCheck(std::unique_ptr<IValueProvider> &val);
+  static bool constBoolCheck(std::unique_ptr<IValueProvider> &val, bool &result);
+
+  /**
+   * @brief Returns true iff the provider is of type bool (or pointer) and contains a true value. False in all other cases
+   * 
+   */
+  bool getNonTruthyBool(const RapidJsonDocument &json,
+                                  RJMemoryPoolAlloc &alloc) const;
 
  protected:
   bool getParamString(std::string &ret,
@@ -340,30 +444,38 @@ class IValueProvider {
    * Checks wether the number of parameters is exactly `expected`
    * @param expected The expected number of parameters
    * @throws WrongParameterCountException if number not as expected
-  **/
+   **/
   void checkParamSize(unsigned int expected);
 
-   /**
+  /**
    * Checks wether the number of parameters is aat least `expected`
    * @param expected The expected number of parameters
    * @throws WrongParameterCountException if number is less than expected
-  **/
-  void checkMinParamSize(unsigned int expected); 
-  
+   **/
+  void checkMinParamSize(unsigned int expected);
+
   /**
    * Checks wether the parameter `i` is of type `expected`
    * @param i The index of the parameter to check
    * @param expected The expected type of the parameter
    * @throws WrongParameterTypeException if type not as expected
-  **/
+   **/
   void checkParamType(unsigned int i, IValueType expected);
+
+  /**
+   * Checks wether the parameter `i` is of any type `expected`
+   * @param i The index of the parameter to check
+   * @param expected The expected type of the parameter
+   * @throws WrongParameterTypeException if type not as expected
+   **/
+  void checkParamType(unsigned int i, const std::vector<IValueType> &expected);
 
   /**
    * Checks wether the parameter `i` is of type `expected` if it exists
    * @param i The index of the parameter to check
    * @param expected The expected type of the parameter
    * @throws WrongParameterTypeException if type not as expected
-  **/
+   **/
   void checkOptionalParamType(unsigned int i, IValueType expected);
 
   std::vector<std::unique_ptr<IValueProvider>> duplicateParameters() const;

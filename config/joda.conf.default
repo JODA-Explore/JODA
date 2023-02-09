@@ -2,22 +2,6 @@
 ##################Joda Default Config File##################
 ############################################################
 
-#Directories
-data_dir = .
-tmpdir = /tmp/JODA
-readthreads=1
-
-
-[indices.caching]
-enable = true
-
-[indices.bloom]
-enable = false
-approx_count = 1000
-fp_prob = 0.001         # Has to be between 0 and 1
-
-[storage.container]
-max_size = 20971520     # 20 * 1024 *1024
 
 ### Delta trees ###
 # Enabling delta trees vastly improves memory usage for a variety of queries.

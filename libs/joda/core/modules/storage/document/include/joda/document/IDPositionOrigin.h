@@ -16,17 +16,18 @@
 class IDPositionOrigin : public IOrigin {
  public:
   IDPositionOrigin(FILEID id);
-  IDPositionOrigin(FILEID id, long start, long end, int index);
+  IDPositionOrigin(FILEID id, size_t start, size_t end, int index);
   std::unique_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
   bool isReparsable() const override;
   virtual ~IDPositionOrigin() override = default;
 
-  long getStart() const;
-  void setStart(long start);
-  long getEnd() const;
-  void setEnd(long end);
+  size_t getStart() const;
+  void setStart(size_t start);
+  size_t getEnd() const;
+  void setEnd(size_t end);
   int getIndex() const;
   void setIndex(int index);
+  FILEID getID() const;
 
   /**
    * Returns a human readable representation of the ID (without the offsets)
@@ -35,6 +36,7 @@ class IDPositionOrigin : public IOrigin {
   virtual std::string getStreamName() const = 0;
   std::string toString() const override = 0;
   std::unique_ptr<IOrigin> clone() const override = 0;
+  virtual std::unique_ptr<IDPositionOrigin> cloneSpecific() const  = 0;
 
   virtual bool operator<(const IOrigin &x) const override final;
   bool operator<(const IDPositionOrigin &other) const;
@@ -42,8 +44,8 @@ class IDPositionOrigin : public IOrigin {
 
  protected:
   FILEID id;
-  long start{};
-  long end{};
+  size_t start{};
+  size_t end{};
   int index{};
 };
 

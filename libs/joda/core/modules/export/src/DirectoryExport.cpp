@@ -1,32 +1,63 @@
-//
-// Created by Nico on 17/04/2019.
-//
 
+
+#include "../include/joda/export/DirectoryExport.h"
+
+#include <fstream>
 #include <utility>
 
-#include "joda/export/DirectoryExport.h"
+//  _____ _            _ _
+// |  __ (_)          | (_)
+// | |__) | _ __   ___| |_ _ __   ___
+// |  ___/ | '_ \ / _ \ | | '_ \ / _ \.
+// | |   | | |_) |  __/ | | | | |  __/
+// |_|   |_| .__/ \___|_|_|_| |_|\___|
+//         | |
+//         |_|
+
+void joda::queryexecution::pipeline::tasks::store::WriteFilesExec::emptyBuffer(
+    std::optional<Input>& buff) {
+      auto filename = dirname+"/"+std::to_string(num)+".json";
+  std::ofstream newfile;
+  newfile.open(filename, std::ofstream::out | std::ofstream::app);
+
+  if (newfile) {
+
+    std::move(buff->begin(), buff->end(),
+              std::ostream_iterator<std::string>(newfile, "\n"));
+  } else {
+    LOG(ERROR) << "Could not open file " << filename
+               << ". Error: " << strerror(errno);
+  }
+  buff.reset();
+}
+
+void joda::queryexecution::pipeline::tasks::store::WriteFilesExec::finalize() {}
+
+joda::queryexecution::pipeline::tasks::store::WriteFilesExec::WriteFilesExec(
+    const std::string& dirname)
+    : dirname(dirname) {}
+
+joda::queryexecution::pipeline::tasks::store::WriteFilesExec::WriteFilesExec(const 
+    WriteFilesExec& other)
+    : dirname(other.dirname) {
+  num = other.num;
+  other.num++;
+}
+
+//  _____ ______                       _
+// |_   _|  ____|                     | |
+//   | | | |__  __  ___ __   ___  _ __| |_ ___ _ __
+//   | | |  __| \ \/ / '_ \ / _ \| '__| __/ _ \ '__|
+//  _| |_| |____ >  <| |_) | (_) | |  | ||  __/ |
+// |_____|______/_/\_\ .__/ \___/|_|   \__\___|_|
+//                   | |
+//                   |_|
 
 const std::string DirectoryExport::getTimerName() { return "Directory Export"; }
 
 DirectoryExport::DirectoryExport(std::string dirname)
     : dirname(std::move(dirname)) {
   // TODO: Check if dir exists
-}
-
-void DirectoryExport::exportContainer(std::unique_ptr<JSONContainer>&& cont) {
-  std::stringstream stream;
-  std::hash<size_t> hash;
-
-  stream << std::hex << hash((size_t)cont.get());
-  std::string filename(stream.str());
-  filename += ".json";
-  cont->writeFile(dirname + "/" + filename, true);
-}
-
-void DirectoryExport::consume(JsonContainerQueue::queue_t& queue) {
-  auto exec = std::make_unique<IOThreadPool<DirectoryExportThread>>(
-      &queue, nullptr, dirname);
-  exec->wait();
 }
 
 const std::string DirectoryExport::toString() {
@@ -37,21 +68,6 @@ const std::string DirectoryExport::toQueryString() {
   return "STORE AS FILES \"" + dirname + "\"";
 }
 
-void DirectoryExportThread::work() {
-  auto myid = std::this_thread::get_id();
-  std::stringstream ss;
-  ss << myid << ".json";
-  auto mystring = ss.str();
-
-  while (shouldRun) {
-    if (!iqueue->isFinished()) {
-      JsonContainerQueue::payload_t ref = nullptr;
-      iqueue->retrieve(ref);
-      if (ref != nullptr) {
-        ref->writeFile(conf + "/" + mystring, true);
-      }
-    } else {
-      shouldRun = false;
-    }
-  }
-}
+ DirectoryExport::PipelineTaskPtr DirectoryExport::getTask() const  {
+  return std::make_unique<joda::queryexecution::pipeline::tasks::store::WriteFilesTask>(dirname);
+};

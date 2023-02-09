@@ -1,9 +1,11 @@
 project(JODA-core-cli CXX)
 
 set(joda-core-cli-SOURCES
-        ${CMAKE_CURRENT_LIST_DIR}/src/CLI.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/CLICompletion.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/cli/CLI.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/CLI.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/cli/BasicCLI.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/BasicCLI.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/CLICompletion.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/CLICompletion.h
         ${CMAKE_CURRENT_LIST_DIR}/src/ResultInterface.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/ResultInterface.h

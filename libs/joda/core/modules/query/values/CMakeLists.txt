@@ -11,6 +11,7 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/AtomProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/PointerProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/RegexExtractProvider.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/RegexExtractFirstProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/RegexProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/RegexReplaceProvider.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/SeqNumberProvider.cpp
@@ -31,6 +32,7 @@ set(joda-core-query-values-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/AtomProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/PointerProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/RegexExtractProvider.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/RegexExtractFirstProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/RegexProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/RegexReplaceProvider.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/query/values/SeqNumberProvider.h

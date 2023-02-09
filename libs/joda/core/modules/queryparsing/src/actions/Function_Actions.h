@@ -2,12 +2,16 @@
 // Created by Nico on 08/05/2019.
 //
 
+#include <joda/query/values/NullProvider.h>
+#include <algorithm>
+#include <string>
+
 #ifndef JODA_FUNCTION_ACTIONS_H
 #define JODA_FUNCTION_ACTIONS_H
 namespace joda::queryparsing::grammar {
 
 template <>
-struct functionAction<pointer> {
+struct functionAction<unprefixed_pointer> {
   template <typename Input>
   static void apply(const Input &in, functionState &state) {
     std::string pointer = in.string();
@@ -19,6 +23,25 @@ struct functionAction<pointer> {
     state.params.push_back(std::move(para));
   }
 };
+
+template <>
+struct functionAction<prefixed_pointer> {
+  template <typename Input>
+  static void apply(const Input &in, functionState &state) {
+    std::string pointer = in.string();
+    if(pointer.size() > 1){ // "$'...'" => "..."
+      pointer =  pointer.substr(2, pointer.size() - 3);
+    }else{
+      pointer.clear(); // $ => ""
+    }
+    auto para = std::make_unique<joda::query::PointerProvider>(pointer, true);
+    if (state.atom == NO_ATOM) {
+      state.atom = ATOM_POINTER;
+    }
+    state.params.push_back(std::move(para));
+  }
+};
+
 template <>
 struct functionAction<floatNumber> {
   template <typename Input>
@@ -156,6 +179,68 @@ struct functionAction<nullAtom> {
       state.atom = ATOM_NULL;
     }
     state.params.push_back(std::move(para));
+  }
+};
+
+template <>
+struct functionAction<negate> {
+  static void apply0(BoolState &state) {
+    state.negated = true;
+  }
+};
+
+template <>
+struct functionAction<gt> {
+  static void apply0(CompareState &state) {
+    state.less = false;
+    state.comparison = true;
+  }
+};
+
+template <>
+struct functionAction<lt> {
+  static void apply0(CompareState &state) {
+    state.less = true;
+    state.comparison = true;
+  }
+};
+
+template <>
+struct functionAction<and_equal> {
+  static void apply0(CompareState &state) {
+    state.equal = true;
+  }
+};
+
+template <>
+struct functionAction<unequal> {
+  static void apply0(CompareState &state) {
+    state.equal = false;
+  }
+};
+
+template <>
+struct functionAction<equal> {
+  static void apply0(CompareState &state) {
+    state.equal = true;
+  }
+};
+
+// CUSTOM module
+template <>
+struct functionAction<func_kw_CUSTOM> {
+  template <typename Input>
+  static bool apply(const Input &in, functionState &state) {
+    auto custom_funcs = joda::extension::ModuleRegister::getInstance().getIValFuncs();
+    std::string custom_func = in.string();
+    std::transform(custom_func.begin(), custom_func.end(),custom_func.begin(), ::toupper);
+    if (std::ranges::find(custom_funcs,custom_func) == custom_funcs.end()) {
+      return false;
+    }
+    state.factory = [custom_func](std::vector<std::unique_ptr<joda::query::IValueProvider>> && params){
+      return joda::extension::ModuleRegister::getInstance().getIValFunc(custom_func,std::move(params));
+    };
+    return true;
   }
 };
 

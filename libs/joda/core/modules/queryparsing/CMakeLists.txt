@@ -7,7 +7,6 @@ set(joda-core-queryparsing-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Agg.h
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/As.h
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Choose.h
-        ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Delete.h
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Grammar.h
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Literals.h
         ${CMAKE_CURRENT_LIST_DIR}/src/grammar/Load.h
@@ -20,17 +19,15 @@ set(joda-core-queryparsing-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/actions/Agg_Actions.h
         ${CMAKE_CURRENT_LIST_DIR}/src/actions/Load_Actions.h
         ${CMAKE_CURRENT_LIST_DIR}/src/actions/Store_Actions.h
-        ${CMAKE_CURRENT_LIST_DIR}/src/actions/Delete_Actions.h
         ${CMAKE_CURRENT_LIST_DIR}/src/actions/Function_Actions.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Load_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Choose_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/As_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Agg_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Store_State.h
-        ${CMAKE_CURRENT_LIST_DIR}/src/states/Delete_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Function_State.h
         ${CMAKE_CURRENT_LIST_DIR}/src/states/Query_State.h
-        ${CMAKE_CURRENT_LIST_DIR}/src/error/LOAD_error.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/error/Load_error.h
         )
 
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-queryparsing-SOURCES} PARENT_SCOPE )

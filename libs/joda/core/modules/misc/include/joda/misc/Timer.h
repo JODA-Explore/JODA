@@ -35,13 +35,13 @@ class Timer {
    * Returns the total duration of the timer in seconds.
    * @return the total duration of the timer in seconds.
    */
-  double durationSeconds();
+  double durationSeconds() const;
 
   /**
    * Creates a string representation of the duration
    * @return string representation of the duration
    */
-  std::string toString();
+  std::string toString() const;
 
   /**
    * Loggs the runtime to GLOG with an string tag and description
@@ -57,6 +57,8 @@ class Timer {
    * @return human readable string representation of the duration
    */
   std::string toHumanDuration() const;
+
+  static std::string toHumanDuration(const std::chrono::milliseconds& duration);
 
  protected:
   std::chrono::time_point<std::chrono::system_clock> now();

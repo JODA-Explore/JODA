@@ -5,30 +5,36 @@
 #ifndef JODA_JSONCONTAINER_H
 #define JODA_JSONCONTAINER_H
 
+#include <joda/config/config.h>
 #include <joda/document/RapidJsonDocument.h>
+#include <joda/document/view/ViewLayer.h>
+#include <joda/indexing/AdaptiveIndexQuery.h>
 #include <joda/indexing/QueryCache.h>
+#include <joda/extension/ModuleExecutorStorage.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
 #include <limits.h>
 
+#include <boost/dynamic_bitset.hpp>
 #include <cstdio>
 #include <functional>
 #include <unordered_set>
 #include <vector>
 
-#include <joda/config/config.h>
-#include <joda/document/RapidJsonDocument.h>
-#include <joda/document/view/ViewLayer.h>
-#include <joda/indexing/QueryCache.h>
-#include <joda/query/project/IProjector.h>
-#include <joda/query/project/ISetProjector.h>
-#include <limits.h>
-#include <functional>
-#include <unordered_set>
 #include "../../../../document/src/DocumentCostHandler.h"
 #include "joda/misc/bloom_filter.hpp"
 
-typedef std::vector<bool> DocIndex;
+class DataContext;
+
+using DocIndex = boost::dynamic_bitset<>;
+
+class ContainerIndex {
+ public:
+  virtual ~ContainerIndex() = default;
+  virtual unsigned long estimateWork(const AdaptiveIndexQuery &query) = 0;
+  virtual std::shared_ptr<const DocIndex> executeQuery(
+      const AdaptiveIndexQuery &query, DataContext &dataContext) = 0;
+};
 
 /**
  * JSONContainers are a collection of JSONDocuments and indices created on them.
@@ -51,6 +57,12 @@ class JSONContainer {
 
   virtual ~JSONContainer();
   void preparePurge();
+
+  /**
+   * @brief Returns the ID of the container
+   * @return The ID of the container
+   */
+  unsigned long getContainerID() const;
 
   /**
    * Checks if the container has enough space to add another document of size
@@ -113,6 +125,20 @@ class JSONContainer {
    */
   void insertDoc(RapidJsonDocument &&doc, size_t baseIndex = 0);
 
+  /**
+   * Sets documents defined in the docs parameter
+   */
+  void setDocuments(const std::vector<size_t> &docs,
+                    std::vector<RapidJsonDocument *> &documents, bool isRange,
+                    bool loadedCheck);
+
+  /**
+   * Sets documents defined in the docs parameter
+   */
+  void setDocuments(const DocIndex &docs,
+                    std::vector<RapidJsonDocument *> &documents,
+                    bool loadedCheck);
+
   // Document Access
   /**
    * Executes "func" on all documents. If it returns True, the document id is
@@ -155,7 +181,7 @@ class JSONContainer {
    * @param func The function to execute on all documents.
    */
   template <class F>
-  void forAll(F f) {
+  void forAll(F &&f) {
     ScopedRef ref(this);
     for (auto &&doc : docs) {
       if (doc.isValid()) {
@@ -171,17 +197,17 @@ class JSONContainer {
    * @param func The function to execute on all documents.
    * @param ids The documents to check
    */
-  
+
   template <class F>
   void forAll(F f, const DocIndex &ids) {
     ScopedRef useCont(this, false);
     reparseSubset(ids);
-    
+
     for (size_t i = 0; i < docs.size(); ++i) {
       if (!ids[i]) continue;
       auto &doc = docs[i];
       if (doc.isValid()) {
-        f(doc);
+        f(doc,i);
       }
     }
     setLastUsed();
@@ -209,7 +235,7 @@ class JSONContainer {
       };
       auto &doc = docs[i];
       if (doc.isValid()) {
-        ret.emplace_back(f(doc,i));
+        ret.emplace_back(f(doc, i));
       }
     }
     setLastUsed();
@@ -301,6 +327,8 @@ class JSONContainer {
    */
   void reparseSubset(const DocIndex &index);
 
+  void reparseSubset(const std::vector<size_t> &ids, bool isRange);
+
   /**
    * Checks if the container is reparsable
    */
@@ -386,6 +414,19 @@ class JSONContainer {
    * @return QueryCache
    */
   const std::unique_ptr<QueryCache> &getCache() const;
+
+  /*
+   * Returns the AdaptiveIndexManager
+   * @return AdaptiveIndexManager
+   */
+  const std::unique_ptr<ContainerIndex> &getAdaptiveIndex() const;
+  const void setAdaptiveIndex(std::unique_ptr<ContainerIndex> index);
+
+  /**
+   * Returns the storage for external indexing modules
+   * @return module storage
+   */
+  const std::unique_ptr<joda::extension::ModuleExecutorStorage> &getModuleStorage() const;
   /**
    * Returns a list of all document ids
    * @return
@@ -449,9 +490,15 @@ class JSONContainer {
     JSONContainer *cont_ = nullptr;
   };
 
-  inline auto useContInScope(bool parse = true) { return ScopedRef(this, parse); }
+  inline auto useContInScope(bool parse = true) {
+    return ScopedRef(this, parse);
+  }
 
  private:
+  // ID
+  unsigned long contId;
+  static std::atomic<unsigned long> contIdCounter;
+
   size_t lastParsedSize = 0;
   /*
    * Ref Counting
@@ -478,6 +525,8 @@ class JSONContainer {
   bool bloomCalculated = false;
   bool viewsComputed = false;
   std::unique_ptr<QueryCache> cache;
+  std::unique_ptr<ContainerIndex> adaptiveIndex;
+  std::unique_ptr<joda::extension::ModuleExecutorStorage> moduleStorage;
 
   void calculateBloom();
   void recursiveBloomAttrSearch(const RJValue &obj,
@@ -515,9 +564,8 @@ class JSONContainer {
 
   void setLastUsed();
 
-
   static bool compareDocContainer(const RapidJsonDocument &i,
-                                  const RapidJsonDocument &j) {                              
+                                  const RapidJsonDocument &j) {
     return i.getOrigin()->operator<(*j.getOrigin());
   }
 

@@ -94,7 +94,6 @@ bool FileJoinManager::createFile(const std::string& file, long val) {
 bool FileJoinManager::createFile(const std::string& file,
                                  const std::string& val) {
   std::ofstream o(file);
-  // TODO: Replace '\n'
   o << "STR" << '\n' << val << std::endl;
   o.close();
   return true;
@@ -174,3 +173,13 @@ FileJoinManager::~FileJoinManager() {
 }
 
 const std::string& FileJoinManager::getBaseDir() const { return baseDir; }
+
+std::vector<std::string> FileJoinManager::getJoinFiles()  {
+  std::lock_guard<std::mutex> lock(mut);
+
+  std::vector<std::string> files;
+  for (auto& f : fLock) {
+    files.emplace_back(getFile(f.first));
+  }
+  return files;
+};

@@ -12,6 +12,8 @@ set(joda-core-document-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/document/URLOrigin.h
         ${CMAKE_CURRENT_LIST_DIR}/src/origin/IDPositionOrigin.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/document/IDPositionOrigin.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/origin/InStreamOrigin.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/document/InStreamOrigin.h
         ${CMAKE_CURRENT_LIST_DIR}/src/BloomAttributeHandler.h
         ${CMAKE_CURRENT_LIST_DIR}/src/BloomAttributeHandler.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/document/view/ViewLayer.cpp

@@ -39,6 +39,8 @@ class StorageCollection {
   void operator=(StorageCollection const &) = delete;
 
   virtual ~StorageCollection();
+
+  void clear();
   /**
    * Retrieves a named JSONStorage by its name.
    * If it does not exist, it returns a nullpointer

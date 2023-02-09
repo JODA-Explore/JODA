@@ -8,6 +8,10 @@ joda::query::ValueProviderProjector::ValueProviderProjector(
     const std::string& to, std::unique_ptr<IValueProvider>&& valprov)
     : IProjector(to), valprov(std::move(valprov)) {
   IValueProvider::replaceConstSubexpressions(this->valprov);
+  auto optimized_val = this->valprov->optimize();
+  if (optimized_val != nullptr) {
+    this->valprov = std::move(optimized_val);
+  }
   accepter = ValueAccepter(this->valprov);
 }
 

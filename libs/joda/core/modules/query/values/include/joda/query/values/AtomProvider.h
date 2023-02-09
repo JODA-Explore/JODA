@@ -37,7 +37,7 @@ class AtomProvider : public joda::query::IValueProvider {
 
   const RJValue *getValue(const RapidJsonDocument &json,
                           RJMemoryPoolAlloc &alloc) const override {
-    assert(!isAtom() && "Did not check for atom before calling");
+    DCHECK(!isAtom()) << "Did not check for atom before calling";
     return nullptr;
   };
 

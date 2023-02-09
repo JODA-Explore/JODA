@@ -5,13 +5,11 @@
 #include "../include/joda/queryparsing/QueryParser.h"
 
 #include <glog/logging.h>
-#include <joda/query/predicate/StaticEvalVisitor.h>
 #include <joda/queryparsing/QueryParser.h>
 
 #include <iostream>
 #include <tao/pegtl.hpp>
-#include <tao/pegtl/analyze.hpp>
-#include <tao/pegtl/contrib/tracer.hpp>
+#include <tao/pegtl/contrib/analyze.hpp>
 #include "Control.h"
 #include "FunctionWrapper.h"
 #include "actions/Actions.h"
@@ -22,12 +20,14 @@ std::shared_ptr<joda::query::Query> joda::queryparsing::QueryParser::parse(
   tao::pegtl::memory_input<> in(str, str);
   grammar::queryState qs;
   try {
+     // Check for correct result
     if (tao::pegtl::parse<grammar::query, grammar::queryAction,
                           grammar::query_control>(in, qs)) {
-      // Check for correct result
-      query::StaticEvalVisitor sev;
-      qs.q->getPredicate()->accept(sev);
-      qs.q->setPredicate(sev.getPred());
+      // Optimize
+      auto new_pred = qs.q->getChoose()->optimize();
+      if(new_pred != nullptr) {
+        qs.q->setChoose(std::move(new_pred));
+      }
       return qs.q;
     }
   } catch (tao::pegtl::parse_error& e) {
@@ -50,9 +50,10 @@ std::vector<std::shared_ptr<joda::query::Query>> joda::queryparsing::QueryParser
                           grammar::query_control>(in, qs)) {
       // Optimize
       for (auto& q : qs.q) {
-         query::StaticEvalVisitor sev;
-         q->getPredicate()->accept(sev);
-         q->setPredicate(sev.getPred());
+        auto new_pred = q->getChoose()->optimize();
+        if(new_pred != nullptr) {
+          q->setChoose(std::move(new_pred));
+        }
       }
       return qs.q;
     }
@@ -63,8 +64,6 @@ std::vector<std::shared_ptr<joda::query::Query>> joda::queryparsing::QueryParser
 
   return queries;
 }
-
-
 
 const std::string joda::queryparsing::QueryParser::getLastError() const {
   if (lastError == nullptr) return "";
@@ -77,7 +76,7 @@ const std::string joda::queryparsing::QueryParser::getLastErrorColor() const {
   ss << "Error parsing query: ";
   size_t i = 0;
   std::string what = lastError->what();
-  while (i < lastError->positions.front().byte) {
+  while (i < lastError->positions().front().byte) {
     ss << what[i];
     i++;
   }

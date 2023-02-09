@@ -1,11 +1,11 @@
 [submodule "extern/googletest"]
 	path = extern/googletest
 	url = https://github.com/google/googletest.git
-	branch = v1.8.x
+	branch = main
 [submodule "extern/PEGTL"]
 	path = extern/PEGTL
 	url = https://github.com/taocpp/PEGTL.git
-	branch = 2.x
+	branch = 3.x
 [submodule "extern/rapidjson"]
 	path = extern/rapidjson
 	url = https://github.com/Tencent/rapidjson

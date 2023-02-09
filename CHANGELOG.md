@@ -2,10 +2,50 @@
 ## DEV
 
 #### Added
-
 #### Changed
 #### Fixed
 
+## 0.14.X
+
+### 0.14.0 Query execution redesign
+
+In this release the query execution pipeline has been completely redesigned.
+This allowed us to extend JODA with many more exciting features, but may have positive and/or negative impacts on the performance, depending on the query.
+
+The most important changes are:
+
+- JOINS with sub-queries.
+- Streaming support, including window aggregations
+- Multi-query optimization.
+- Iterator functions like MAP/FILTER/ANY/ALL.
+- Temporary (unnamed) datasets/intermediate results.
+- User-Defined modules (functions, aggregators, importers, exporters, indices)
+- Removed support of the `DELETE` expression in queries.
+
+
+#### Breaking Changes
+- Removed support for `DELETE` expressions in queries. Please use CLI `delete` commands or HTTP `delete` endpoints instead.
+- Benchmark/Statistics output has changed to support the new query pipeline architecture.
+
+#### Added
+- Support for temporary collections. `LOAD FROM FILE ...` is now a valid query which will not create a permanent dataset, but pass the imported documents to the rest of the query
+- Support for JOINS with sub-queries. Currently equality joins (`LOAD A JOIN B ON(<attr>[, <attr>])`) and theta joins (`LOAD A JOIN B WHERE(<attr>)`) are implemented
+- Iterator functions `MAP`/`FILTER`/`ANY`/`ALL`
+- All boolean binary operators can now also be used as functions (e.g. `AND(a, b)`, `NOT(a)`, `OR(a, b)`)
+  - Additionally added `XOR` and `IMPLICATION` functions
+- All binary comparison operators can now also be used as functions (e.g. `LESS(a, b)`, `LESSEQ(a, b)`, `EQUAL(a, b)`)
+- Streaming support. If JODA is invoked with preset queries and connected to a stream (pipe, TTY, ...) the queries will be executed in streaming mode. This allows the continuous evaluation of queries over a potentially endless stream. Query results can be printed to to streams and other locations.
+- Window aggregations, which allow to compute aggregations over a tumbling window. Mostly useful for streaming mode
+- User defined modules can now be loaded to extend JODA with custom features written in python
+  - Functions allow to define custom functions in python which can be used in queries
+  - Aggregators allow to define custom aggregators in python which can be used in aggregation steps
+  - Importers allow import and connection of external data sources
+  - Exporters allow to export data to external data sources
+  - Indices allow to define custom indices which can be used to improve filter performance
+- Added new REGEX extract first function
+- Added `CONCAT` function to concatenate strings
+- Added `SPLIT` function to split strings
+- Added `TRUTHY` and `FALSY` functions to convert values to Boolean
 
 ## 0.13.X
 ### 0.13.2 - Hotfix

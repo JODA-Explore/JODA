@@ -40,6 +40,11 @@ class FileJoinManager : public JoinManager {
    */
   const std::string& getBaseDir() const;
 
+  /**
+   * Returns all files involved in this join
+   */
+  std::vector<std::string> getJoinFiles() ;
+
  protected:
   bool createFile(const std::string& file, bool val);
   bool createFile(const std::string& file, long val);

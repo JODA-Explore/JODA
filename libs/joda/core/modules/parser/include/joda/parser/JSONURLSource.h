@@ -13,15 +13,18 @@ namespace joda::docparsing {
  */
 class JSONURLSource : public joda::docparsing::IImportSource {
  public:
-  explicit JSONURLSource(std::string urlPath);
-  virtual void feedSources(JsonURLReaderQueue::queue_t &queue,
-                           JsonURLReaderQueue::queue_t::ptok_t &ptok) override;
+  explicit JSONURLSource(std::string urlPath, double sample = 1.0);
+
+  virtual std::unique_ptr<queryexecution::pipeline::tasks::PipelineTask>
+  getTask() const override;
+
   size_t estimatedSize() override;
   const std::string toString() override;
   const std::string toQueryString() override;
 
  private:
   std::string urlPath;
+  double sample;
 };
 }  // namespace joda::docparsing
 

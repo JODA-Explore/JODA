@@ -17,6 +17,8 @@ class config {
  public:
   // Indices
   static bool queryCache;
+  static bool adaptiveIndex;
+
 
   // Bloom
   static bool bloom_enabled;
@@ -25,7 +27,6 @@ class config {
       bloom_prob;  // Maximum tolerable false positive probability? (0,1)
 
   // Directories
-  static std::string home;
   static std::string tmpdir;
 
   // Storage
@@ -55,11 +56,6 @@ class config {
   static size_t parsingThreads;
   static size_t readingThreads;
 
-  // Parsing
-  static size_t read_bulk_size;
-  static std::string read_reader;
-  static size_t parse_bulk_size;
-
   // Similarity
   static size_t
       sim_min_cont_size;  // Minimum container size (smaller will be merged)
@@ -81,6 +77,12 @@ class config {
   // View
   static bool enable_views;
   static bool enable_views_vo;
+
+  // Multi query
+  static bool enable_multi_query;
+
+  // Stream
+  static bool enable_streams;
 };
 
 inline std::istream& operator>>(std::istream& in, config::Sim_Measures& unit) {

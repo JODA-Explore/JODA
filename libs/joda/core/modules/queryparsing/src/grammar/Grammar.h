@@ -5,11 +5,6 @@
 #ifndef PARSER_GRAMMAR_H_H
 #define PARSER_GRAMMAR_H_H
 
-#include <joda/query/predicate/AndPredicate.h>
-#include <joda/query/predicate/ComparePredicate.h>
-#include <joda/query/predicate/EqualizePredicate.h>
-#include <joda/query/predicate/NegatePredicate.h>
-#include <joda/query/predicate/OrPredicate.h>
 #include <joda/query/project/PointerCopyProject.h>
 #include <cctype>
 #include <climits>
@@ -30,7 +25,6 @@ struct queryAction : tao::pegtl::nothing<Rule> {};
 template <typename Rule>
 struct queriesAction : tao::pegtl::nothing<Rule> {};
 
-
 }  // namespace joda::queryparsing::grammar
 
 #include "Literals.h"
@@ -38,27 +32,37 @@ struct queriesAction : tao::pegtl::nothing<Rule> {};
 #include "Agg.h"
 #include "As.h"
 #include "Choose.h"
-#include "Delete.h"
 #include "Load.h"
 #include "Store.h"
+#include "Join.h"
 
 namespace joda::queryparsing::grammar {
 /*
  * Query
  */
 
-struct queryCommand
-    : tao::pegtl::seq<
+struct queryCommandWithoutStore : tao::pegtl::seq<
+        // Load
           tao::pegtl::state<
               loadState,
               tao::pegtl::action<loadAction, tao::pegtl::must<loadCommand>>>,
+        //Join
+        tao::pegtl::state<
+              joinState,
+              tao::pegtl::action<
+                  joinAction,
+                  tao::pegtl::opt<tao::pegtl::pad<joinKW, tao::pegtl::space>,
+                                  tao::pegtl::pad<tao::pegtl::must<join_exp>,
+                                                  tao::pegtl::space>>>>,
+        // Choose                                    
           tao::pegtl::state<
               chooseState,
               tao::pegtl::action<
                   chooseExpAction,
                   tao::pegtl::opt<tao::pegtl::pad<chooseKW, tao::pegtl::space>,
-                                  tao::pegtl::pad<tao::pegtl::must<qexp>,
+                                  tao::pegtl::pad<tao::pegtl::must<predicate_expression>,
                                                   tao::pegtl::space>>>>,
+         // As                                         
           tao::pegtl::state<
               asState,
               tao::pegtl::action<
@@ -66,22 +70,25 @@ struct queryCommand
                   tao::pegtl::opt<tao::pegtl::pad<asKW, tao::pegtl::space>,
                                   tao::pegtl::pad<tao::pegtl::must<projectExp>,
                                                   tao::pegtl::space>>>>,
+         // Agg                                         
           tao::pegtl::state<
               aggState,
               tao::pegtl::action<
                   aggExpAction,
                   tao::pegtl::opt<tao::pegtl::pad<aggKW, tao::pegtl::space>,
                                   tao::pegtl::pad<tao::pegtl::must<aggExp>,
-                                                  tao::pegtl::space>>>>,
+                                                  tao::pegtl::space>>>>
+         > {};
+
+struct queryCommand
+    : tao::pegtl::seq<queryCommandWithoutStore,
+        // Store                                         
           tao::pegtl::state<
               storeState,
-              tao::pegtl::action<storeAction, tao::pegtl::opt<storeCommand>>>,
-          tao::pegtl::state<
-              deleteState,
-              tao::pegtl::action<deleteAction, tao::pegtl::opt<deleteCommand>>>,
-          tao::pegtl::eof> {};
+              tao::pegtl::action<storeAction, tao::pegtl::opt<storeCommand>>>> {};
 
-struct query : tao::pegtl::must<queryCommand> {};
+struct query : tao::pegtl::must<queryCommand,
+          tao::pegtl::eof> {};
 
 struct single_query : tao::pegtl::state<
               queryState,
@@ -95,6 +102,7 @@ struct query_list : tao::pegtl::list_tail<single_query, query_separator,
 
 struct queries : tao::pegtl::must<query_list,tao::pegtl::star<tao::pegtl::space>,
           tao::pegtl::eof> {};
+
 
 
 }  // namespace joda::queryparsing::grammar

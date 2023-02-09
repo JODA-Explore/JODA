@@ -103,3 +103,13 @@ boost::optional<std::string> joda::filesystem::DirectoryRegister::getTMPDir(
   }
   return {};
 }
+
+
+boost::optional<std::string> joda::filesystem::DirectoryRegister::ensureTMPDir(
+    const std::string& name) {
+  auto dir = config::tmpdir + "/" + name;
+  if (registerDirectory(dir, false)) {
+    return dir;
+  }
+  return {};
+}

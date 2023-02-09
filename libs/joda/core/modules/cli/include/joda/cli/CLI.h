@@ -4,13 +4,18 @@
 
 #ifndef JODA_CLI_H
 #define JODA_CLI_H
+#include <joda/extension/ModuleRegister.h>
+#include <joda/storage/JSONStorage.h>
 #include <readline/history.h>
 #include <readline/readline.h>
+#include <stdio.h>
+
 #include <string>
 #include <vector>
+
 #include "joda/misc/Benchmark.h"
 #include "joda/query/Query.h"
-#include "joda/queryexecution/QueryPlan.h"
+#include "joda/queryexecution/PipelineQueryPlan.h"
 
 #ifdef JODA_ENABLE_PROFILING
 #include "gperftools/profiler.h"
@@ -25,10 +30,8 @@ class CLI {
   CLI();
   /**
    * Starts the CLI and reacts to user-input
-   * @param onceQueries Optional queries to be executed once with a following
-   * shutdown of the system
    */
-  void start(const std::vector<std::string> &onceQueries);
+  void start();
 
   /**
    * Changes interactivity of the CLI.
@@ -62,12 +65,15 @@ class CLI {
   void dumpConfig();
   void listSources();
   void listResults();
+  void deleteSource(const std::string &name);
   void unknownCommand();
   void executeQuery(std::shared_ptr<query::Query> &query,
-                    bool printResult = true);
+                    bool printResult = true, bool lastQuery = false);
   void executeNonInteractiveQuery(std::shared_ptr<query::Query> &query,
-                                  bool printResult = true);
+                                  bool printResult = true,
+                                  bool lastQuery = false);
   void logo();
+  void registerModule(const std::string &name);
 #ifdef JODA_ENABLE_PROFILING
   void profileStart(const std::string &name);
   void profileStop();

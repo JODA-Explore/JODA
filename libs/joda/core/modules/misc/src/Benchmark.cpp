@@ -201,3 +201,4 @@ bool Benchmark::isValid() const { return valid; }
 const RJValue &Benchmark::getLastLine() const {
   return benchDoc[benchDoc.Size() - 1];
 }
+

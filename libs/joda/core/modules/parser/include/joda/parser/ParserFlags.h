@@ -8,6 +8,7 @@
 #include <joda/concurrency/Queue.h>
 #include <joda/document/IDPositionOrigin.h>
 #include <joda/document/IOrigin.h>
+#include <joda/document/TemporaryOrigin.h>
 
 #define JODA_PARSER_FLAG_T JODA_FLAG_T
 enum class ParserFlag : JODA_PARSER_FLAG_T {

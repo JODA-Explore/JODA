@@ -8,11 +8,10 @@
 #include <joda/container/ContainerFlags.h>
 #include <joda/container/JSONContainer.h>
 
-#include <joda/container/ContainerFlags.h>
-#include <joda/container/JSONContainer.h>
 #include <future>
 #include <mutex>
 #include <unordered_map>
+#include <list>
 class QueryPlan;
 
 /**
@@ -52,20 +51,39 @@ class JSONStorage {
    * @param cs Counter of remaining containers in the queue
    */
   void insertDocuments(
-      moodycamel::ConcurrentQueue<std::unique_ptr<JSONContainer>> &queue,
+      moodycamel::ConcurrentQueue<std::shared_ptr<JSONContainer>> &queue,
       const std::atomic_bool &cf, std::atomic_uint &cs);
 
   /**
    * Inserts a single container into the JSONStorage
    * @param cont The container to insert
    */
-  void insertDocuments(std::unique_ptr<JSONContainer> &&cont);
+  void insertDocuments(std::shared_ptr<JSONContainer> &&cont);
 
   /**
-   * Fills the queue with references to all containers within the JSONStorage
-   * @param queue the queue through which the containers are sent
+   * Retrieves a copied list of the contained containers
    */
-  void getDocumentsQueue(JsonContainerRefQueue::queue_t *queue);
+  std::vector<std::shared_ptr<JSONContainer>> copyContainers() ;
+
+  /**
+   * Extracts the actual JSONContainers of the JSONStorage.
+   * !This is a destructive operation, no containers remain in the collection!
+   */
+    std::vector<std::shared_ptr<JSONContainer>> extractContainers();
+
+  /**
+   * Executes a function on all containers
+   * @tparam  F the function to call
+   * @param func The function to execute on all containers.
+   */
+  template <class F>
+  void forAll(F &&f) {
+    documentMutex.lock();
+    for (const auto &cont : container) {
+      f(cont);
+    }
+    documentMutex.unlock();
+  }
 
   /**
    * Returns the number of documents in the collection
@@ -212,10 +230,9 @@ class JSONStorage {
   const std::string &getQueryString() const;
 
 
-
  protected:
   friend QueryPlan;
-  const std::vector<std::unique_ptr<JSONContainer>> &getContainer() const;
+  const std::list<std::shared_ptr<JSONContainer>> &getContainer() const;
 
   std::string name;
   std::string regtmpdir;
@@ -224,13 +241,14 @@ class JSONStorage {
   std::string query;
 
   std::mutex documentMutex;
-  std::vector<std::unique_ptr<JSONContainer>> container;
+  std::list<std::shared_ptr<JSONContainer>> container;
   unsigned long docCount = 0;
 
   // Multithread
   size_t threadCount(size_t containerSize) const;
 
   std::string getStorageID() const;
+
 };
 
 #endif  // JODA_JSONSTORAGE_H

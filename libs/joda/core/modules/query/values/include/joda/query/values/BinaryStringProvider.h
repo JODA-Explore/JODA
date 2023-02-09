@@ -42,6 +42,8 @@ class BinaryStringProvider : public joda::query::IValueProvider {
 
   std::string toString() const override { return IValueProvider::toString(); }
 
+  bool isAtom() const override {return true;}
+
   std::unique_ptr<IValueProvider> duplicate() const override {
     return std::make_unique<BinaryStringProvider<Calc>>(duplicateParameters());
   };
@@ -143,6 +145,39 @@ struct BinaryFINDSTRCalculationFunction {
 
 typedef BinaryStringProvider<BinaryFINDSTRCalculationFunction> FINDSTRProvider;
 
+
+
+/*
+ * SPLIT
+ */
+struct BinarySPLITCalculationFunction {
+  static constexpr auto name = "SPLIT";
+  static constexpr joda::query::IValueType retType = IV_Array;
+
+  inline static RJValue calculate(std::string &&lhs, std::string &&rhs,
+                                  RJMemoryPoolAlloc &alloc) {
+    RJValue arr(rapidjson::kArrayType);
+    size_t last = 0; 
+    size_t next = 0; 
+    while ((next = lhs.find(rhs, last)) != std::string::npos) {
+        auto item = lhs.substr(last, next-last);
+        RJValue val(item, alloc);
+        last = next + rhs.size(); 
+        arr.PushBack(std::move(val), alloc);
+    }
+    
+    auto item = lhs.substr(last);
+    RJValue val(item, alloc);
+    arr.PushBack(std::move(val), alloc);
+
+    return arr;
+  };
+};
+
+typedef BinaryStringProvider<BinarySPLITCalculationFunction> SPLITProvider;
+
+
+
 template class BinaryStringProvider<BinarySCONTAINSCalculationFunction>;
 
 template class BinaryStringProvider<BinarySTARTSWITHCalculationFunction>;
@@ -150,5 +185,8 @@ template class BinaryStringProvider<BinarySTARTSWITHCalculationFunction>;
 template class BinaryStringProvider<BinaryConcatCalculationFunction>;
 
 template class BinaryStringProvider<BinaryFINDSTRCalculationFunction>;
+
+template class BinaryStringProvider<BinarySPLITCalculationFunction>;
+
 }  // namespace joda::query
 #endif  // JODA_BINARYSTRINGPROVIDER_H

@@ -6,11 +6,11 @@
 #include <utility>
 
 CacheEntry::CacheEntry(std::shared_ptr<const CacheIndex> docs,
-                       std::shared_ptr<joda::query::Predicate> predicate)
+                       std::unique_ptr<joda::query::IValueProvider>&& predicate)
     : docs(std::move(docs)), predicate(std::move(predicate)) {}
 
-void CacheEntry::acceptPredicate(joda::query::PredicateVisitor& v) {
-  predicate->accept(v);
+const std::unique_ptr<joda::query::IValueProvider>& CacheEntry::getPredicate() const{
+  return predicate;
 }
 
 std::shared_ptr<const CacheEntry::CacheIndex> CacheEntry::getDocs() const {
@@ -22,5 +22,5 @@ const long CacheEntry::estimatedSize() {
 }
 
 CacheEntry::CacheEntry(std::shared_ptr<const CacheIndex>&& docs,
-                       std::shared_ptr<joda::query::Predicate> predicate)
+                       std::unique_ptr<joda::query::IValueProvider>&& predicate)
     : docs(std::move(docs)), predicate(std::move(predicate)) {}

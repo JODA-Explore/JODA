@@ -8,59 +8,27 @@
 #include <joda/container/ContainerFlags.h>
 #include <joda/parser/ParserFlags.h>
 #include <joda/parser/ReaderFlags.h>
+#include <joda/pipelineatomics/PipelineTask.h>
 
 namespace joda::docparsing {
 /**
  * Interface representing a list of documents to be imported into the system.
  */
 class IImportSource {
+ protected:
+    typedef joda::queryexecution::pipeline::tasks::PipelineTaskPtr PipelineTaskPtr;
  public:
-  /**
-   * Initializes a new IImportSource with the given flags
-   * @param readerFlag the flags required by the reader to be able to read the
-   * documents
-   * @param parserFlag the flags required by the parser to be able to parse the
-   * documents
-   * @param containerFlag the flags required by the container to be able to
-   * store the documents
-   */
-  IImportSource(ReaderFlag readerFlag, ParserFlag parserFlag,
-                ContainerFlag containerFlag)
-      : readerFlag(readerFlag),
-        parserFlag(parserFlag),
-        containerFlag(containerFlag) {}
+
+  IImportSource() = default;
 
   virtual ~IImportSource() = default;
 
-  ReaderFlag getReaderFlag() const { return readerFlag; }
+  /**
+   * Returns the loading task
+   * @return the task to be executed to load the documents
+   */
+  virtual PipelineTaskPtr getTask() const = 0;
 
-  ParserFlag getParserFlag() const { return parserFlag; }
-
-  ContainerFlag getContainerFlag() const { return containerFlag; }
-
-  virtual void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t
-          &queue,
-      JODA_READER_QUEUE<
-          JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t::ptok_t &ptok) {
-    DCHECK(false) << "Called unimplemented queue "
-                     "JODA_JSON_FILE_LINESEPERATED_READER_FLAG";
-  };
-
-  virtual void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t &queue,
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t
-          &ptok) {
-    DCHECK(false)
-        << "Called unimplemented queue JODA_JSON_FILE_BEAUTIFIED_READER_FLAG";
-  };
-
-  virtual void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_URL_READER_FLAG>::queue_t &queue,
-      JODA_READER_QUEUE<JODA_JSON_URL_READER_FLAG>::queue_t::ptok_t &ptok) {
-    DCHECK(false)
-        << "Called unimplemented queue JODA_JSON_URL_BEAUTIFIED_READER_FLAG";
-  };
 
   /**
    * Returns a (human readable) string describing the IImportSource.
@@ -80,12 +48,6 @@ class IImportSource {
    */
   virtual size_t estimatedSize() { return 0; }
 
- protected:
- public:
- private:
-  ReaderFlag readerFlag;
-  ParserFlag parserFlag;
-  ContainerFlag containerFlag;
 };
 }  // namespace joda::docparsing
 

@@ -6,8 +6,10 @@
 #define JODA_QUERYCACHE_H
 
 #include <joda/document/RapidJsonDocument.h>
-#include <joda/query/predicate/Predicate.h>
+#include <joda/query/values/IValueProvider.h>
+
 #include <unordered_map>
+
 #include "../../../src/cache/CacheEntry.h"
 
 /**
@@ -16,13 +18,6 @@
  */
 class QueryCache {
  public:
-  /**
-   * Returns the cached DOC_IDs for the given predicate
-   * @param pred The predicated in internal representation
-   * @return A set of DOC_IDs stored by a previous query execution
-   */
-  std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
-      const std::shared_ptr<joda::query::Predicate> &pred);
 
   /**
    * Returns the cached DOC_IDs for the given predicate
@@ -30,7 +25,7 @@ class QueryCache {
    * @return A set of DOC_IDs stored by a previous query execution
    */
   std::shared_ptr<const CacheEntry::CacheIndex> getBestCache(
-      const std::unique_ptr<joda::query::Predicate> &pred);
+      const std::unique_ptr<joda::query::IValueProvider> &pred);
   /**
    * Returns the cached DOC_IDs for the given predicate
    * @param predStr The predicated in string representation
@@ -43,7 +38,7 @@ class QueryCache {
    * @param pred Predicate to check for
    * @return True if a cache exists; False else
    */
-  bool cacheAvailable(const std::shared_ptr<joda::query::Predicate> &pred);
+  bool cacheAvailable(const std::unique_ptr<joda::query::IValueProvider> &pred);
   /**
    * Checks if the given predicate is stored in the cache
    * @param predStr Predicate to check for
@@ -60,8 +55,9 @@ class QueryCache {
    * @param docs The set of DOC_IDs to add to the CacheEntry
    * @param predicate The predicate that produced docs
    */
-  void addQueryResult(std::shared_ptr<const CacheEntry::CacheIndex> docs,
-                      const std::shared_ptr<joda::query::Predicate> &predicate);
+  void addQueryResult(
+      std::shared_ptr<const CacheEntry::CacheIndex> docs,
+      const std::unique_ptr<joda::query::IValueProvider> &predicate);
 
   /**
    * Resets the QueryCache and removes all CacheEntries

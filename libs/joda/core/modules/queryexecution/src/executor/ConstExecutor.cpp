@@ -28,3 +28,4 @@ void ConstExecutor::alwaysAfterSelect(const joda::query::Query& q,
 std::unique_ptr<IQueryExecutor> ConstExecutor::duplicate() {
   return std::make_unique<ConstExecutor>();
 }
+

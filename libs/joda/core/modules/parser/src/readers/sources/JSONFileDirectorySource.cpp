@@ -3,46 +3,23 @@
 //
 
 #include "../../../include/joda/parser/JSONFileDirectorySource.h"
+#include <joda/parser/pipeline/ListDir.h>
 
 #include <joda/fs/DirectoryFileScanner.h>
-
 #include <utility>
 
 joda::docparsing::JSONFileDirectorySource::JSONFileDirectorySource(
     const std::string& dirPath, const double sample)
     : joda::docparsing::JSONFileDirectorySource(dirPath, false, sample) {}
 
-void joda::docparsing::JSONFileDirectorySource::feedSources(
-    JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t& queue,
-    JODA_READER_QUEUE<
-        JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t::ptok_t& ptok) {
-  DCHECK(JODA_JSON_FILE_LINESEPERATED_READER_FLAG == getReaderFlag())
-      << "Wrong flag called, this should be checked beforehand";
-  joda::filesystem::DirectoryFileScanner scanner;
-  auto files = scanner.getFilesInDir(dirPath, "json");
-  for (auto&& item : files) {
-    SampleFile file{sample, item};
-    queue.send(ptok, std::move(file));
+joda::docparsing::JSONFileDirectorySource::PipelineTaskPtr joda::docparsing::JSONFileDirectorySource::getTask() const {
+  if(lineSeparated){
+    return std::make_unique<queryexecution::pipeline::tasks::load::LSListDirTask>(dirPath, sample);
   }
-  // TODO: Use chunks
-  // queue.send(ptok,std::make_move_iterator(files.begin()), files.size());
+  return std::make_unique<queryexecution::pipeline::tasks::load::ListDirTask>(dirPath,sample);
+  
 }
 
-void joda::docparsing::JSONFileDirectorySource::feedSources(
-    JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t& queue,
-    JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t&
-        ptok) {
-  DCHECK(JODA_JSON_FILE_BEAUTIFIED_READER_FLAG == getReaderFlag())
-      << "Wrong flag called, this should be checked beforehand";
-  joda::filesystem::DirectoryFileScanner scanner;
-  auto files = scanner.getFilesInDir(dirPath, "json");
-  for (auto&& item : files) {
-    SampleFile file{sample, std::move(item)};
-    queue.send(ptok, std::move(file));
-  }
-  // TODO: Use chunks
-  // queue.send(ptok,std::make_move_iterator(files.begin()), files.size());
-}
 
 const std::string joda::docparsing::JSONFileDirectorySource::toString() {
   return "Directory: " + dirPath +
@@ -63,12 +40,7 @@ const std::string joda::docparsing::JSONFileDirectorySource::toQueryString() {
 }
 
 joda::docparsing::JSONFileDirectorySource::JSONFileDirectorySource(
-    std::string dirPath, bool lineSeparated, const double sample)
-    : IImportSource(lineSeparated ? JODA_JSON_FILE_LINESEPERATED_READER_FLAG
-                                  : JODA_JSON_FILE_BEAUTIFIED_READER_FLAG,
-                    lineSeparated ? JODA_JSON_TEXT_PARSER_FLAG
-                                  : JODA_JSON_TEXT_STREAM_PARSER_FLAG,
-                    JODA_JSON_CONTAINER_FLAG),
+    std::string dirPath, bool lineSeparated, const double sample) :
       lineSeparated(lineSeparated),
       dirPath(std::move(dirPath)),
       sample(sample) {}
@@ -79,5 +51,5 @@ size_t joda::docparsing::JSONFileDirectorySource::estimatedSize() {
   for (auto&& item : dfs.getFilesInDir(dirPath, "json")) {
     size += dfs.getFileSize(item);
   }
-  return size*config::text_binary_mod;
+  return size * config::text_binary_mod;
 }

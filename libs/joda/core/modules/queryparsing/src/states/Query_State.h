@@ -4,8 +4,6 @@
 
 #ifndef JODA_QUERY_STATE_H
 #define JODA_QUERY_STATE_H
-#include <joda/query/predicate/Predicate.h>
-
 #include <stack>
 namespace joda::queryparsing::grammar {
 
@@ -18,11 +16,15 @@ struct queriesState {
   std::vector<std::shared_ptr<joda::query::Query>> q{};
 };
 
+struct joinState;  // Forward declare JoinState for subquery expressions
+
 struct queryState {
   inline queryState() { q = std::make_shared<joda::query::Query>(); }
 
+  // JOIN Subquery
   template <typename Input>
-  inline queryState(const Input &in, queriesState &qs) {q = std::make_shared<joda::query::Query>();}
+  inline void success(const Input &in,
+                      joinState &qs);  // Forward declare success function
 
   template <typename Input>
   inline void success(const Input &in){};
@@ -35,11 +37,16 @@ struct queryState {
   std::shared_ptr<joda::query::Query> q;
 };
 
-enum Comparison { NONE, GT, GTE, LT, LTE, EQU, NEQU };
-enum stackMod { BASE, AND, OR };
-
-typedef std::stack<
-    std::pair<stackMod, std::vector<std::unique_ptr<joda::query::Predicate>>>>
-    predStack;
 }  // namespace joda::queryparsing::grammar
+
+#include "Join_State.h"  // Import joinstate (cyclic dependency)
+
+namespace joda::queryparsing::grammar {
+// Actually define function
+template <typename Input>
+inline void queryState::success(const Input &in, joinState &qs) {
+  qs.subquery = std::move(q);
+}
+}  // namespace joda::queryparsing::grammar
+
 #endif  // JODA_QUERY_STATE_H

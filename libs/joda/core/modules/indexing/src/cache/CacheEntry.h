@@ -6,9 +6,11 @@
 #define JODA_CACHEENTRY_H
 
 #include <joda/document/RapidJsonDocument.h>
-#include <joda/query/predicate/Predicate.h>
-#include <joda/query/predicate/PredicateVisitor.h>
+#include <joda/query/values/IValueProvider.h>
+
 #include <unordered_set>
+#include <boost/dynamic_bitset.hpp>
+
 
 /**
  * One Cache entry, containing the result documents and the predicate
@@ -16,17 +18,17 @@
  */
 class CacheEntry {
  public:
-  typedef std::vector<bool> CacheIndex;
+  using CacheIndex = boost::dynamic_bitset<>;
+  
   CacheEntry(std::shared_ptr<const CacheIndex> docs,
-             std::shared_ptr<joda::query::Predicate> predicate);
-  CacheEntry(std::shared_ptr<const CacheIndex> &&docs,
-             std::shared_ptr<joda::query::Predicate> predicate);
+             std::unique_ptr<joda::query::IValueProvider>&& predicate);
+  CacheEntry(std::shared_ptr<const CacheIndex>&& docs,
+             std::unique_ptr<joda::query::IValueProvider>&& predicate);
 
   /**
-   * Executes the given PredicateVisitor on the stored predicate
-   * @param v A reference to the PredicateVisitor to execute
+   * Returns the used predicate
    */
-  void acceptPredicate(joda::query::PredicateVisitor &v);
+  const std::unique_ptr<joda::query::IValueProvider>& getPredicate() const;
 
   /**
    * Returns the set of documents in the CacheEntry
@@ -42,7 +44,7 @@ class CacheEntry {
 
  protected:
   std::shared_ptr<const CacheIndex> docs;
-  std::shared_ptr<joda::query::Predicate> predicate;
+  std::unique_ptr<joda::query::IValueProvider> predicate;
 };
 
 #endif  // JODA_CACHEENTRY_H

@@ -26,11 +26,11 @@
   // "postCreateCommand": "uname -a",
 
 	// Uncomment the next line if you want to publish any ports.
-	 "appPort": ["5632:5632"],
+	// "appPort": ["5632:5632"],
 
 	// Uncomment the next line to run commands after the container is created.
 	// "postCreateCommand": "uname -a",
 
 	// Add the IDs of extensions you want installed when the container is created in the array below.
-	"extensions": ["ms-vscode.cmake-tools","ms-vscode.cpptools"]
+	"extensions": ["ms-vscode.cmake-tools","ms-vscode.cpptools", "ms-vscode.cpptools-extension-pack"]
 }

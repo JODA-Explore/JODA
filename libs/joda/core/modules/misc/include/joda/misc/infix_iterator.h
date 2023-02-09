@@ -7,8 +7,13 @@
 #include <iterator>
 #include <ostream>
 template <class T, class charT = char, class traits = std::char_traits<charT> >
-class infix_ostream_iterator
-    : public std::iterator<std::output_iterator_tag, void, void, void, void> {
+class infix_ostream_iterator {
+  using iterator_category = std::output_iterator_tag;
+  using value_type = void;
+  using difference_type = void;
+  using pointer = void;
+  using reference = void;
+
   std::basic_ostream<charT, traits> *os;
   charT const *delimiter;
   bool first_elem;

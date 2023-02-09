@@ -32,7 +32,7 @@ target_include_directories(joda-core-query-agg-lib
 find_package(rapidjson REQUIRED)
 target_include_directories(joda-core-query-agg-lib INTERFACE ${RAPIDJSON_INCLUDE_DIRS})
 
-target_link_libraries(joda-core-query-agg-lib INTERFACE joda-core-query-values-lib joda-core-concurrency-lib)
+target_link_libraries(joda-core-query-agg-lib INTERFACE joda-core-query-values-lib joda-core-concurrency-lib )
 
 #########################################################
 #

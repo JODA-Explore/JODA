@@ -9,9 +9,6 @@
 #include <joda/parser/JSONFileSource.h>
 #include <joda/query/Query.h>
 #include <joda/query/aggregation/IAggregator.h>
-#include <joda/query/predicate/PredFWD.h>
-#include <joda/query/predicate/Predicate.h>
-#include <joda/query/predicate/ToStringVisitor.h>
 #include <joda/query/project/DeletePointerProjector.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
@@ -27,9 +24,8 @@
 class QueryParsingTest : public ::testing::Test {
  protected:
   const std::string default_storeVar = {};
-  const std::string default_deleteVar = {};
-  const std::unique_ptr<joda::query::Predicate> default_choosePred =
-      std::make_unique<joda::query::ValToPredicate>(true);
+  const std::unique_ptr<joda::query::IValueProvider> default_choosePred =
+      std::make_unique<joda::query::BoolProvider>(true);
   const std::vector<std::unique_ptr<joda::docparsing::IImportSource>>
       default_importSources = {};
   const std::unique_ptr<IExportDestination> default_exportDestination = nullptr;
@@ -64,19 +60,14 @@ class QueryParsingTest : public ::testing::Test {
     EXPECT_TRUE(false);
   }
 
-  std::unique_ptr<joda::query::Predicate> IValToPred(
-      std::unique_ptr<joda::query::IValueProvider>&& val) {
-    return std::make_unique<joda::query::ValToPredicate>(std::move(val));
-  }
 
-  void checkEqual(const std::shared_ptr<joda::query::Predicate>& toTest,
-                  const std::unique_ptr<joda::query::Predicate>& control) {
-    joda::query::ToStringVisitor stringify;
-    toTest->accept(stringify);
-    auto testStr = stringify.popString();
-    control->accept(stringify);
-    auto contrStr = stringify.popString();
-    EXPECT_STREQ(testStr.c_str(), contrStr.c_str());
+  void checkEqual(const std::unique_ptr<joda::query::IValueProvider>& toTest,
+                  const std::unique_ptr<joda::query::IValueProvider>& control) {
+    auto testStr = toTest->toString();
+    auto contrStr = control->toString();
+    auto to_test = testStr.c_str();
+    auto control_string = testStr.c_str();
+    EXPECT_STREQ(to_test, control_string);
   }
 
   void equals(
@@ -84,11 +75,11 @@ class QueryParsingTest : public ::testing::Test {
       const std::vector<std::unique_ptr<joda::docparsing::IImportSource>>&
           importSources,
       const std::unique_ptr<IExportDestination>& exportDestination,
-      const std::string& delete_var,
-      const std::unique_ptr<joda::query::Predicate>& choosePred,
+      const std::unique_ptr<joda::query::IValueProvider>& choosePred,
       const std::vector<std::unique_ptr<joda::query::IProjector>>& proj,
       const std::vector<std::unique_ptr<joda::query::ISetProjector>>& setproj,
       const std::vector<std::unique_ptr<joda::query::IAggregator>>& agg) {
+    ASSERT_NE(q, nullptr);
     // LOAD X
     EXPECT_STREQ(loadVar.c_str(), q->getLoad().c_str());
 
@@ -112,11 +103,8 @@ class QueryParsingTest : public ::testing::Test {
                    q->getExportDestination()->toString().c_str());
     }
 
-    // DELETE
-    EXPECT_STREQ(delete_var.c_str(), q->getDelete().c_str());
-
     // CHOOSE
-    checkEqual(q->getPredicate(), choosePred);
+    checkEqual(q->getChoose(), choosePred);
 
     // AS (normal)
     EXPECT_EQ(proj.size(), q->getProjectors().size());
@@ -157,47 +145,47 @@ TEST_F(QueryParsingTest, Analyze) {
 TEST_F(QueryParsingTest, SimpleLoad) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, default_proj, default_setproj,
+          default_choosePred, default_proj, default_setproj,
          default_agg);
 }
 
 TEST_F(QueryParsingTest, LOADLoad) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD LOAD"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "LOAD", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, default_proj, default_setproj,
+          default_choosePred, default_proj, default_setproj,
          default_agg);
 }
 
 TEST_F(QueryParsingTest, LoadFile) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A FROM FILE \"json.json\""););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::vector<std::unique_ptr<joda::docparsing::IImportSource>> sources;
   sources.push_back(std::make_unique<joda::docparsing::JSONFileSource>(
       "json.json", false, 1));
-  equals(q, "A", sources, default_exportDestination, default_deleteVar,
+  equals(q, "A", sources, default_exportDestination, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
 TEST_F(QueryParsingTest, LoadFiles) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A FROM FILES \"tmp\""););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::vector<std::unique_ptr<joda::docparsing::IImportSource>> sources;
   sources.push_back(std::make_unique<joda::docparsing::JSONFileDirectorySource>(
       "tmp", false, 1));
-  equals(q, "A", sources, default_exportDestination, default_deleteVar,
+  equals(q, "A", sources, default_exportDestination, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
 TEST_F(QueryParsingTest, LoadFileNoVar) {
   std::shared_ptr<joda::query::Query> q;
-  q = parseQuery("LOAD FROM FILE \"json.json\"", false);
-  EXPECT_EQ(q, nullptr);
+  q = parseQuery("LOAD FROM FILE \"json.json\"", true);
+  ASSERT_NE(q, nullptr);
 }
 
 TEST_F(QueryParsingTest, LoadMissingVar) {
@@ -215,11 +203,11 @@ TEST_F(QueryParsingTest, MissingLoad) {
 TEST_F(QueryParsingTest, LoadFileSample) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A FROM FILE \"json.json\" SAMPLE 0.5"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::vector<std::unique_ptr<joda::docparsing::IImportSource>> sources;
   sources.push_back(std::make_unique<joda::docparsing::JSONFileSource>(
       "json.json", false, 0.5));
-  equals(q, "A", sources, default_exportDestination, default_deleteVar,
+  equals(q, "A", sources, default_exportDestination, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
@@ -233,7 +221,7 @@ FROM FILE "one.json" LINESEPARATED,
 FROM FILES "tmp2" LINESEPARATED
 )#";
   EXPECT_NO_THROW(q = parseQuery(query););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::vector<std::unique_ptr<joda::docparsing::IImportSource>> sources;
   sources.push_back(std::make_unique<joda::docparsing::JSONFileSource>(
       "json.json", false, 0.5));
@@ -243,7 +231,7 @@ FROM FILES "tmp2" LINESEPARATED
       std::make_unique<joda::docparsing::JSONFileSource>("one.json", true, 1));
   sources.push_back(std::make_unique<joda::docparsing::JSONFileDirectorySource>(
       "tmp2", true, 1));
-  equals(q, "A", sources, default_exportDestination, default_deleteVar,
+  equals(q, "A", sources, default_exportDestination, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
@@ -251,11 +239,11 @@ TEST_F(QueryParsingTest, LoadFileSample2) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A FROM FILE \"json.json\" LINESEPARATED "
                                  "SAMPLE 0.382783464824757"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::vector<std::unique_ptr<joda::docparsing::IImportSource>> sources;
   sources.push_back(std::make_unique<joda::docparsing::JSONFileSource>(
       "json.json", true, 0.382783464824757));
-  equals(q, "A", sources, default_exportDestination, default_deleteVar,
+  equals(q, "A", sources, default_exportDestination, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
@@ -289,21 +277,21 @@ TEST_F(QueryParsingTest, LoadFileSampleMinus) {
 TEST_F(QueryParsingTest, SimpleStore) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A STORE B"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   auto store = std::make_shared<JSONStorage>("B");
   std::unique_ptr<IExportDestination> e =
       std::make_unique<StorageExport>(store);
-  equals(q, "A", default_importSources, e, default_deleteVar,
+  equals(q, "A", default_importSources, e, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
 TEST_F(QueryParsingTest, StoreFILE) {
   std::shared_ptr<joda::query::Query> q;
   EXPECT_NO_THROW(q = parseQuery("LOAD A STORE AS FILE \"json.json\""););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   std::unique_ptr<IExportDestination> e =
       std::make_unique<FileExport>("json.json");
-  equals(q, "A", default_importSources, e, default_deleteVar,
+  equals(q, "A", default_importSources, e, 
          default_choosePred, default_proj, default_setproj, default_agg);
 }
 
@@ -314,43 +302,26 @@ TEST_F(QueryParsingTest, StoreFileAndVar) {
 }
 
 /*
- * DELETE Tests
- */
-TEST_F(QueryParsingTest, SimpleDelete) {
-  std::shared_ptr<joda::query::Query> q;
-  EXPECT_NO_THROW(q = parseQuery("LOAD A DELETE B"););
-  EXPECT_NE(q, nullptr);
-  equals(q, "A", default_importSources, default_exportDestination, "B",
-         default_choosePred, default_proj, default_setproj, default_agg);
-}
-
-TEST_F(QueryParsingTest, DeleteMissingVar) {
-  std::shared_ptr<joda::query::Query> q;
-  q = parseQuery("LOAD A DELETE ", false);
-  EXPECT_EQ(q, nullptr);
-}
-
-/*
  * CHOOSE
  */
 TEST_F(QueryParsingTest, ChooseTrue) {
   std::shared_ptr<joda::query::Query> q;
-  auto truePred = IValToPred(std::make_unique<joda::query::BoolProvider>(true));
+  std::unique_ptr<joda::query::IValueProvider> truePred = std::make_unique<joda::query::BoolProvider>(true);
   EXPECT_NO_THROW(q = parseQuery("LOAD A CHOOSE true"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, truePred, default_proj, default_setproj,
+          truePred, default_proj, default_setproj,
          default_agg);
 }
 
 TEST_F(QueryParsingTest, ChooseFalse) {
   std::shared_ptr<joda::query::Query> q;
-  auto falsePred =
-      IValToPred(std::make_unique<joda::query::BoolProvider>(false));
+  std::unique_ptr<joda::query::IValueProvider> falsePred =
+      std::make_unique<joda::query::BoolProvider>(false);
   EXPECT_NO_THROW(q = parseQuery("LOAD A CHOOSE false"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, falsePred, default_proj, default_setproj,
+          falsePred, default_proj, default_setproj,
          default_agg);
 }
 
@@ -362,22 +333,22 @@ TEST_F(QueryParsingTest, ChooseNumber) {
 
 TEST_F(QueryParsingTest, StaticEvalAnd) {
   std::shared_ptr<joda::query::Query> q;
-  auto falsePred =
-      IValToPred(std::make_unique<joda::query::BoolProvider>(false));
+  std::unique_ptr<joda::query::IValueProvider> falsePred =
+      std::make_unique<joda::query::BoolProvider>(false);
   EXPECT_NO_THROW(q = parseQuery("LOAD A CHOOSE true && false"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, falsePred, default_proj, default_setproj,
+          falsePred, default_proj, default_setproj,
          default_agg);
 }
 
 TEST_F(QueryParsingTest, StaticEvalOr) {
   std::shared_ptr<joda::query::Query> q;
-  auto truePred = IValToPred(std::make_unique<joda::query::BoolProvider>(true));
+  std::unique_ptr<joda::query::IValueProvider> truePred = std::make_unique<joda::query::BoolProvider>(true);
   EXPECT_NO_THROW(q = parseQuery("LOAD A CHOOSE true || false"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, truePred, default_proj, default_setproj,
+          truePred, default_proj, default_setproj,
          default_agg);
 }
 
@@ -387,9 +358,9 @@ TEST_F(QueryParsingTest, ASValue) {
   proj.push_back(std::make_unique<joda::query::ValueProviderProjector>(
       "/a", std::make_unique<joda::query::PiProvider>()));
   EXPECT_NO_THROW(q = parseQuery("LOAD A AS ('/a' : PI())"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, proj, default_setproj,
+          default_choosePred, proj, default_setproj,
          default_agg);
 }
 
@@ -399,9 +370,9 @@ TEST_F(QueryParsingTest, ASPtr) {
   proj.push_back(std::make_unique<joda::query::ValueProviderProjector>(
       "/a", std::make_unique<joda::query::PointerProvider>("/b")));
   EXPECT_NO_THROW(q = parseQuery("LOAD A AS ('/a' : '/b')"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, proj, default_setproj,
+          default_choosePred, proj, default_setproj,
          default_agg);
 }
 
@@ -409,9 +380,9 @@ TEST_F(QueryParsingTest, ASAll) {
   std::shared_ptr<joda::query::Query> q;
 
   EXPECT_NO_THROW(q = parseQuery("LOAD A AS *"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, default_proj, default_setproj,
+          default_choosePred, default_proj, default_setproj,
          default_agg);
 }
 
@@ -421,9 +392,9 @@ TEST_F(QueryParsingTest, ASAllButOne) {
   proj.push_back(std::make_unique<joda::query::PointerCopyProject>("", ""));
   proj.push_back(std::make_unique<joda::query::DeletePointerProjector>("/a"));
   EXPECT_NO_THROW(q = parseQuery("LOAD A AS *, ('/a':)"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, proj, default_setproj,
+          default_choosePred, proj, default_setproj,
          default_agg);
 }
 
@@ -435,9 +406,9 @@ TEST_F(QueryParsingTest, ASMultiple) {
   proj.push_back(std::make_unique<joda::query::ValueProviderProjector>(
       "/b", std::make_unique<joda::query::PiProvider>()));
   EXPECT_NO_THROW(q = parseQuery("LOAD A AS *, ('/a':),   ('/b' : PI())"););
-  EXPECT_NE(q, nullptr);
+  ASSERT_NE(q, nullptr);
   equals(q, "A", default_importSources, default_exportDestination,
-         default_deleteVar, default_choosePred, proj, default_setproj,
+          default_choosePred, proj, default_setproj,
          default_agg);
 }
 
@@ -463,6 +434,10 @@ TEST_F(QueryParsingTest, NumParseTest) {
   EXPECT_STREQ(qstring.c_str(), q->toString().c_str());
 }
 
+/**
+ * Agg
+ */
+
 TEST_F(QueryParsingTest, MixedAggTest) {
   std::shared_ptr<joda::query::Query> q;
   std::string qstring =
@@ -480,3 +455,19 @@ TEST_F(QueryParsingTest, MixedAggTest) {
   EXPECT_STREQ(aggs[3]->toString().c_str(),
                "'/collect':GROUP COLLECT('/old') AS coll BY ''");
 }
+
+TEST_F(QueryParsingTest, WindowAggTest) {
+  std::shared_ptr<joda::query::Query> q;
+  std::string qstring =
+      R"(LOAD A AGG WINDOW (100) ('/count':COUNT(''))  )";
+  EXPECT_NO_THROW(q = parseQuery(qstring));
+
+  ASSERT_NE(q, nullptr);
+  EXPECT_EQ(q->getAggWindowSize(), 100);
+  auto& aggs = q->getAggregators();
+  ASSERT_EQ(aggs.size(), 1);
+
+  EXPECT_STREQ(aggs[0]->toString().c_str(), "'/count':COUNT('')");
+}
+
+// TODO STREAM Test

@@ -18,15 +18,16 @@ class FileOrigin : public IDPositionOrigin {
  public:
   // Identifies an interval of a File where one/or multiple documents can be
   // parsed without skipping through the file
-  typedef std::pair<FILEID, std::pair<long, long>> ParseInterval;
+  typedef std::pair<FILEID, std::pair<size_t, size_t>> ParseInterval;
 
   FileOrigin(FILEID id);
-  FileOrigin(FILEID file, long start, long end, int index);
+  FileOrigin(FILEID file, size_t start, size_t end, int index);
   /*
    * Inherited
    */
   bool isReparsable() const override;
   std::unique_ptr<IOrigin> clone() const override;
+  virtual std::unique_ptr<IDPositionOrigin> cloneSpecific() const override;
   std::unique_ptr<RJDocument> reparse(RJMemoryPoolAlloc &alloc) const override;
   std::string toString() const override;
   std::string getStreamName() const override;

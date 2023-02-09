@@ -33,6 +33,7 @@ struct storeState {
 
   std::unique_ptr<joda::query::IValueProvider> groupvalprov;
   std::unique_ptr<IExportDestination> exportDest;
+  std::string custom_name;
 };
 }  // namespace joda::queryparsing::grammar
 #endif  // JODA_STORE_STATE_H

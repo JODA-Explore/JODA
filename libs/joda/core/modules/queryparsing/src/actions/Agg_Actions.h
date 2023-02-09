@@ -11,6 +11,9 @@
 #include <joda/query/aggregation/GroupAggregator.h>
 #include <joda/query/aggregation/HistogramAggregator.h>
 #include <joda/query/aggregation/NumberAggregator.h>
+#include <string>
+#include <ranges>
+#include <joda/extension/ModuleRegister.h>
 
 #include "../grammar/Grammar.h"
 #include "../states/States.h"
@@ -83,6 +86,22 @@ struct aggExpAction<aggKW_HISTOGRAM> {
 };
 
 template <>
+struct aggExpAction<aggKW_CUSTOM> {
+  template <typename Input>
+  static bool apply(const Input &in, aggState &state) {
+    assert(state.aggfun == NOAGG);
+    auto custom_funcs = joda::extension::ModuleRegister::getInstance().getAggFuncs();
+    std::string custom_func = in.string();
+    if (std::ranges::find(custom_funcs,custom_func) == custom_funcs.end()) {
+      return false;
+    }
+    state.aggfun = CUSTOM;
+    state.customAggName = custom_func;
+    return true;
+  }
+};
+
+template <>
 struct aggExpAction<aggToPointer> {
   template <typename Input>
   static void apply(const Input &in, aggState &state) {
@@ -112,6 +131,28 @@ struct aggExpAction<aggAsIdent> {
     DCHECK(state.groupAs.empty());
     std::string as = in.string();
     state.groupAs = as;
+  }
+};
+
+template <>
+struct aggExpAction<aggWindowSize> {
+  template <typename Input>
+  static bool apply(const Input &in, aggState &state) {
+    std::string str = in.string();
+    try {
+      state.windowSize = std::stoull(str);
+    } catch (std::exception &e) {
+      LOG(ERROR) << "Could not parse number: " << str << ". " << e.what();
+      return false;
+    }
+    return true;
+  }
+};
+
+template <>
+struct aggExpAction<aggWindowExp> {
+  static void apply0(aggState &state) {
+    state.window = true;
   }
 };
 
@@ -161,8 +202,11 @@ struct aggExpAction<aggSingleExp> {
         case HISTOGRAM:
           agg = std::make_unique<joda::query::HistogramAggregator>(
               state.toPointer, std::move(state.valprov));
+        case CUSTOM:
+          agg = joda::extension::ModuleRegister::getInstance().getAggFunc(state.customAggName,
+              state.toPointer, std::move(state.valprov));
       }
-    } catch (joda::query::WrongParameterException &e) {
+    } catch (const std::exception &e) {
       throw tao::pegtl::parse_error(e.what(), in);
     }
     DCHECK(agg != nullptr);
@@ -182,6 +226,7 @@ struct aggExpAction<aggSingleExp> {
     state.valprov.clear();
     state.toPointer.clear();
     state.aggfun = NOAGG;
+    state.customAggName.clear();
     assert(state.valprov.empty());
     assert(state.toPointer.empty());
     assert(state.aggfun == NOAGG);

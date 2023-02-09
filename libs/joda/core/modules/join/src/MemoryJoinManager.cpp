@@ -116,25 +116,31 @@ if(val.IsDouble()){
   return NOT_HASHABLE;
 }
 
-void MemoryJoinManager::loadJoin(std::shared_ptr<JSONStorage>& load) {
+std::shared_ptr<JSONContainer> MemoryJoinManager::loadOneJoinCont() {
   std::lock_guard<std::mutex> guard(mut);
-  size_t size = 0;
-  for (auto&& doc : docs) {
-    size += doc.second->getMemSize();
-  }
-  auto cont =
-      std::make_unique<JSONContainer>(size / config::storageRetrievalThreads);
-  for (auto&& doc : docs) {
-    auto tmpdoc = std::make_unique<RJDocument>(cont->getAlloc());
-    doc.second->deepCopyInto(*tmpdoc);
-    if (!cont->hasSpace(doc.second->getMemSize()) && cont->size() > 0) {
-      cont->finalize();
-      load->insertDocuments(std::move(cont));
-      cont = std::make_unique<JSONContainer>(size /
-                                             config::storageRetrievalThreads);
+  if(docs.empty()) return nullptr;
+  if (joinSize == 0) {
+    for (auto&& doc : docs) {
+      joinSize += doc.second->getMemSize();
     }
-    cont->insertDoc(std::move(tmpdoc), std::make_unique<TemporaryOrigin>());
   }
+
+  auto cont =
+      std::make_unique<JSONContainer>(joinSize / config::storageRetrievalThreads);
+  while(!docs.empty()){
+    auto tmpdoc = std::make_unique<RJDocument>(cont->getAlloc());
+    auto it = docs.begin();
+    auto joinDoc = std::move(it->second);
+    docs.erase(it);
+    joinDoc->deepCopyInto(*tmpdoc);
+    
+    cont->insertDoc(std::move(tmpdoc), std::make_unique<TemporaryOrigin>());
+    if (!cont->hasSpace(0) && cont->size() > 0) {
+      cont->finalize();
+      return cont;
+    }
+  }
+  
   cont->finalize();
-  load->insertDocuments(std::move(cont));
+  return cont;
 }

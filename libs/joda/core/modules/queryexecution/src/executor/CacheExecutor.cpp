@@ -3,16 +3,16 @@
 //
 
 #include "CacheExecutor.h"
-#include "joda/config/config.h"
 
-#include <joda/query/predicate/ToStringVisitor.h>
+#include <joda/query/values/BinaryBoolProvider.h>
+
 #include <utility>
+
+#include "joda/config/config.h"
 #include "joda/query/Query.h"
 
 CacheExecutor::CacheExecutor(const joda::query::Query& q) {
-  joda::query::ToStringVisitor stringify;
-  q.getPredicate()->accept(stringify);
-  predStr = stringify.popString();
+  predStr = q.getChoose()->toString();
 }
 
 unsigned long CacheExecutor::estimatedWork(const joda::query::Query& q,
@@ -21,26 +21,28 @@ unsigned long CacheExecutor::estimatedWork(const joda::query::Query& q,
     return NOT_APPLICABLE;
   }
   // Check for complete matching cache
-  if (cont.getCache()->cacheAvailable(predStr)){
+  if (cont.getCache()->cacheAvailable(predStr)) {
     return 0;
   }
 
   // Check if root Pred is AND and check LHS and RHS:
-  auto pred = q.getPredicate();
-  auto *base = pred.get();
-  auto *andpred = dynamic_cast<joda::query::AndPredicate*>(base);
-  if (andpred == nullptr){
+  auto pred = q.getChoose();
+  auto* base = pred.get();
+  auto* andpred = dynamic_cast<joda::query::AndProvider*>(base);
+  if (andpred == nullptr) {
     return NOT_APPLICABLE;
   }
 
-  auto &lhs = andpred->getLHS();
+  const auto& lhs = andpred->getLhs();
   auto lhscache = cont.getCache()->getBestCache(lhs);
-  auto lhscacheSize = lhscache == nullptr ? NOT_APPLICABLE : std::count(lhscache->begin(), lhscache->end(), true);
-  auto &rhs = andpred->getRHS();
+  auto lhscacheSize = lhscache == nullptr ? NOT_APPLICABLE
+                                          : lhscache->count();
+  const auto& rhs = andpred->getRhs();
   auto rhscache = cont.getCache()->getBestCache(rhs);
-  auto rhscacheSize = rhscache == nullptr ? NOT_APPLICABLE : std::count(rhscache->begin(), rhscache->end(), true);
+  auto rhscacheSize = rhscache == nullptr ? NOT_APPLICABLE
+                                          : rhscache->count();
 
-  if (lhscacheSize <= rhscacheSize){
+  if (lhscacheSize <= rhscacheSize) {
     return lhscacheSize;
   }
   return rhscacheSize;
@@ -56,29 +58,76 @@ std::shared_ptr<const DocIndex> CacheExecutor::execute(
     return wholecache;
   }
 
-  auto pred = q.getPredicate();
-  auto *base = pred.get();
-  auto *andpred = dynamic_cast<joda::query::AndPredicate*>(base);
-  DCHECK(andpred != nullptr) << "This should not be possible, as else NOT_APPLICABLE would have been returned";
+  auto pred = q.getChoose();
+  auto* base = pred.get();
+  auto* andpred = dynamic_cast<joda::query::AndProvider*>(base);
+  DCHECK(andpred != nullptr) << "This should not be possible, as else "
+                                "NOT_APPLICABLE would have been returned";
 
-  auto &lhs = andpred->getLHS();
+  auto& lhs = andpred->getLhs();
   auto lhscache = cont.getCache()->getBestCache(lhs);
-  auto lhscacheSize = lhscache == nullptr ? NOT_APPLICABLE : std::count(lhscache->begin(), lhscache->end(), true);
-  auto &rhs = andpred->getRHS();
+  auto lhscacheSize = lhscache == nullptr ? NOT_APPLICABLE
+                                          : lhscache->count();
+  auto& rhs = andpred->getRhs();
   auto rhscache = cont.getCache()->getBestCache(rhs);
-  auto rhscacheSize = rhscache == nullptr ? NOT_APPLICABLE : std::count(rhscache->begin(), rhscache->end(), true);
-  if (lhscacheSize <= rhscacheSize){
+  auto rhscacheSize = rhscache == nullptr ? NOT_APPLICABLE
+                                          : rhscache->count();
+  RJMemoryPoolAlloc alloc;
+  DocIndex ind(cont.size());
+  if (lhscacheSize <= rhscacheSize) {
     // Check RHS predicate against LHS cache
-    std::function<bool(RapidJsonDocument&, size_t)> fun =
-      [&](RapidJsonDocument& doc, size_t i) { return rhs->check(doc); };
-    auto res = cont.forAllRet<std::function<bool(RapidJsonDocument&, size_t)>,bool>(fun,*lhscache);
-    return std::make_shared<const DocIndex>(res);
+    std::function<void(RapidJsonDocument&, size_t)> fun =
+        [&rhs,&alloc, &ind](RapidJsonDocument& doc, size_t i) {
+          if (!rhs->isAtom()) {
+            auto ret = rhs->getValue(doc, alloc);
+            if (ret == nullptr) {
+              ind[i] = false;
+              return;
+            }
+            if (!ret->IsBool()) {
+              ind[i] = false;
+              return;
+            }
+            ind[i] = ret->GetBool();
+          } else {
+            auto ret = rhs->getAtomValue(doc, alloc);
+            if (!ret.IsBool()) {
+              ind[i] = false;
+              return;
+            }
+            ind[i] = ret.GetBool();
+          }
+        };
+    cont.forAll(
+            fun, *lhscache);
+    return std::make_shared<const DocIndex>(std::move(ind));
   }
   // Check LHS predicate against RHS cache
-  std::function<bool(RapidJsonDocument&, size_t)> fun =
-      [&](RapidJsonDocument& doc, size_t i) { return lhs->check(doc); };
-  auto res = cont.forAllRet<std::function<bool(RapidJsonDocument&, size_t)>,bool>(fun,*rhscache);
-  return std::make_shared<const DocIndex>(res);
+  std::function<void(RapidJsonDocument&, size_t)> fun =
+      [&lhs,&alloc,&ind](RapidJsonDocument& doc, size_t i) {
+        if (!lhs->isAtom()) {
+          auto ret = lhs->getValue(doc, alloc);
+          if (ret == nullptr) {
+            ind[i] = false;
+            return;
+          }
+          if (!ret->IsBool()) {
+            ind[i] = false;
+            return;
+          }
+          ind[i] = ret->GetBool();
+        } else {
+          auto ret = lhs->getAtomValue(doc, alloc);
+          if (!ret.IsBool()) {
+            ind[i] = false;
+            return;
+          }
+          ind[i] = ret.GetBool();
+        }
+      };
+    cont.forAll(
+            fun, *rhscache);
+    return std::make_shared<const DocIndex>(std::move(ind));
 }
 
 std::string CacheExecutor::getName() const { return "CacheExecutor"; }
@@ -89,8 +138,8 @@ void CacheExecutor::alwaysAfterSelect(const joda::query::Query& q,
   /*
    * Set Cache
    */
-  auto queryPredicate = q.getPredicate();
-  cont.getCache()->addQueryResult(sel, q.getPredicate());
+  auto queryPredicate = q.getChoose();
+  cont.getCache()->addQueryResult(sel, queryPredicate);
 }
 
 std::unique_ptr<IQueryExecutor> CacheExecutor::duplicate() {

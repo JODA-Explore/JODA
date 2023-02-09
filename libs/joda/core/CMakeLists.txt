@@ -1,9 +1,12 @@
 project(JODA-Core CXX)
 
+
 add_subdirectory(modules/config)
 add_subdirectory(modules/parser)
 add_subdirectory(modules/concurrency)
 add_subdirectory(modules/misc)
+add_subdirectory(modules/extension)
+add_subdirectory(modules/pipelineatomics)
 add_subdirectory(modules/storage)
 add_subdirectory(modules/indexing)
 add_subdirectory(modules/query)
@@ -61,10 +64,11 @@ target_link_libraries(joda-core-lib
         joda-core-join-lib
         joda-core-fs-lib
         joda-core-queryparsing-lib
+        joda-core-extension-lib
         joda-core-queryexecution-lib
         joda-core-network-lib
         joda-core-cli-lib
-        joda-core-export-lib
+        joda-core-export-lib  
         )
 
 

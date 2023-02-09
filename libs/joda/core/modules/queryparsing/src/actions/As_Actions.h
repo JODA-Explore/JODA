@@ -8,7 +8,6 @@
 #include "../grammar/Grammar.h"
 #include "../states/States.h"
 
-#include "joda/query/predicate/ValToPredicate.h"
 #include "joda/query/project/DeletePointerProjector.h"
 #include "joda/query/project/FlattenProjector.h"
 #include "joda/query/project/ValueProviderProjector.h"

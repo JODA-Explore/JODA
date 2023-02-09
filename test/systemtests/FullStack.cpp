@@ -5,7 +5,7 @@
 #include <gtest/gtest.h>
 #include <joda/config/ConfigParser.h>
 #include <joda/fs/DirectoryRegister.h>
-#include <joda/queryexecution/QueryPlan.h>
+#include <joda/queryexecution/PipelineQueryPlan.h>
 #include <joda/queryparsing/QueryParser.h>
 #include <joda/storage/collection/StorageCollection.h>
 #include <boost/program_options/variables_map.hpp>
@@ -17,7 +17,8 @@ class FullStack : public ::testing::Test {
     char* a = &array[0];
     char** argv = &a;
     FLAGS_minloglevel = 0;
-    joda::filesystem::DirectoryRegister::getInstance();
+    [[maybe_unused]] volatile auto& dr = joda::filesystem::DirectoryRegister::getInstance();
+    [[maybe_unused]] volatile auto& sc = StorageCollection::getInstance();
     auto options = ConfigParser::parseConfigs(1, argv);
     ConfigParser::setConfig(options);
     config::enable_views = false;
@@ -25,8 +26,10 @@ class FullStack : public ::testing::Test {
     config::storeJson = false;
 #endif
     initNumtest();
+  }
 
-    StorageCollection::getInstance().removeStorage("A");
+  void TearDown() override {
+    StorageCollection::getInstance().clear();
   }
 
   static unsigned long executeQuery(const char* qstr) {
@@ -34,8 +37,9 @@ class FullStack : public ::testing::Test {
     auto q = qp.parse(qstr);
     EXPECT_NE(q, nullptr) << qp.getLastError();
     if (q == nullptr) return 0;
-    QueryPlan plan(q);
-    return plan.executeQuery(nullptr);
+    joda::queryexecution::PipelineQueryPlan plan;
+    plan.createPlan(q);
+    return plan.executeAndGetResult();
   }
 
  protected:
@@ -51,7 +55,7 @@ class FullStack : public ::testing::Test {
 
 TEST_F(FullStack, LOADNumtest) {
   auto resultId = executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+      "LOAD LOADNumtest FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   ASSERT_NE(result, nullptr);
   ASSERT_EQ(result->size(), 5);
@@ -65,7 +69,7 @@ TEST_F(FullStack, LOADNumtest) {
 TEST_F(FullStack, LOADNumtestSimJaccard) {
   config::sim_measure = config::PATH_JACCARD;
   auto resultId = executeQuery(
-      "LOAD PATH_JACCARD FROM FILE \"./test/data/json/numtest.json\" "
+      "LOAD LOADNumtestSimJaccard FROM FILE \"./test/data/json/numtest.json\" "
       "LINESEPARATED ");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
@@ -79,11 +83,7 @@ TEST_F(FullStack, LOADNumtestSimJaccard) {
 }
 
 TEST_F(FullStack, LOADFormattest) {
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD B FROM FILE \"./test/data/json/formattest.json\"");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+  auto resultId = executeQuery("LOAD LOADFormattest FROM FILE \"./test/data/json/formattest.json\"");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->size(), 5);
@@ -96,16 +96,12 @@ TEST_F(FullStack, LOADFormattest) {
 }
 
 TEST_F(FullStack, CHOOSEString) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("CHOOSEString"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A CHOOSE '/desc' == \"ones\"");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD CHOOSEString FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("CHOOSEString"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("CHOOSEString")->size(), 5);
+  auto resultId = executeQuery("LOAD CHOOSEString CHOOSE '/desc' == \"ones\"");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   ASSERT_EQ(result->size(), 1);
@@ -114,64 +110,48 @@ TEST_F(FullStack, CHOOSEString) {
 }
 
 TEST_F(FullStack, CHOOSENum) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("CHOOSENum"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A CHOOSE '/c' == 1");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD CHOOSENum FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("CHOOSENum"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("CHOOSENum")->size(), 5);
+  auto resultId = executeQuery("LOAD CHOOSENum CHOOSE '/c' == 1");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->size(), 3);
 }
 
 TEST_F(FullStack, ChooseConstTrue) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("ChooseConstTrue"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A CHOOSE 1 == 1");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD ChooseConstTrue FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("ChooseConstTrue"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("ChooseConstTrue")->size(), 5);
+  auto resultId = executeQuery("LOAD ChooseConstTrue CHOOSE 1 == 1");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->size(), 5);
 }
 
 TEST_F(FullStack, ChooseConstFalse) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("ChooseConstFalse"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A CHOOSE 1 != 1");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD ChooseConstFalse FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("ChooseConstFalse"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("ChooseConstFalse")->size(), 5);
+  auto resultId = executeQuery("LOAD ChooseConstFalse CHOOSE 1 != 1");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   EXPECT_EQ(result->size(), 0);
 }
 
 TEST_F(FullStack, AGGNum) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("AGGNum"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A AGG ('':SUM('/b'))");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD AGGNum FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("AGGNum"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("AGGNum")->size(), 5);
+  auto resultId = executeQuery("LOAD AGGNum AGG ('':SUM('/b'))");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   ASSERT_EQ(result->size(), 1);
@@ -180,16 +160,12 @@ TEST_F(FullStack, AGGNum) {
 }
 
 TEST_F(FullStack, GroupAggNum) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("GroupAggNum"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A AGG ('': GROUP COUNT('/a') AS count BY '/c' )");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD GroupAggNum FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("GroupAggNum"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("GroupAggNum")->size(), 5);
+  auto resultId = executeQuery("LOAD GroupAggNum AGG ('': GROUP COUNT('/a') AS count BY '/c' )");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   ASSERT_NE(result, nullptr);
   ASSERT_EQ(result->size(), 1);
@@ -223,16 +199,12 @@ TEST_F(FullStack, GroupAggNum) {
 }
 
 TEST_F(FullStack, Proj) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
+  ASSERT_FALSE(StorageCollection::getInstance().storageExists("Proj"));
   executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A AS ('/a': \"fixed\")");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  auto resultId = plan.executeQuery(nullptr);
+      "LOAD Proj FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
+  ASSERT_TRUE(StorageCollection::getInstance().storageExists("Proj"));
+  ASSERT_EQ(StorageCollection::getInstance().getStorage("Proj")->size(), 5);
+  auto resultId = executeQuery("LOAD Proj AS ('/a': \"fixed\")");
   auto result = StorageCollection::getInstance().getStorage(resultId);
   EXPECT_NE(result, nullptr);
   ASSERT_EQ(result->size(), 5);
@@ -240,19 +212,4 @@ TEST_F(FullStack, Proj) {
   for (const auto& item : stringify) {
     EXPECT_STREQ(item.c_str(), R"({"a":"fixed"})");
   }
-}
-
-TEST_F(FullStack, Delete) {
-  ASSERT_FALSE(StorageCollection::getInstance().storageExists("A"));
-  executeQuery(
-      "LOAD A FROM FILE \"./test/data/json/numtest.json\" LINESEPARATED");
-  ASSERT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  ASSERT_EQ(StorageCollection::getInstance().getStorage("A")->size(), 5);
-  joda::queryparsing::QueryParser qp;
-  auto q = qp.parse("LOAD A DELETE A");
-  ASSERT_NE(q, nullptr) << qp.getLastError();
-  QueryPlan plan(q);
-  EXPECT_TRUE(StorageCollection::getInstance().storageExists("A"));
-  plan.executeQuery(nullptr);
-  EXPECT_FALSE(StorageCollection::getInstance().storageExists("A"));
 }

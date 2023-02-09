@@ -5,7 +5,7 @@
 #ifndef JODA_CONSTEXECUTOR_H
 #define JODA_CONSTEXECUTOR_H
 
-#include "IQueryExecutor.h"
+#include <joda/queryexecution/IQueryExecutor.h>
 class ConstExecutor : public IQueryExecutor {
  public:
   unsigned long estimatedWork(const joda::query::Query &q,

@@ -19,10 +19,15 @@ std::unique_ptr<RJDocument> FileOrigin::reparse(
   if (!f.is_open()) {
     LOG(ERROR) << "Could not open file: " << id;
   }
+  rapidjson::IStreamWrapper isw(f);
 
-  line.resize(static_cast<unsigned long>(end - start));
-  f.seekg(std::max(0l, start));  // Go to start of interval
-  f.read(&line[0], end - start);
+  line.resize(end - start);
+  while (isw.Tell() < start) {
+    isw.Take();
+  }
+  while(isw.Tell() < end) {
+    line.push_back(isw.Take());
+  }
 
   /*
    * Parse
@@ -43,12 +48,16 @@ std::unique_ptr<RJDocument> FileOrigin::reparse(
   return doc;
 }
 
-FileOrigin::FileOrigin(FILEID file, long start, long end, int index)
+FileOrigin::FileOrigin(FILEID file, size_t start, size_t end, int index)
     : IDPositionOrigin(file, start, end, index) {
   CHECK(FileNameRepo::validFile(file));
 }
 
 std::unique_ptr<IOrigin> FileOrigin::clone() const {
+  return std::make_unique<FileOrigin>(id, start, end, index);
+}
+
+std::unique_ptr<IDPositionOrigin> FileOrigin::cloneSpecific() const {
   return std::make_unique<FileOrigin>(id, start, end, index);
 }
 
@@ -78,10 +87,13 @@ std::vector<FileOrigin::ParseInterval> FileOrigin::mergeIntervals(
   ret.push_back(intervals[0]);
   // Merge continuous intervals
   for (size_t i = 1; i < intervals.size(); i++) {
-    if (intervals[i].first == ret.back().first &&
-        intervals[i].second.first <= ret.back().second.second) {
-      ret.back().second.second =
-          std::max(ret.back().second.second, intervals[i].second.second);
+    const auto& new_interval = intervals[i];
+    auto& last_interval = ret.back();
+    if (new_interval.first == last_interval.first && // Same file && new.start <= old.end
+        new_interval.second.first <= last_interval.second.second) {
+          // old.end = new.end
+      last_interval.second.second = 
+          std::max(last_interval.second.second, new_interval.second.second);
     } else {
       ret.push_back(intervals[i]);
     }
@@ -99,6 +111,9 @@ std::vector<std::unique_ptr<RJDocument>> FileOrigin::parseIntervals(
   FILEID lastFile = intervals[0].first;
   std::ifstream f =
       std::ifstream(g_FileNameRepoInstance.getFile(intervals[0].first));
+      
+  rapidjson::IStreamWrapper isw(f);
+
   for (auto &interval : intervals) {
     
     // Close old file and open new one if interval file change
@@ -106,32 +121,34 @@ std::vector<std::unique_ptr<RJDocument>> FileOrigin::parseIntervals(
       f.close();
       f = std::ifstream(g_FileNameRepoInstance.getFile(interval.first));
       lastFile = interval.first;
+      // Placement New
+      isw.~BasicIStreamWrapper<std::istream>();
+      new(&isw) rapidjson::IStreamWrapper(f); 
     }
     if (!f.is_open()) {
       LOG(ERROR) << "Could not open file: " << interval.first;
       continue;
     }
 
-    if (f.tellg() < interval.second.first) {
-      f.seekg(std::max(0l, interval.second.first));  // Go to start of interval
-                                                     // if not already there
+    while (isw.Tell() < interval.second.first) {
+      isw.Take();
     }
 
-    rapidjson::IStreamWrapper isw(f);
     /*
      * Parse
      */
     
-    auto start = f.tellg();
-    while (f.tellg() < interval.second.second-1 && f.tellg() >= 0) {
+    auto start = isw.Tell();
+    while (isw.Tell() < interval.second.second-1 && isw.Tell() >= 0) {
       auto doc = std::make_unique<RJDocument>(&alloc);
       // Parse all documents in the interval
       doc->ParseStream<rapidjson::kParseStopWhenDoneFlag>(isw);
-      auto end = f.tellg();
-      if (end < 0) {   // Sometimes seek ends at -1
-        break;
-      }
+      auto end = isw.Tell();
+
       if (doc->HasParseError()) {
+        if(doc->GetParseError() == rapidjson::kParseErrorDocumentEmpty && f.eof()){
+          continue; //Trailing whitespace is included in parser interval
+        }
         LOG(ERROR) << "Reparse error: "
                    << rapidjson::GetParseError_En(doc->GetParseError())
                    << " in File: "

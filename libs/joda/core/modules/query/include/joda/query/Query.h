@@ -8,11 +8,12 @@
 #include <joda/document/RapidJsonDocument.h>
 #include <joda/export/IExportDestination.h>
 #include <joda/join/JoinManager.h>
+#include <joda/join/relation/ContainerJoinExecutor.h>
 #include <joda/parser/IImportSource.h>
 #include <joda/query/aggregation/IAggregator.h>
-#include <joda/query/predicate/Predicate.h>
 #include <joda/query/project/IProjector.h>
 #include <joda/query/project/ISetProjector.h>
+
 #include <memory>
 
 namespace joda::query {
@@ -47,31 +48,47 @@ class Query {
   void setLoad(const std::string &load);
 
   /**
-   *
-   * @return the name of the collection which should be deleted after the query,
-   * or "" if none
+   * Sets the join executor of the JOIN command.
    */
-  const std::string &getDelete() const;
+  void setJoinExecutor(std::shared_ptr<join::ContainerJoinExecutor> executor);
 
   /**
-   *
-   * @param del the name of the collection which should be deleted after the
-   * query, or "" if none
+   * Returns the join executor of the JOIN command, if any.
    */
-  void setDelete(const std::string &del);
+  std::shared_ptr<join::ContainerJoinExecutor> getJoinExecutor() const;
+
+  /*
+   * Sets the join partner of the JOIN command.
+   */
+  void setJoinPartner(const std::string &partner);
+
+  /**
+   * Returns the join partner of the JOIN command, if any.
+   */
+  std::string getJoinPartner() const;
+
+  /**
+   * Sets the subquery of the JOIN command.
+   */
+  void setSubQuery(std::shared_ptr<Query> subquery);
+
+  /**
+   * Returns the subquery of the JOIN command, if any.
+   */
+  std::shared_ptr<Query> getSubQuery() const;
 
   /**
    *
    * @param predicate the predicate of the CHOOSE expression
    */
-  void setPredicate(std::unique_ptr<Predicate> &&predicate);
+  void setChoose(std::unique_ptr<IValueProvider> &&predicate);
 
   /**
    *
    * @return a copy of the CHOOSE expression predicate, default:
-   * ValToPredicate(TrueValue)
+   * TrueValue
    */
-  std::unique_ptr<Predicate> getPredicate() const;
+  std::unique_ptr<IValueProvider> getChoose() const;
 
   /**
    * Adds a Projection expression to the query
@@ -105,7 +122,28 @@ class Query {
   /**
    * @return True if the query contains an aggregation, else False
    */
-  bool hasAggregators();
+  bool hasAggregators() const;
+
+  /**
+   * Sets the aggregation window size
+   * @param size The size of the aggregation window, 0 means no window
+   */
+  void setAggWindowSize(uint64_t size);
+
+  /**
+   * Gets the aggregation window size
+   * @return The size of the aggregation window, 0 means no window
+   * @see setAggWindowSize
+   */
+  uint64_t getAggWindowSize() const;
+
+  /**
+   * Returns wether or not the query contains an aggregation window
+   * @return True if the query contains an aggregation window, else False
+   * @see getAggWindowSize
+   */
+  bool hasAggWindow() const;
+
   /**
    *
    * @return The list of aggregators, default: []
@@ -119,7 +157,7 @@ class Query {
   const std::shared_ptr<JoinManager> &getStoreJoinManager() const;
   void setStoreJoinManager(
       const std::shared_ptr<JoinManager> &storeJoinManager);
-  std::unique_ptr<IExportDestination> &getExportDestination();
+  const std::unique_ptr<IExportDestination> &getExportDestination() const;
   void setExportDestination(
       std::unique_ptr<IExportDestination> &&exportDestination);
 
@@ -137,6 +175,24 @@ class Query {
    * @return True if the predicate is const, else False
    */
   bool chooseIsConst(bool &val) const;
+
+  /**
+   * Checks whether the CHOOSE predicate has to be evaluated
+   * @return true if the predicate has to be evaluated, else false
+   */
+  bool hasChoose() const;
+
+  /**
+   * Checks whether the AS statement has to be evaluated
+   * @return true if the statement has to be evaluated, else false
+   */
+  bool hasAS() const;
+
+  /**
+   * Checks whether the JOIN statement has to be evaluated
+   * @return true if the statement has to be evaluated, else false
+   */
+  bool hasJOIN() const;
 
   /**
    * Checks whether the AS transformations can be evaluated with views.
@@ -164,9 +220,16 @@ class Query {
   std::shared_ptr<JoinManager> loadJoinManager = nullptr;
 
   /*
+   * Join command
+   */
+  std::shared_ptr<join::ContainerJoinExecutor> joinExecutor;
+  std::string joinPartner;
+  std::shared_ptr<Query> subQuery;
+
+  /*
    * Choose command
    */
-  std::unique_ptr<Predicate> pred = nullptr;
+  std::unique_ptr<IValueProvider> pred = nullptr;
 
   /*
    * AS command
@@ -179,18 +242,14 @@ class Query {
    */
 
   std::vector<std::unique_ptr<IAggregator>> aggregators{};
+  uint64_t aggWindowSize = 0;
 
   /*
    * Store command
    */
-  std::unique_ptr<IExportDestination> exportDestination;
+  std::unique_ptr<IExportDestination> exportDestination = nullptr;
   std::shared_ptr<JoinManager> storeJoinManager = nullptr;
   std::string store;
-
-  /*
-   * Delete command
-   */
-  std::string del;
 };
 }  // namespace joda::query
 

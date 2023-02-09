@@ -13,9 +13,9 @@ class JoinExport : public IExportDestination {
   JoinExport(std::shared_ptr<JoinManager> joinManager);
   const std::string toString() override;
   const std::string toQueryString() override;
-
+  virtual PipelineTaskPtr getTask() const override;
+  
  protected:
-  void exportContainer(std::unique_ptr<JSONContainer> &&cont) override;
   const std::string getTimerName() override;
 
  private:

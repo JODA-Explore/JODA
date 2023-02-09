@@ -92,6 +92,7 @@ class ListAttributesHandler {
 
   void reset() {
     attributes.clear();
+    firstObject = false;
     stack = 0;
   }
 

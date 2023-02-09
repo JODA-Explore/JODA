@@ -12,7 +12,11 @@ set(joda-core-network-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/DeleteRequest.cpp
         ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/DeleteRequest.h
         ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/SystemRequest.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/SystemRequest.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/SystemRequest.h        
+        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/ModulePost.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/ModulePost.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/ModuleRequest.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/ModuleRequest.h
         ${CMAKE_CURRENT_LIST_DIR}/src/apiv2/API.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/network/apiv2/API.h
         ${CMAKE_CURRENT_LIST_DIR}/src/Favicon.h

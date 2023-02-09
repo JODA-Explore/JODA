@@ -14,19 +14,17 @@ namespace joda::docparsing {
 class JSONFileSource : public joda::docparsing::IImportSource {
  public:
   JSONFileSource(const std::string &filePath, const double sample = 1);
+
   JSONFileSource(std::string filePath, bool lineSeparated,
                  const double sample = 1.0);
-  void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t
-          &queue,
-      JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t::
-          ptok_t &ptok) override;
-  void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t &queue,
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t
-          &ptok) override;
+
+  virtual std::unique_ptr<queryexecution::pipeline::tasks::PipelineTask>
+  getTask() const override;
+
   size_t estimatedSize() override;
+
   const std::string toString() override;
+
   const std::string toQueryString() override;
 
  private:

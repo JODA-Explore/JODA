@@ -6,6 +6,7 @@
 #define JODA_QUEUE_H
 #include <glog/logging.h>
 #include <joda/concurrency/concurrentqueue.h>
+
 #include <cstdint>
 
 #define JODA_FLAG_T uint32_t
@@ -23,7 +24,8 @@ struct JODA_SHARED_QUEUE {
 
   JODA_SHARED_QUEUE(size_t minCapacity, size_t maxExplicitProducers,
                     size_t maxImplicit = 0)
-      : queue(minCapacity, maxExplicitProducers, maxImplicit) {}
+      : queue(minCapacity, 0, maxExplicitProducers),
+        min_capacity(minCapacity) {}
   JODA_SHARED_QUEUE() : queue() {}
 
   JODA_SHARED_QUEUE(JODA_SHARED_QUEUE& c) = delete;
@@ -38,10 +40,21 @@ struct JODA_SHARED_QUEUE {
   std::atomic<size_t> added{};
   std::atomic<size_t> removed{};
   std::atomic<bool> finishedWriting{};
+  size_t min_capacity = 0;
+  unsigned int id = 0;
+
+  void setId(unsigned int id) { this->id = id; }
 
   bool isFinished() {
     return finishedWriting.load(std::memory_order_acquire) &&
            inQueue.load(std::memory_order_acquire) == 0;
+  }
+
+  bool isBusy() {
+    return inQueue.load(std::memory_order_acquire) > (min_capacity * 0.1);
+  }
+  bool isFull() {
+    return inQueue.load(std::memory_order_acquire) > (min_capacity * 0.8);
   }
 
   std::pair<size_t, size_t> getStatistics() {
@@ -52,36 +65,26 @@ struct JODA_SHARED_QUEUE {
 
   void registerProducer() {
     auto i = registered.fetch_add(1);
-    DLOG(INFO) << "Registered " << i + 1 << "th producer in queue " << flag;
+    DLOG(INFO) << "Registered " << i + 1 << "th producer in queue " << id;
     DCHECK(i >= 0);
   }
 
   void unregisterProducer() {
     auto i = registered.fetch_sub(1);
-    DLOG(INFO) << "Unregistered " << i << "th producer in queue " << flag;
+    DLOG(INFO) << "Unregistered " << i << "th producer in queue " << id;
     DCHECK(i >= 0);
   }
 
   void producerFinished() {
     auto i = finished.fetch_add(1, std::memory_order_release);
-    DLOG(INFO) << i + 1 << " Producer finished in queue " << flag;
+    DLOG(INFO) << i + 1 << " Producer finished in queue " << id;
     if (finished.load(std::memory_order_acquire) >= registered.load()) {
       finishedWriting.store(true, std::memory_order_release);
-      DLOG(INFO) << "Queue " << flag << "  finished";
+      DLOG(INFO) << "Queue " << id << "  finished";
     }
   }
 
-  void send(typename queue_t::producer_token_t& ptok, payload_t&& e) {
-    using namespace std::chrono_literals;
-    auto te = std::move(e);
-    while (!queue.try_enqueue(ptok, std::move(te))) {
-      std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
-    }
-    inQueue.fetch_add(1, std::memory_order_release);
-    added.fetch_add(1, std::memory_order_relaxed);
-  }
-
-  void send(payload_t&& e) {
+  bool send(typename queue_t::producer_token_t& ptok, payload_t&& e) {
     using namespace std::chrono_literals;
     auto te = std::move(e);
     while (!queue.try_enqueue(std::move(te))) {
@@ -89,46 +92,109 @@ struct JODA_SHARED_QUEUE {
     }
     inQueue.fetch_add(1, std::memory_order_release);
     added.fetch_add(1, std::memory_order_relaxed);
+    return true;
+  }
+
+  bool send(payload_t&& e) {
+    using namespace std::chrono_literals;
+    auto te = std::move(e);
+    while (!queue.try_enqueue(std::move(te))) {
+      std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
+    }
+    inQueue.fetch_add(1, std::memory_order_release);
+    added.fetch_add(1, std::memory_order_relaxed);
+    return true;
   }
 
   template <typename It>
-  void send(typename queue_t::producer_token_t& ptok, It e, size_t count) {
+  bool send(typename queue_t::producer_token_t& ptok, It e, size_t count) {
     using namespace std::chrono_literals;
-    while (!queue.try_enqueue_bulk(ptok, e, count)) {
+    int tries = 0;
+    while (!queue.try_enqueue_bulk(e, count)) {
       std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
+      if (!isBusy()) {
+        tries++;
+        if (tries > 10) {
+          return false;
+        }
+      }
+    }
+    inQueue.fetch_add(count, std::memory_order_release);
+    added.fetch_add(count, std::memory_order_relaxed);
+    return true;
+  }
+
+  template <typename It>
+  void forceSend(typename queue_t::producer_token_t& ptok, It e, size_t count) {
+    using namespace std::chrono_literals;
+    int tries = 0;
+    while (!queue.try_enqueue_bulk(e, count)) {
+      tries++;
+      std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
+      if (tries > 10) {
+        LOG(INFO) << "Queue " << id << " full. Forcing reallocation.";
+        queue.enqueue_bulk(e, count);
+        break;
+      }
     }
     inQueue.fetch_add(count, std::memory_order_release);
     added.fetch_add(count, std::memory_order_relaxed);
   }
 
+  bool forceSend(typename queue_t::producer_token_t& ptok, payload_t&& e) {
+    using namespace std::chrono_literals;
+    auto te = std::move(e);
+    int tries = 0;
+    while (!queue.try_enqueue(std::move(e))) {
+      tries++;
+      std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
+      if (tries > 10) {
+        LOG(INFO) << "Queue " << id << " full. Forcing reallocation.";
+        queue.enqueue(std::move(e));
+        break;
+      }
+    }
+    inQueue.fetch_add(1, std::memory_order_release);
+    added.fetch_add(1, std::memory_order_relaxed);
+    return true;
+  }
+
   template <typename It>
-  void send(It e, size_t count) {
+  bool send(It e, size_t count) {
     using namespace std::chrono_literals;
     while (!queue.try_enqueue_bulk(e, count)) {
       std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
     }
     inQueue.fetch_add(count, std::memory_order_release);
     added.fetch_add(count, std::memory_order_relaxed);
+    return true;
   }
 
-  void retrieve(payload_t& e) {
+  bool retrieve(payload_t& e) {
     using namespace std::chrono_literals;
+    size_t i = 0;
     while (!queue.try_dequeue(e)) {
       std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
-      if (isFinished()) return;
+      i++;
+      if (isFinished() || i > 10) return false;
     }
     inQueue.fetch_sub(1, std::memory_order_release);
     removed.fetch_add(1, std::memory_order_relaxed);
+    return true;
   }
 
-  void retrieve(typename queue_t::consumer_token_t& ctok, payload_t& e) {
+
+  bool retrieve(typename queue_t::consumer_token_t& ctok, payload_t& e) {
     using namespace std::chrono_literals;
+    size_t i = 0;
     while (!queue.try_dequeue(ctok, e)) {
       std::this_thread::sleep_for(JODA_QUEUE_WAIT_TIME);
-      if (isFinished()) return;
+      i++;
+      if (isFinished() || i > 10) return false;
     }
     inQueue.fetch_sub(1, std::memory_order_release);
     removed.fetch_add(1, std::memory_order_relaxed);
+    return true;
   }
 
   template <typename It>
@@ -144,6 +210,17 @@ struct JODA_SHARED_QUEUE {
   size_t retrieve(typename queue_t::consumer_token_t& ctok, It e,
                   size_t count) {
     auto i = queue.try_dequeue_bulk(ctok, e, count);
+    if (i > 0) {
+      inQueue.fetch_sub(i, std::memory_order_release);
+      removed.fetch_add(i, std::memory_order_relaxed);
+    }
+    return i;
+  }
+
+  template <typename It>
+  size_t retrieve(typename queue_t::producer_token_t& ptok, It e,
+                  size_t count) {
+    auto i = queue.try_dequeue_bulk(e, count);
     if (i > 0) {
       inQueue.fetch_sub(i, std::memory_order_release);
       removed.fetch_add(i, std::memory_order_relaxed);

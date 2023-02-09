@@ -105,4 +105,5 @@ lib/
 
 **/node_modules
 
+*.pyc
 

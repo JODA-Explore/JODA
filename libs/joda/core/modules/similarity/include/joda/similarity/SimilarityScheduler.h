@@ -28,8 +28,7 @@ class SimilarityScheduler {
    * through.
    * @param contSize The size of newly constructed containers.
    */
-  explicit SimilarityScheduler(JsonContainerQueue::queue_t *queue,
-                               size_t contSize = 0);
+  explicit SimilarityScheduler(size_t contSize = 0);
 
   /**
    * Uses the string representation of a document to get the container in which
@@ -72,8 +71,9 @@ class SimilarityScheduler {
    * @param doc The document to schedule
    * @param origin The origin of the document
    * @param size The size of the document (bytes)
+   * @return The container, if is is full and finished
    */
-  void scheduleDocument(ContainerIdentifier id,
+  std::unique_ptr<JSONContainer> scheduleDocument(ContainerIdentifier id,
                         std::unique_ptr<RJDocument> &&doc,
                         std::unique_ptr<IOrigin> &&origin, size_t size);
   virtual ~SimilarityScheduler() = default;
@@ -82,14 +82,13 @@ class SimilarityScheduler {
    * Finalizes the Scheduler.
    * Has to be called before deconstructing it.
    */
-  void finalize();
+  std::vector<std::unique_ptr<JSONContainer>> finalize();
 
  private:
   typedef std::pair<std::unique_ptr<JSONContainer>,
                     typename similarityRepresentation<SIM>::Representation>
       sCont;
   std::vector<sCont> container;
-  JsonContainerQueue::queue_t *queue;
   size_t contSize;
   std::unique_ptr<JSONContainer> createContainer(size_t contSize) const;
 };
@@ -110,24 +109,25 @@ std::unique_ptr<RJDocument> SimilarityScheduler<SIM>::getNewDoc(
 }
 
 template <typename SIM>
-void SimilarityScheduler<SIM>::scheduleDocument(
+std::unique_ptr<JSONContainer> SimilarityScheduler<SIM>::scheduleDocument(
     ContainerIdentifier id, std::unique_ptr<RJDocument> &&doc,
     std::unique_ptr<IOrigin> &&origin, size_t size) {
   container[id].first->insertDoc(std::move(doc), std::move(origin));
   if (!(container[id].first->hasSpace(0) || container[id].first->size() == 0)) {
     container[id].first->finalize();
     DCHECK(container[id].first != nullptr);
-    queue->send(std::move(container[id].first));  // Enqueue
+    auto ret = std::move(container[id].first);  // Enqueue
     DCHECK(container[id].first == nullptr);
     container[id].first = createContainer(contSize);
     DCHECK(container[id].first != nullptr);
+    return ret;
   }
+  return nullptr;
 }
 
 template <typename SIM>
-SimilarityScheduler<SIM>::SimilarityScheduler(
-    JsonContainerQueue::queue_t *queue, size_t contSize)
-    : queue(queue), contSize(contSize) {}
+SimilarityScheduler<SIM>::SimilarityScheduler( size_t contSize)
+    : contSize(contSize) {}
 
 template <typename SIM>
 typename SimilarityScheduler<SIM>::ContainerIdentifier
@@ -212,20 +212,21 @@ SimilarityScheduler<SIM>::getContainerForDoc(
 }
 
 template <typename SIM>
-void SimilarityScheduler<SIM>::finalize() {
+std::vector<std::unique_ptr<JSONContainer>> SimilarityScheduler<SIM>::finalize() {
   // TODO Merge small container
-
+  std::vector<std::unique_ptr<JSONContainer>> ret;
+  ret.reserve(container.size());
   for (auto &&currentSimContainer : container) {
     auto &currentContainer = currentSimContainer.first;
     if (currentContainer->size() > 0) {
       DCHECK(currentContainer != nullptr);
       currentContainer->finalize();
       if (!config::storeJson) currentContainer->removeDocuments();
-      queue->send(std::move(currentContainer));  // Enqueue
+      ret.emplace_back(std::move(currentContainer));
       DCHECK(currentContainer == nullptr);
     }
   }
-  queue->producerFinished();
+  return ret;
 }
 
 #endif  // JODA_SIMILARITYSCHEDULER_H

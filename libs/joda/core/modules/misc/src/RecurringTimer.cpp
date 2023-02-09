@@ -5,6 +5,8 @@
 #include "../include/joda/misc/RecurringTimer.h"
 #include <glog/logging.h>
 #include "../include/joda/misc/Timer.h"
+#include <iomanip>
+
 std::chrono::time_point<std::chrono::system_clock> RecurringTimer::now() {
   return std::chrono::high_resolution_clock::now();
 }
@@ -40,4 +42,37 @@ double RecurringTimer::durationSeconds() const {
   auto ms =
       std::chrono::duration_cast<std::chrono::milliseconds>(totalDur).count();
   return static_cast<double>(ms) / 1000.0;
+}
+
+
+std::string RecurringTimer::toHumanDuration() const {
+  auto input_ms = std::chrono::duration_cast<std::chrono::milliseconds>(totalDur);
+  return Timer::toHumanDuration(input_ms);
+}
+
+void RecurringTimer::addTimer(const RecurringTimer& other){
+  totalDur += other.totalDur;
+}
+
+void RecurringTimer::addTimer(const std::chrono::milliseconds& other){
+  totalDur += other;
+}
+
+std::chrono::milliseconds RecurringTimer::getDuration() const{
+  return std::chrono::duration_cast<std::chrono::milliseconds>(totalDur);
+}
+
+
+
+ScopeTimer RecurringTimer::timeScope() {
+  return ScopeTimer(this);
+}
+
+
+ScopeTimer::ScopeTimer(RecurringTimer* timer) : timer(timer) {
+  timer->start();
+}
+
+ScopeTimer::~ScopeTimer() {
+  timer->stop();
 }

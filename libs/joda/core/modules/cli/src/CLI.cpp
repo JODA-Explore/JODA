@@ -8,7 +8,6 @@
 #include <joda/config/ConfigParser.h>
 #include <joda/misc/MemoryUtility.h>
 #include <joda/misc/ProgressBar.h>
-#include <joda/query/predicate/ToStringVisitor.h>
 
 #include <fstream>
 #include <iostream>
@@ -35,7 +34,9 @@ int cmd_startup() {
   return 1;
 }
 
+// On Enter command
 int bind_cr(int /*count*/, int /*key*/) {
+  // Start at end
   int i = rl_end - 1;
   auto string = rl_copy_text(0, rl_end);
   std::string tmpline(string, static_cast<unsigned long>(rl_end));
@@ -43,10 +44,12 @@ int bind_cr(int /*count*/, int /*key*/) {
   while (i >= 0) {
     DCHECK(i < static_cast<int>(tmpline.size()))
         << "i is initialized incorrectly";
+    // Skip space chars
     if (std::isspace(tmpline[i]) != 0) {
       i--;
       continue;
     }
+    // On ';' commit command
     if (tmpline[i] == ';') {
       printf("\n");
       rl_done = 1;
@@ -111,65 +114,44 @@ void joda::cli::CLI::parseCommand() {
   }
 }
 
-void joda::cli::CLI::start(const std::vector<std::string>& onceQueries) {
-  size_t query_i = 0;
-  if (isatty(STDIN_FILENO) != 0) {
-    using_history();
-    rl_readline_name = "JODA";
-    if (config::persistent_history) {
-      if (config::history_file.empty()) {
-        LOG(WARNING)
-            << "Persistent history enabled, but no history file provided.";
-      } else {
-        DLOG(INFO) << "Reading history file \"" << config::history_file << "\"";
-        auto err = read_history(config::history_file.c_str());
-        if (err != 0) {
-          if (err == 2) {
-            DLOG(INFO)
-                << "History file does not exist. Will be created on exit.";
-          } else {
-            LOG(ERROR) << "Error " << err << " while reading history file.";
-          }
+void joda::cli::CLI::start() {
+  using_history();
+  rl_readline_name = "JODA";
+  if (config::persistent_history) {
+    if (config::history_file.empty()) {
+      LOG(WARNING)
+          << "Persistent history enabled, but no history file provided.";
+    } else {
+      DLOG(INFO) << "Reading history file \"" << config::history_file << "\"";
+      auto err = read_history(config::history_file.c_str());
+      if (err != 0) {
+        if (err == 2) {
+          DLOG(INFO) << "History file does not exist. Will be created on exit.";
         } else {
-          if (config::history_size > 0) {
-            stifle_history(config::history_size);
-          }
+          LOG(ERROR) << "Error " << err << " while reading history file.";
+        }
+      } else {
+        if (config::history_size > 0) {
+          stifle_history(config::history_size);
         }
       }
     }
-    rl_startup_hook = joda::cli_funcs::cmd_startup;
-    rl_attempted_completion_function = CLICompletion::completer;
-    std::vector<std::string> cmds;
-    for (const auto& command : getCommands()) {
-      cmds.emplace_back(command.first + ";");
-    }
-    CLICompletion::setCli_commands(cmds);
   }
+  rl_startup_hook = joda::cli_funcs::cmd_startup;
+  rl_attempted_completion_function = CLICompletion::completer;
+  std::vector<std::string> cmds;
+  for (const auto& command : getCommands()) {
+    cmds.emplace_back(command.first + ";");
+  }
+  CLICompletion::setCli_commands(cmds);
+
   while (execute) {
-    std::shared_ptr<query::Query> query;
-    if (onceQueries.empty()) {
-      parseCommand();
-    } else {
-      auto onceQuery = onceQueries[query_i];
-      joda::queryparsing::QueryParser qp;
-      query = qp.parse(onceQuery);
-      query_i++;
-      auto lastQuery = query_i == onceQueries.size();
-      if (lastQuery) {
-        executeQuery(query, lastQuery);
-      } else {
-        executeNonInteractiveQuery(query, lastQuery);
-      }
-      if (lastQuery) {
-        execute = false;
-      }
-    }
-    if (isatty(STDIN_FILENO) != 0) {
-      DLOG(INFO) << "Writing history file";
-      auto err = write_history(config::history_file.c_str());
-      if (err != 0) {
-        LOG(ERROR) << "Error " << err << " while writing history file.";
-      }
+    parseCommand();
+
+    DLOG(INFO) << "Writing history file";
+    auto err = write_history(config::history_file.c_str());
+    if (err != 0) {
+      LOG(ERROR) << "Error " << err << " while writing history file.";
     }
   }
 }
@@ -226,19 +208,19 @@ void joda::cli::CLI::query(std::string& query) {
       executeQuery(q);
     }
   }
-
 }
+
 void joda::cli::CLI::executeNonInteractiveQuery(
-    std::shared_ptr<query::Query>& query, bool printResult) {
+    std::shared_ptr<query::Query>& query, bool printResult, bool lastQuery) {
   if (query != nullptr) {
     auto queryName = query->toString();
     bench.addValue("Query", queryName);
-    query::ToStringVisitor stringify;
 
     try {
       Timer timer;
-      QueryPlan plan(query);
-      auto resultId = plan.executeQuery(&bench);
+      queryexecution::PipelineQueryPlan plan;
+      plan.createPlan(query);
+      auto resultId = plan.executeAndGetResult(&bench);
 
       auto result = checkResult(resultId);
 
@@ -284,12 +266,11 @@ std::shared_ptr<JSONStorage> joda::cli::CLI::checkResult(
     }
   } else {
     if (resultId == JODA_STORE_EXTERNAL_RS_ID) {
-      std::cout << "Successfully exported data." << std::endl;
+      print("Successfully exported data.");
     } else if (resultId == JODA_STORE_SKIPPED_QUERY_ID) {
-      std::cout << "Skipped query because of an error, see log for more info."
-                << std::endl;
+      print("Skipped query because of an error, see log for more info.");
     } else if (resultId == JODA_STORE_EMPTY_RS_ID) {
-      std::cout << "Input set and result set are empty" << std::endl;
+      print("Input set and result set are empty");
     } else {
       std::cerr << "Got invalid result set" << std::endl;
     }
@@ -298,78 +279,81 @@ std::shared_ptr<JSONStorage> joda::cli::CLI::checkResult(
 }
 
 void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query>& query,
-                                  bool printResult) {
+                                  bool printResult, bool lastQuery) {
   if (simpleMode) {
-    return executeNonInteractiveQuery(query, printResult);
+    return executeNonInteractiveQuery(query, printResult, lastQuery);
   }
   if (query != nullptr) {
     auto queryName = query->toString();
     bench.addValue("Query", queryName);
-    query::ToStringVisitor stringify;
     try {
       Timer timer;
-      QueryPlan plan(query);
-      std::chrono::steady_clock::time_point start =
-          std::chrono::steady_clock::now();
-      auto resultTaks = std::async(std::launch::async,
-                                   [&]() { return plan.executeQuery(&bench); });
-      bool parsing = plan.hasToParse();
+      queryexecution::PipelineQueryPlan plan;
+      plan.createPlan(query);
+      // std::chrono::steady_clock::time_point start =
+      //     std::chrono::steady_clock::now();
+      // PrintResult only true
+      auto resultTaks = std::async(std::launch::async, [&]() {
+        return plan.executeAndGetResult(&bench);
+      });
+
       ResultInterface interface;
       std::unique_ptr<ProgressBar<size_t>> pb;
       std::string status1;
       std::string status2;
 
-      if (parsing) {
-        status2 = "Waiting for parser";
-      }
       interface.setStatus2(status2);
       while (resultTaks.wait_for(std::chrono::milliseconds(100)) !=
              std::future_status::ready) {
-        auto stats = plan.getStats();
-        std::chrono::steady_clock::time_point now =
-            std::chrono::steady_clock::now();
-        auto time_elapsed =
-            std::chrono::duration_cast<std::chrono::milliseconds>(now - start)
-                .count();
-        double seconds = static_cast<double>(time_elapsed) / 1000.0;
-        double parsedDocs_s = static_cast<double>(stats.parsedDocs) / seconds;
-        double parsedConts_s = static_cast<double>(stats.parsedConts) / seconds;
-        if (pb == nullptr && stats.numConts > 0) {
-          pb = std::make_unique<ProgressBar<size_t>>(stats.numConts, 30);
-        }
-        if (pb != nullptr) {
-          pb->set_progress(stats.evaluatedConts);
-        }
-        if (parsing) {
-          status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs) +
-                    "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
-                    "/s)/" + std::to_string(stats.parsedConts) + "(" +
-                    std::to_string(static_cast<size_t>(parsedConts_s)) + "/s)";
-        }
-        interface.setStatus1(status1);
-        if (pb != nullptr) {
-          auto str = pb->toString();
-          interface.setStatus2(str);
-        }
+        // auto stats = plan.getStats();
+        // std::chrono::steady_clock::time_point now =
+        //     std::chrono::steady_clock::now();
+        // auto time_elapsed =
+        //     std::chrono::duration_cast<std::chrono::milliseconds>(now -
+        //     start)
+        //         .count();
+        // double seconds = static_cast<double>(time_elapsed) / 1000.0;
+        // double parsedDocs_s = static_cast<double>(stats.parsedDocs) /
+        // seconds; double parsedConts_s =
+        // static_cast<double>(stats.parsedConts) / seconds; if (pb == nullptr
+        // && stats.numConts > 0) {
+        //   pb = std::make_unique<ProgressBar<size_t>>(stats.numConts, 30);
+        // }
+        // if (pb != nullptr) {
+        //   pb->set_progress(stats.evaluatedConts);
+        // }
+        // if (parsing) {
+        //   status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs)
+        //   +
+        //             "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
+        //             "/s)/" + std::to_string(stats.parsedConts) + "(" +
+        //             std::to_string(static_cast<size_t>(parsedConts_s)) +
+        //             "/s)";
+        // }
+        // interface.setStatus1(status1);
+        // if (pb != nullptr) {
+        //   auto str = pb->toString();
+        //   interface.setStatus2(str);
+        // }
       }
-      auto stats = plan.getStats();
-      std::chrono::steady_clock::time_point now =
-          std::chrono::steady_clock::now();
-      auto time_elapsed =
-          std::chrono::duration_cast<std::chrono::milliseconds>(now - start)
-              .count();
-      double seconds = static_cast<double>(time_elapsed) / 1000.0;
-      double parsedDocs_s = static_cast<double>(stats.parsedDocs) / seconds;
-      double parsedConts_s = static_cast<double>(stats.parsedConts) / seconds;
-      if (parsing) {
-        status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs) +
-                  "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
-                  "/s)/" + std::to_string(stats.parsedConts) + "(" +
-                  std::to_string(static_cast<size_t>(parsedConts_s)) + "/s)";
-      }
+      // auto stats = plan.getStats();
+      // std::chrono::steady_clock::time_point now =
+      //     std::chrono::steady_clock::now();
+      // auto time_elapsed =
+      //     std::chrono::duration_cast<std::chrono::milliseconds>(now - start)
+      //         .count();
+      // double seconds = static_cast<double>(time_elapsed) / 1000.0;
+      // double parsedDocs_s = static_cast<double>(stats.parsedDocs) / seconds;
+      // double parsedConts_s = static_cast<double>(stats.parsedConts) /
+      // seconds; if (parsing) {
+      //   status1 = "Parsed Docs/Conts: " + std::to_string(stats.parsedDocs) +
+      //             "(" + std::to_string(static_cast<size_t>(parsedDocs_s)) +
+      //             "/s)/" + std::to_string(stats.parsedConts) + "(" +
+      //             std::to_string(static_cast<size_t>(parsedConts_s)) + "/s)";
+      // }
       interface.setStatus1(status1);
       if (pb != nullptr) {
-        pb->set_progress(stats.evaluatedConts);
+        // pb->set_progress(stats.evaluatedConts);
         auto str = pb->toString();
         interface.setStatus2(str);
       } else {
@@ -392,7 +376,7 @@ void joda::cli::CLI::executeQuery(std::shared_ptr<query::Query>& query,
       bench.addValue(Benchmark::RUNTIME, "Query", timer.durationSeconds());
       bench.finishLine();
     } catch (const std::exception& e) {
-      std::cout << e.what() << std::endl;
+      std::cerr << e.what() << std::endl;
     }
   }
 }
@@ -401,8 +385,10 @@ joda::cli::CLI::CLI() : bench(config::benchfile) { checkTerminal(); }
 
 void joda::cli::CLI::benchmarkQuery(const std::shared_ptr<query::Query>& q,
                                     const std::string& /*name*/) {
-  QueryPlan plan(q);
-  StorageCollection::getInstance().removeStorage(plan.executeQuery(&bench));
+  queryexecution::PipelineQueryPlan plan;
+  plan.createPlan(q);
+  StorageCollection::getInstance().removeStorage(
+      plan.executeAndGetResult(&bench));
   bench.finishLine();
   print("-----STATISTICS------");
   print(bench.lastLineToString());
@@ -421,6 +407,35 @@ void joda::cli::CLI::benchmarkQuery(
   }
 }
 
+void joda::cli::CLI::deleteSource(const std::string& name) {
+  std::string trimmed = name;
+  ltrim(rtrim(trimmed));
+
+  auto store = StorageCollection::getInstance().getStorage(trimmed);
+  if (store == nullptr) {
+    print("No such source with name '" + trimmed + "' found");
+    return;
+  }
+  StorageCollection::getInstance().removeStorage(trimmed);
+  auto size = store->size();
+  auto contSize = store->contSize();
+  store = nullptr;  // Remove pointer
+  print("Deleted source '" + trimmed + "' with " + std::to_string(size) +
+        " documents (" + std::to_string(contSize) + " container)");
+}
+
+void joda::cli::CLI::registerModule(const std::string& name) {
+  std::string trimmed = name;
+  ltrim(rtrim(trimmed));
+
+  try{
+    joda::extension::ModuleRegister::getInstance().registerModule(trimmed);
+  } catch (const std::exception& e) {
+    print(e.what());
+  }
+  
+}
+
 void joda::cli::CLI::unknownCommand() { print("Unknown command"); }
 
 void joda::cli::CLI::logo() {
@@ -435,8 +450,8 @@ void joda::cli::CLI::logo() {
                  **(((((/*               ,///////*                  ///////,                *((((((*               //(((((*/        /((((((( ,((((((**
                  **(((((/*                *//////,        by        *//////,                *((((((*               //(((((*,        /((((((/  /((((((/
                  **(((((/*                *//////,   Nico Schäfer   *//////.                *((((((*               //(((((/,       *((((((/#&&/(((((((/
-                 **(((((/*                *///////                 (///////                 *((((((*               //(((((*.      (/((((((((((((((((((//
-                 **(((((/*                **/////**                *//////*                 *((((((*              %/((((((,      /*((((((((((((((((((((**
+                 **(((((/*                *///////     DBIS LAB    (///////                 *((((((*               //(((((*.      (/((((((((((((((((((//
+                 **(((((/*                **/////**     TU KL      *//////*                 *((((((*              %/((((((,      /*((((((((((((((((((((**
       %/*        **(((((/,                 *////////              *///////.                 *((((((*             %/((((((/       /((((((((((((((((((((((/
     &(/((//      //(((((/.                  *///////,%          /*///////*                  *((((((*           &%/(((((((,      /(((((((         ,(((((((/
   **((((((((/////(((((((,                    /////////////////*/////////*                   *((((((/*///////(//(((((((((.      (/((((((*          /((((((//
@@ -454,9 +469,12 @@ joda::cli::CLI::getCommands() {
       {"logo", std::bind(&CLI::logo, this)},
       {"cache", std::bind(&CLI::toggleCache, this)},
       {"sources", std::bind(&CLI::listSources, this)},
+      {"delete", std::bind(&CLI::deleteSource, this, std::placeholders::_1)},
       {"results", std::bind(&joda::cli::CLI::listResults, this)},
       {"help", std::bind(&CLI::help, this)},
       {"dump config", std::bind(&joda::cli::CLI::dumpConfig, this)},
+      {"register",
+       std::bind(&CLI::registerModule, this, std::placeholders::_1)},
 #ifdef JODA_ENABLE_PROFILING
       {"profile stop", std::bind(&CLI::profileStop, this)},
       {"profile start",
@@ -467,16 +485,18 @@ joda::cli::CLI::getCommands() {
 
 void joda::cli::CLI::help() {
   std::cout << "---------------------- JODA ----------------------\n";
-  std::cout << "quit        - Quits the program \n";
-  std::cout << "help        - Shows this message \n";
-  std::cout << "results     - Shows a list of available results \n";
-  std::cout << "sources     - Shows a list of data sources \n";
-  std::cout << "cache       - Enables cache index \n";
-  std::cout << "dump config - Shows all currently set settings \n";
-  std::cout << "LOAD ...    - Executes a query \n";
+  std::cout << "quit                    - Quits the program \n";
+  std::cout << "help                    - Shows this message \n";
+  std::cout << "results                 - Shows a list of available results \n";
+  std::cout << "sources                 - Shows a list of data sources \n";
+  std::cout << "delete <name>           - Deletes the source with the given name \n";
+  std::cout << "register <module path>  - Registers an external module \n";
+  std::cout << "cache                   - Enables cache index \n";
+  std::cout << "dump config             - Shows all currently set settings \n";
+  std::cout << "LOAD ...                - Executes a query \n";
 #ifdef JODA_ENABLE_PROFILING
-  std::cout << "profile start <name>  - Starts profiling with name \n";
-  std::cout << "profile stop          - Stops profiling \n";
+  std::cout << "profile start <name>    - Starts profiling with name \n";
+  std::cout << "profile stop            - Stops profiling \n";
 #endif
   std::cout << "--------------------------------------------------\n";
   std::cout << std::flush;
@@ -491,20 +511,21 @@ void joda::cli::CLI::dumpConfig() {
 
 void joda::cli::CLI::setSimpleMode(bool simpleMode) {
   if (simpleMode) {
-    LOG(INFO)
-        << "Using non interactive query processing due to terminal support.";
+    LOG(INFO) << "Using non interactive query processing due to terminal "
+                 "support or config.";
   }
   CLI::simpleMode = simpleMode;
 }
 
 void joda::cli::CLI::checkTerminal() {
+  if (config::disable_interactive_CLI) {
+    setSimpleMode(true);
+    return;
+  }
   SCREEN* terminal = newterm(nullptr, nullptr, nullptr);
   if (terminal == nullptr) {
     setSimpleMode(true);
   } else {
-    if (config::disable_interactive_CLI) {
-      setSimpleMode(true);
-    }
     endwin();
   }
 }

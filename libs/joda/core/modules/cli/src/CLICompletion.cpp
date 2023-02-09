@@ -3,15 +3,18 @@
 //
 
 #include "CLICompletion.h"
+
 #include <glog/logging.h>
 #include <joda/queryparsing/QueryParser.h>
 #include <joda/storage/collection/StorageCollection.h>
 #include <readline/readline.h>
+
 #include <algorithm>
 #include <iterator>
 #include <regex>
 #include <sstream>
 #include <string>
+
 #include "joda/cli/CLI.h"
 
 size_t joda::cli::CLICompletion::match_index = 0;
@@ -72,33 +75,30 @@ char* joda::cli::CLICompletion::basic_query_completer(const char* text,
     std::vector<std::string> qCommands;
     std::string line(rl_line_buffer);
 
-    if (line.find("DELETE") == std::string::npos) {
-      qCommands.emplace_back("DELETE");
-      if (line.find("AGG") == std::string::npos) {
-        qCommands.emplace_back("AGG");
-        if (line.find("AS") == std::string::npos) {
-          qCommands.emplace_back("AS");
+    if (line.find("AGG") == std::string::npos) {
+      qCommands.emplace_back("AGG");
+      if (line.find("AS") == std::string::npos) {
+        qCommands.emplace_back("AS");
 
-          // Also add functions
-          auto functions = joda::queryparsing::QueryParser::getFunctionNames();
-          std::stringstream ss(functions);
-          std::string token;
-          while (std::getline(ss, token, ' ')) {
-            qCommands.emplace_back(token + "(");
-          }
+        // Also add functions
+        auto functions = joda::queryparsing::QueryParser::getFunctionNames();
+        std::stringstream ss(functions);
+        std::string token;
+        while (std::getline(ss, token, ' ')) {
+          qCommands.emplace_back(token + "(");
+        }
 
-          if (line.find("CHOOSE") == std::string::npos) {
-            qCommands.emplace_back("CHOOSE");
-            //            if(line.find("FROM FILES")==std::string::npos){
-            //              qCommands.emplace_back("FROM FILES");
-            //            }
-            //            if(line.find("FROM FILE")==std::string::npos){
-            //              qCommands.emplace_back("FROM FILE");
-            //            }
-            //            if(line.find("FROM GROUPED")==std::string::npos){
-            //              qCommands.emplace_back("FROM GROUPED");
-            //            }
-          }
+        if (line.find("CHOOSE") == std::string::npos) {
+          qCommands.emplace_back("CHOOSE");
+          //            if(line.find("FROM FILES")==std::string::npos){
+          //              qCommands.emplace_back("FROM FILES");
+          //            }
+          //            if(line.find("FROM FILE")==std::string::npos){
+          //              qCommands.emplace_back("FROM FILE");
+          //            }
+          //            if(line.find("FROM GROUPED")==std::string::npos){
+          //              qCommands.emplace_back("FROM GROUPED");
+          //            }
         }
       }
     }

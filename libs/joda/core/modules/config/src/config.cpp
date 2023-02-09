@@ -6,6 +6,8 @@
 
 // Indices
 bool config::queryCache = true;
+bool config::adaptiveIndex = true;
+
 
 // Bloom
 bool config::bloom_enabled = true;
@@ -15,7 +17,6 @@ double config::bloom_prob =
     0.001;  // Maximum tolerable false positive probability? (0,1)
 
 // Directories
-std::string config::home = std::string();
 std::string config::tmpdir = std::string();
 
 // Storage
@@ -37,10 +38,6 @@ size_t config::storageRetrievalThreads = 0;  // JSON_STORAGE_DEFAULT_THREADS;
 size_t config::readingThreads = 0;           // JSON_STORAGE_DEFAULT_THREADS;
 size_t config::parsingThreads = 0;           // JSON_STORAGE_DEFAULT_THREADS;
 
-// Parsing
-size_t config::read_bulk_size = 0;
-std::string config::read_reader = std::string();
-size_t config::parse_bulk_size = 0;
 
 // Similarity
 size_t config::sim_min_cont_size = 0;
@@ -59,3 +56,9 @@ bool config::disable_interactive_CLI = false;
 // View
 bool config::enable_views = false;
 bool config::enable_views_vo = false;
+
+// Multi Query
+bool config::enable_multi_query = false;
+
+//Streams
+bool config::enable_streams = false;

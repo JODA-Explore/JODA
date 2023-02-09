@@ -36,6 +36,10 @@ class IAggregator {
       : toPointer(toPointer), params(std::move(params)) {
     for (auto &param : this->params) {
       IValueProvider::replaceConstSubexpressions(param);
+      auto optimized_val = param->optimize();
+      if (optimized_val != nullptr) {
+        param = std::move(optimized_val);
+      }
     }
   }
   IAggregator(IAggregator const &) = delete;
@@ -143,7 +147,7 @@ class IAggregator {
   }
 
   void checkOptionalParamType(unsigned int i, IValueType expected) {
-    if(params.size() < i+1) {
+    if (params.size() < i + 1) {
       return;
     }
     if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {

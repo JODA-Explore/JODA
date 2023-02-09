@@ -8,6 +8,8 @@
 #include "JodaResultRequest.h"
 #include "JodaSourceRequest.h"
 #include "SystemRequest.h"
+#include "ModulePost.h"
+#include "ModuleRequest.h"
 
 void joda::network::apiv2::API::registerEndpoint(const std::string& prefix,
                                                  httplib::Server& server) {
@@ -16,4 +18,6 @@ void joda::network::apiv2::API::registerEndpoint(const std::string& prefix,
   JodaSourceRequest::registerEndpoint((prefix + API::prefix), server);
   DeleteRequest::registerEndpoint((prefix + API::prefix), server);
   SystemRequest::registerEndpoint((prefix + API::prefix), server);
+  ModulePost::registerEndpoint((prefix + API::prefix), server);
+  ModuleRequest::registerEndpoint((prefix + API::prefix), server);
 }

@@ -376,7 +376,7 @@ class StringCastCalculator {
   typedef bool State;
 
   // Return value of the function
-  static constexpr IValueType retType = IV_Number;
+  static constexpr IValueType retType = IV_String;
 
   static constexpr auto name = "STRING";
   /**

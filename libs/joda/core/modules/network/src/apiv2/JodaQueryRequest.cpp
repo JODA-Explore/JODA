@@ -5,11 +5,13 @@
 
 #include <joda/misc/Timer.h>
 #include <joda/network/apiv2/API.h>
-#include <joda/queryexecution/QueryPlan.h>
+#include <joda/queryexecution/PipelineQueryPlan.h>
 #include <joda/queryparsing/QueryParser.h>
 #include <joda/storage/collection/StorageCollection.h>
 #include "joda/network/JodaServer.h"
 #include <boost/algorithm/string.hpp>
+
+#include <boost/algorithm/string/trim.hpp>
 
 void joda::network::apiv2::JodaQueryRequest::registerEndpoint(
     const std::string& prefix, httplib::Server& server) {
@@ -42,10 +44,10 @@ void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request& req,
   }
   LOG(INFO) << "Got query: " << q->second;
 
-  std::string queries_string = q->second;
-  boost::algorithm::trim(queries_string); // remove leading and following whitespace
 
   queryparsing::QueryParser parser;
+  std::string queries_string = q->second;
+  boost::algorithm::trim(queries_string); // remove leading and following whitespace
   if(queries_string.back() == ';'){
     queries_string = queries_string.substr(0, queries_string.size() - 1);
   }
@@ -57,16 +59,22 @@ void joda::network::apiv2::JodaQueryRequest::query(const httplib::Request& req,
 
   Benchmark bench(config::benchfile);
   unsigned long result;
+  queryexecution::PipelineQueryPlan plan;
+  plan.createPlan(queries);
+  std::string qs_str;
   for (const auto& query : queries) {
-    QueryPlan plan(query);
-    bench.addValue("Query", query->toString());
-    LOG(INFO) << "Executing query:\n" << query->toString();
-    Timer timer;
-    result = plan.executeQuery(&bench);
-    timer.stop();
-    bench.addValue(Benchmark::RUNTIME, "Query", timer.durationSeconds());
-    bench.finishLine();
+    qs_str += query->toString() + ";\n";
   }
+
+  bench.addValue("Query", qs_str);
+  Timer timer;
+  result = plan.executeAndGetResult(&bench);
+  timer.stop();
+  
+  bench.addValue(Benchmark::RUNTIME, "Query", timer.durationSeconds());
+  bench.finishLine();
+  
+
   if (result < JODA_STORE_VALID_ID_START) {
     if (result == JODA_STORE_EXTERNAL_RS_ID) {
       return export_(res);

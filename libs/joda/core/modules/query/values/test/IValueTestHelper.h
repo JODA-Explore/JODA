@@ -31,8 +31,8 @@ class IValueTestHelper {
     return std::make_unique<joda::query::UInt64Provider>(i);
   }
   static std::unique_ptr<joda::query::IValueProvider> getPointer(
-      std::string ptr) {
-    return std::make_unique<joda::query::PointerProvider>(ptr);
+      std::string ptr, bool relative = false) {
+    return std::make_unique<joda::query::PointerProvider>(ptr, relative);
   }
   static std::unique_ptr<joda::query::IValueProvider> getStringVal(
       std::string str) {

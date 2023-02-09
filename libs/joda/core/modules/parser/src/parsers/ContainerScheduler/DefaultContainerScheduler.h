@@ -26,8 +26,7 @@ class DefaultContainerScheduler {
    * through.
    * @param contSize The size of newly constructed containers.
    */
-  DefaultContainerScheduler(JsonContainerQueue::queue_t *queue,
-                            size_t contSize = 0);
+  DefaultContainerScheduler(size_t contSize = 0);
 
   /**
    * Always returns 0, as this scheduler does not require an id
@@ -56,8 +55,9 @@ class DefaultContainerScheduler {
    * @param doc The document to schedule
    * @param origin The origin of the document
    * @param size The size of the document (bytes)
+   * @return The container, if is is full and finished
    */
-  void scheduleDocument(ContainerIdentifier id,
+  std::unique_ptr<JSONContainer> scheduleDocument(ContainerIdentifier id,
                         std::unique_ptr<RJDocument> &&doc,
                         std::unique_ptr<IOrigin> &&origin, size_t size);
 
@@ -73,12 +73,12 @@ class DefaultContainerScheduler {
    * Finalizes the Scheduler.
    * Has to be called before deconstructing it.
    */
-  void finalize();
+  std::vector<std::unique_ptr<JSONContainer>> finalize();
 
   virtual ~DefaultContainerScheduler() = default;
 
+
  private:
-  JsonContainerQueue::queue_t *queue;
   size_t contSize;
 
   std::unique_ptr<JSONContainer> currentContainer;

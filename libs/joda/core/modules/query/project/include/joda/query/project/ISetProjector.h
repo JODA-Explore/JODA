@@ -76,7 +76,7 @@ class ISetProjector {
     // Duplicate existing documents |VAL|-1 times
     for (auto i = 0; i < times - 1; ++i) {
       for (size_t j = 0; j < origDocs; ++j) {
-        assert(j < newDocs.size() && j >= 0 && "Stay in range of array");
+        DCHECK(j < newDocs.size() && j >= 0) << "Stay in range of array";
         auto doc = std::make_unique<RJDocument>(&newDocs[j]->GetAllocator());
         doc->CopyFrom(*newDocs[j], doc->GetAllocator());
         newDocs.push_back(std::move(doc));
@@ -88,7 +88,7 @@ class ISetProjector {
   void fillArrayRangeWithVal(std::vector<std::unique_ptr<RJDocument>> &newDocs,
                              unsigned long origDocs, int i, RJValue &val) {
     for (unsigned long j = origDocs * i; j < origDocs * (i + 1); ++j) {
-      assert(j < newDocs.size() && j >= 0 && "Stay in range of array");
+      DCHECK(j < newDocs.size() && j >= 0) <<  "Stay in range of array";
       RJValue newval;
       newval.CopyFrom(val, newDocs.front()->GetAllocator());
       ptr.Set(*newDocs[j], newval);

@@ -18,27 +18,29 @@ struct aggExpAction : tao::pegtl::nothing<Rule> {};
  * Keywords
  */
 #ifndef __CLION_IDE__  // Prevent lag from expanding all macros
-struct aggKW : TAOCPP_PEGTL_KEYWORD("AGG") {};
+struct aggKW : TAO_PEGTL_KEYWORD("AGG") {};
 
-struct aggKW_MIN : TAOCPP_PEGTL_KEYWORD("MIN") {};
-struct aggKW_MAX : TAOCPP_PEGTL_KEYWORD("MAX") {};
-struct aggKW_ATTSTAT : TAOCPP_PEGTL_KEYWORD("ATTSTAT") {};
-struct aggKW_AVG : TAOCPP_PEGTL_KEYWORD("AVG") {};
-struct aggKW_COUNT : TAOCPP_PEGTL_KEYWORD("COUNT") {};
-struct aggKW_SUM : TAOCPP_PEGTL_KEYWORD("SUM") {};
-struct aggKW_DISTINCT : TAOCPP_PEGTL_KEYWORD("DISTINCT") {};
-struct aggKW_COLLECT : TAOCPP_PEGTL_KEYWORD("COLLECT") {};
-struct aggKW_HISTOGRAM : TAOCPP_PEGTL_KEYWORD("HISTOGRAM") {};
+struct aggKW_MIN : TAO_PEGTL_KEYWORD("MIN") {};
+struct aggKW_MAX : TAO_PEGTL_KEYWORD("MAX") {};
+struct aggKW_ATTSTAT : TAO_PEGTL_KEYWORD("ATTSTAT") {};
+struct aggKW_AVG : TAO_PEGTL_KEYWORD("AVG") {};
+struct aggKW_COUNT : TAO_PEGTL_KEYWORD("COUNT") {};
+struct aggKW_SUM : TAO_PEGTL_KEYWORD("SUM") {};
+struct aggKW_DISTINCT : TAO_PEGTL_KEYWORD("DISTINCT") {};
+struct aggKW_COLLECT : TAO_PEGTL_KEYWORD("COLLECT") {};
+struct aggKW_HISTOGRAM : TAO_PEGTL_KEYWORD("HISTOGRAM") {};
+struct aggKW_CUSTOM : tao::pegtl::identifier {};
 
-struct aggKW_GROUP : TAOCPP_PEGTL_KEYWORD("GROUP") {};
-struct aggKW_BY : TAOCPP_PEGTL_KEYWORD("BY") {};
-struct aggKW_AS : TAOCPP_PEGTL_KEYWORD("AS") {};
+struct aggKW_GROUP : TAO_PEGTL_KEYWORD("GROUP") {};
+struct aggKW_BY : TAO_PEGTL_KEYWORD("BY") {};
+struct aggKW_AS : TAO_PEGTL_KEYWORD("AS") {};
+struct aggKW_WINDOW : TAO_PEGTL_KEYWORD("WINDOW") {};
 #endif
 
 // Agg commands
 struct aggKeywords
     : tao::pegtl::sor<aggKW_ATTSTAT, aggKW_AVG, aggKW_COUNT, aggKW_SUM,
-                      aggKW_DISTINCT, aggKW_COLLECT, aggKW_MIN, aggKW_MAX, aggKW_HISTOGRAM> {};
+                      aggKW_DISTINCT, aggKW_COLLECT, aggKW_MIN, aggKW_MAX, aggKW_HISTOGRAM, aggKW_CUSTOM> {};
 
 /*
  * Aggregate Expresstion
@@ -68,6 +70,15 @@ struct aggGrouped
                       tao::pegtl::pad<aggKW_BY, tao::pegtl::space>,
                       tao::pegtl::pad<aggByExpr, tao::pegtl::space>> {};
 
+// WINDOW ( 50 )
+struct aggWindowSize : unsignedIntNumber {};
+struct aggWindowExp: tao::pegtl::seq<
+    tao::pegtl::pad<aggKW_WINDOW, tao::pegtl::space>,
+    tao::pegtl::pad<tao::pegtl::one<'('>, tao::pegtl::space>,
+    tao::pegtl::pad<aggWindowSize, tao::pegtl::space>,
+    tao::pegtl::pad<tao::pegtl::one<')'>, tao::pegtl::space>
+>{};
+
 struct aggSingleExp
     : tao::pegtl::seq<
           tao::pegtl::must<tao::pegtl::one<'('>>,
@@ -80,8 +91,9 @@ struct aggSingleExp
                           tao::pegtl::space>> {};
 struct aggExp : tao::pegtl::action<
                     aggExpAction,
+                    tao::pegtl::seq<tao::pegtl::opt<aggWindowExp>,
                     tao::pegtl::list_must<aggSingleExp, tao::pegtl::one<','>,
-                                          tao::pegtl::space>> {};
+                                          tao::pegtl::space>>> {};
 
 }  // namespace joda::queryparsing::grammar
 

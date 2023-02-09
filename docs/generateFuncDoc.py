@@ -126,6 +126,8 @@ def convertToJODAString(value):
     if isinstance(value, str):
         if value.startswith("'") and value.endswith("'"):
             return value
+        if value.startswith("_NOSTRING_"):
+            return value.removeprefix("_NOSTRING_")
         return '"' + value + '"'
     elif value is None:
         return "null"
@@ -214,11 +216,11 @@ def executeExample(name: str, example, joda_path: str) -> str:
             f.write("{}")
 
     # Write Query
-    query = "LOAD tmp FROM FILE \"{doc}\" AS ('': {name}({input})) STORE AS FILE \"out.json\"".format(
+    query = "LOAD FROM FILE \"{doc}\" AS ('': {name}({input})) STORE AS FILE \"out.json\"".format(
         name=name, doc=doc_path, input=getExampleInputs(example))
 
     # Execute query
-    out = subprocess.run([joda_path, '-t', '1', '--noninteractive', "--logtostderr",
+    out = subprocess.run([joda_path, '-t', '1', '--noninteractive', "--logtostderr", "-c",
                          '--query', query], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if out.returncode != 0:
         raise Exception("Failed to execute example '{}'".format(query))

@@ -25,7 +25,7 @@ void Timer::stop() {
 #endif
 }
 
-double Timer::durationSeconds() {
+double Timer::durationSeconds() const {
 #ifndef JODA_TIMING_ENABLED
   return 0;
 #endif
@@ -46,7 +46,7 @@ void Timer::log(const std::string& what, const std::string& part) {
 #endif
 }
 
-std::string Timer::toString() {
+std::string Timer::toString() const {
 #ifndef JODA_TIMING_ENABLED
   return "";
 #endif
@@ -60,6 +60,11 @@ std::string Timer::toString() {
 std::string Timer::toHumanDuration() const {
   auto input_ms = std::chrono::duration_cast<std::chrono::milliseconds>(
       endTime - startTime);
+  return toHumanDuration(input_ms);
+}
+
+std::string Timer::toHumanDuration(const std::chrono::milliseconds& duration){
+  auto input_ms = duration;
   auto h = std::chrono::duration_cast<std::chrono::hours>(input_ms);
   input_ms -= h;
   auto m = std::chrono::duration_cast<std::chrono::minutes>(input_ms);

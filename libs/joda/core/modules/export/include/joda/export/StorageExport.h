@@ -16,10 +16,9 @@ class StorageExport : public IExportDestination {
   const std::string toQueryString() override;
   std::string getStorageName() const;
   const std::shared_ptr<JSONStorage> &getStore() const;
+  virtual PipelineTaskPtr getTask() const override;
 
  protected:
-  void consumeContainer(JsonContainerQueue::queue_t &queue) override;
-  void exportContainer(std::unique_ptr<JSONContainer> &&cont) override;
   const std::string getTimerName() override;
 
  private:

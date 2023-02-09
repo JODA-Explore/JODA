@@ -18,7 +18,7 @@ class QueryParser {
  public:
   /**
    * Parses the given input string into a Query.
-   * If an error occurs, it is logged, stored and a nullpointer is returned.
+   * If an error occurs, it is logged, stored, and a nullpointer is returned.
    * @param str the input textual representation
    * @return A Query if the input was a valid JODA query, nullpointer if not.
    */
@@ -31,7 +31,6 @@ class QueryParser {
    * @return A list of Query pointers if the input was valid, empty list if not.
    */
   std::vector<std::shared_ptr<query::Query>> parseMultiple(const std::string& str);
-
 
   /**
    * Returns the current error message, if parsing did not succeed.

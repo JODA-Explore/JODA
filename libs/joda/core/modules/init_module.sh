@@ -20,7 +20,7 @@ set(joda-core-${NAME}-SOURCES
 
         )
 
-set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-${NAME}-SOURCES} PARENT_SCOPE )
+set(JODA-CORE-SOURCE-FILES \$\{JODA-CORE-SOURCE-FILES\} \$\{joda-core-${NAME}-SOURCES\} PARENT_SCOPE )
 
 add_library(joda-core-${NAME}-lib INTERFACE )
 

@@ -5,10 +5,12 @@
 #ifndef JODA_LOAD_ACTIONS_H
 #define JODA_LOAD_ACTIONS_H
 
+#include <joda/parser/JSONInStreamSource.h>
 #include <joda/parser/JSONURLSource.h>
+#include <joda/extension/ModuleRegister.h>
+
 #include "../grammar/Grammar.h"
 #include "../states/States.h"
-
 #include "joda/query/values/PointerProvider.h"
 namespace joda::queryparsing::grammar {
 
@@ -28,6 +30,14 @@ struct loadAction<fromFilesKW> {
 template <>
 struct loadAction<fromFileKW> {
   static void apply0(loadState &state) { state.source = FILE_SOURCE; }
+};
+
+template <>
+struct loadAction<fromStreamKW> {
+  static void apply0(loadState &state) {
+    state.source = STREAM_SOURCE;
+    state.loadFile = "INSTREAM";
+  }
 };
 
 template <>
@@ -66,6 +76,24 @@ struct loadAction<loadFilesLineSeperatedCommand> {
 };
 
 template <>
+struct loadAction<customFromId> {
+  template <typename Input>
+  static bool apply(const Input &in, loadState &state) {
+    std::string custom_func = in.string();
+    if(joda::extension::ModuleRegister::getInstance().importExists(custom_func)){
+      state.custom_name = custom_func;
+      return true;
+    }
+    return false;
+  }
+};
+
+template <>
+struct loadAction<customFrom> {
+  static void apply0(loadState &state) { state.source = CUSTOM_SOURCE; }
+};
+
+template <>
 struct loadAction<sampleNum> {
   template <typename Input>
   static void apply(const Input &in, loadState &state) {
@@ -96,7 +124,25 @@ struct loadAction<loadImportSource> {
           break;
         case URL_SOURCE:
           state.sources.emplace_back(
-              std::make_unique<docparsing::JSONURLSource>(state.loadFile));
+              std::make_unique<docparsing::JSONURLSource>(state.loadFile,
+                                                          state.sampleNum));
+          break;
+        case CUSTOM_SOURCE:
+          state.sources.emplace_back(joda::extension::ModuleRegister::getInstance().getImportSource(state.custom_name,state.loadFile,
+                                                          state.sampleNum ));
+          break;
+        case STREAM_SOURCE:
+          if (!config::enable_streams) {
+            throw tao::pegtl::parse_error(
+                "Stream input can't be used in the given context", in);
+          }
+          state.sources.emplace_back(
+              std::make_unique<docparsing::JSONInStreamSource>(
+                  state.sampleNum));
+          break;
+        default:
+          LOG(ERROR) << "Unknown source type for load, this should not be "
+                        "possible.";
           break;
       }
     }

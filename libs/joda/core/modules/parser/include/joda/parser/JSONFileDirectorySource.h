@@ -18,17 +18,14 @@ class JSONFileDirectorySource : public joda::docparsing::IImportSource {
                                    const double sample = 1);
   explicit JSONFileDirectorySource(std::string dirPath, bool lineSeparated,
                                    const double sample = 1.0);
-  void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t
-          &queue,
-      JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t::
-          ptok_t &ptok) override;
-  void feedSources(
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t &queue,
-      JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t
-          &ptok) override;
+  ~JSONFileDirectorySource() override = default;
+
+  virtual PipelineTaskPtr getTask() const override;
+
   size_t estimatedSize() override;
+
   const std::string toString() override;
+
   const std::string toQueryString() override;
 
  private:

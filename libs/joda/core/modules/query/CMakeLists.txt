@@ -2,7 +2,6 @@ project(JODA-Core-query CXX)
 
 add_subdirectory(values)
 add_subdirectory(aggregate)
-add_subdirectory(predicate)
 add_subdirectory(project)
 
 set(joda-core-query-SOURCES
@@ -29,9 +28,9 @@ target_link_libraries(joda-core-query-lib
         joda-core-parser-lib
         joda-core-query-values-lib
         joda-core-query-agg-lib
-        joda-core-query-pred-lib
         joda-core-query-proj-lib
         joda-core-export-lib
+        joda-core-extension-lib
         )
 
 #########################################################

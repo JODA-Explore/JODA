@@ -167,6 +167,10 @@ void StorageCollection::stopJoin(const JoinManager& jm) {
 StorageCollection::~StorageCollection() {
   DLOG(INFO) << "Cleaning up " << storages.size() << " Storages "
              << "(" << resultStorage.size() << " temporaries)";
+
+}
+
+void StorageCollection::clear() {
   runningJoins.clear();
   dependencies.clear();
   for (auto& storage : storages) {

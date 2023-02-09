@@ -11,13 +11,14 @@
 #include <utility>
 
 void JSONStorage::insertDocuments(
-    moodycamel::ConcurrentQueue<std::unique_ptr<JSONContainer>>& queue,
+    moodycamel::ConcurrentQueue<std::shared_ptr<JSONContainer>>& queue,
     const std::atomic_bool& cf, std::atomic_uint& cs) {
-  std::unique_ptr<JSONContainer> cont;
+  std::shared_ptr<JSONContainer> cont;
   moodycamel::ConsumerToken ctok(queue);
   while (true) {
     if (!queue.try_dequeue(ctok, cont)) {  // If can't receive container
       if (cf.load() && cs.load() == 0) {
+      
         return;  // Check if finished, if yes return
       }
       continue;  // Else continue
@@ -33,13 +34,14 @@ void JSONStorage::insertDocuments(
   }
 }
 
-void JSONStorage::insertDocuments(std::unique_ptr<JSONContainer>&& cont) {
+void JSONStorage::insertDocuments(std::shared_ptr<JSONContainer>&& cont) {
   if (cont == nullptr) {
     return;
   }
   std::lock_guard<std::mutex> lock(documentMutex);
   docCount += cont->size();
   container.push_back(std::move(cont));
+
 }
 
 unsigned long JSONStorage::size() const { return docCount; }
@@ -180,7 +182,6 @@ void JSONStorage::writeFiles(const std::string& file) {
 
 std::vector<std::string> JSONStorage::stringify(unsigned long start,
                                                 unsigned long end) {
-  // TODO: maybe multithread
   DLOG(INFO) << "Getting strings of Storage in range [" << start << "," << end
              << "]";
   std::vector<std::string> ret;
@@ -278,9 +279,10 @@ std::vector<std::shared_ptr<RJDocument>> JSONStorage::getRaw(
 
 const std::string& JSONStorage::getRegtmpdir() const { return regtmpdir; }
 
+
 void JSONStorage::insertDocumentsQueue(JsonContainerQueue::queue_t* queue) {
   DCHECK(queue != nullptr);
-  std::unique_ptr<JSONContainer> cont;
+  std::shared_ptr<JSONContainer> cont;
   JsonContainerQueue::queue_t::queue_t::consumer_token_t ctok(queue->queue);
   while (!queue->isFinished()) {
     DCHECK(cont == nullptr);
@@ -297,12 +299,13 @@ void JSONStorage::insertDocumentsQueue(JsonContainerQueue::queue_t* queue) {
     documentMutex.unlock();
     DCHECK(cont == nullptr);
   }
+
 }
 void JSONStorage::insertDocumentsQueue(JsonContainerQueue::queue_t* queue,
                                        size_t& insertedDocs,
                                        size_t& insertedConts) {
   DCHECK(queue != nullptr);
-  std::unique_ptr<JSONContainer> cont;
+  std::shared_ptr<JSONContainer> cont;
   JsonContainerQueue::queue_t::queue_t::consumer_token_t ctok(queue->queue);
   while (!queue->isFinished()) {
     DCHECK(cont == nullptr);
@@ -320,16 +323,26 @@ void JSONStorage::insertDocumentsQueue(JsonContainerQueue::queue_t* queue,
     documentMutex.unlock();
     DCHECK(cont == nullptr);
   }
+
 }
 
-void JSONStorage::getDocumentsQueue(JsonContainerRefQueue::queue_t* queue) {
-  DCHECK(queue != nullptr);
-  queue->registerProducer();
-  auto ptok = JsonContainerRefQueue::queue_t::ptok_t(queue->queue);
-  for (auto& cont : container) {
-    queue->send(ptok, cont.get());
-  }
-  queue->producerFinished();
+std::vector<std::shared_ptr<JSONContainer>> JSONStorage::copyContainers() {
+  documentMutex.lock();
+  std::vector<std::shared_ptr<JSONContainer>> ret;
+  ret.reserve(container.size());
+  std::copy(container.begin(), container.end(), std::back_inserter(ret));
+  documentMutex.unlock();
+  return ret;
+}
+
+std::vector<std::shared_ptr<JSONContainer>> JSONStorage::extractContainers() {
+  documentMutex.lock();
+  std::vector<std::shared_ptr<JSONContainer>> ret;
+  ret.reserve(container.size());
+  std::move(container.begin(), container.end(), std::back_inserter(ret));
+  container.clear();
+  documentMutex.unlock();
+  return ret;
 }
 
 unsigned long JSONStorage::getLastUsed() const {
@@ -342,18 +355,16 @@ unsigned long JSONStorage::getLastUsed() const {
   return maxLastUsed;
 }
 
-const std::vector<std::unique_ptr<JSONContainer>>& JSONStorage::getContainer()
+const std::list<std::shared_ptr<JSONContainer>>& JSONStorage::getContainer()
     const {
   return container;
 }
 
-void JSONStorage::addQueryString(const std::string &query_string){
-  if(!query.empty()){
+void JSONStorage::addQueryString(const std::string& query_string) {
+  if (!query.empty()) {
     query.append("\n");
   }
   query.append(query_string);
 }
 
-const std::string &JSONStorage::getQueryString() const{
-  return query;
-}
+const std::string& JSONStorage::getQueryString() const { return query; }

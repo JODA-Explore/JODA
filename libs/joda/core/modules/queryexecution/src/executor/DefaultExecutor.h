@@ -5,7 +5,7 @@
 #ifndef JODA_DEFAULTEXECUTOR_H
 #define JODA_DEFAULTEXECUTOR_H
 
-#include "IQueryExecutor.h"
+#include <joda/queryexecution/IQueryExecutor.h>
 class DefaultExecutor : public IQueryExecutor {
  public:
   explicit DefaultExecutor();

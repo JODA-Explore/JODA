@@ -83,6 +83,16 @@ class IOThreadPool : public IThreadUser {
     }
   }
 
+    /**
+   * Increases the number of threads to the given value
+   * @param threads number of threads to use
+   */
+  void increaseThreadsTo(size_t threads) {
+    while (threads < getUsedThreads()) {
+      addThread();
+    }
+  }
+
   /**
    * Returns the number of threads currently in use
    * @return
@@ -135,7 +145,7 @@ class IOThreadPool : public IThreadUser {
    */
   bool hasRunningThreads() {
     for (const auto& item : threads) {
-      if (item->running()) return true;
+      if (item->isRunning()) return true;
     }
     return false;
   }

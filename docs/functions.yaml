@@ -26,6 +26,79 @@ ACOS:
     type: Number
   output: '**Number:** ACOS(x)'
   short-description: Calculates the arccosine of the given number
+ALL:
+  category: Iterator
+  description: The first parameter has to be an array or object pointer. For every
+    member value or array child the second parameter is evaluated. To actually use
+    the values of the children, a relative pointer should be used.
+  examples:
+  - document: '[1,2,3,4]'
+    input:
+    - ''''''
+    - _NOSTRING_ ISNUMBER($'')
+  - document: '[{"num":1},{"num":2},{"num":3},{"num":4}]'
+    input:
+    - ''''''
+    - _NOSTRING_ $'/num' > 2
+  input-parameters:
+  - description: Object or Array to iterate
+    name: iteratable
+    optional: false
+    type: Object/Array
+  - description: Predicate to evaluate for each child
+    name: predicate
+    optional: false
+    type: Bool
+  output: '**Bool:** True if predicate is true for all children'
+  short-description: Checks if the second parameter is true for all children of the
+    first parameter.
+AND:
+  category: Boolean Algebra
+  description: This function can also be written as infix notation `<lhs> && <rhs>`.
+  examples:
+  - input:
+    - true
+    - false
+  - input:
+    - true
+    - true
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: Bool
+  - description: ''
+    name: rhs
+    optional: false
+    type: Bool
+  output: '**Bool:** `<lhs> && <rhs>`'
+  short-description: Combines the two parameters with the Boolean AND operation.
+ANY:
+  category: Iterator
+  description: The first parameter has to be an array or object pointer. For every
+    member value or array child the second parameter is evaluated. To actually use
+    the values of the children, a relative pointer should be used.
+  examples:
+  - document: '[1,2,3,4]'
+    input:
+    - ''''''
+    - _NOSTRING_ ISNUMBER($'')
+  - document: '[{"num":1},{"num":2},{"num":3},{"num":4}]'
+    input:
+    - ''''''
+    - _NOSTRING_ $'/num' > 2
+  input-parameters:
+  - description: Object or Array to iterate
+    name: iteratable
+    optional: false
+    type: Object/Array
+  - description: Predicate to evaluate for each child
+    name: predicate
+    optional: false
+    type: Bool
+  output: '**Bool:** True if predicate is true for any children'
+  short-description: Checks if the second parameter is true for any children of the
+    first parameter.
 ASIN:
   category: Mathematical
   description: ''
@@ -92,6 +165,24 @@ CEIL:
     type: Number
   output: "**Number:** \u2308x\u2309"
   short-description: Calculates the ceiling of the given (floating point) number
+CONCAT:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - Hello
+    - World
+  input-parameters:
+  - description: First string to concatenate
+    name: str1
+    optional: false
+    type: String
+  - description: Second string to concatenate
+    name: str2
+    optional: false
+    type: String
+  output: '**String:** combination of `str1` and `str2`'
+  short-description: Concatenates two string values
 COS:
   category: Mathematical
   description: ''
@@ -144,6 +235,27 @@ DIV:
     type: Number
   output: '**Number:** x/y'
   short-description: Divides x by y
+EQUAL:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> == <rhs>`.
+  examples:
+  - input:
+    - true
+    - true
+  - input:
+    - 5
+    - 2
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number/Bool/Object/Array
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number/Bool/Object/Array
+  output: '**Bool:** True if the parameters have the same values'
+  short-description: Checks if the given parameters have the same values.
 EXISTS:
   category: Type
   description: ''
@@ -161,6 +273,30 @@ EXISTS:
     type: Any
   output: '**Bool:** True if it exists, false otherwise'
   short-description: Checks if the given attribute exists.
+FALSY:
+  category: Type
+  description: The falsy definition of [MDN](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)
+    has been used.
+  examples:
+  - input:
+    - false
+  - input:
+    - 0
+  - input:
+    - 1
+  - input:
+    - ''
+  - input:
+    - A
+  - input:
+    - null
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** true, if value is falsy, false else'
+  short-description: Checks whether the given value is falsy.
 FILENAME:
   category: Metadata
   description: ''
@@ -188,6 +324,32 @@ FILEPOSSTART:
   input-parameters: []
   output: '**Number:** The starting position of the document'
   short-description: Returns the starting position of the document, within the file.
+FILTER:
+  category: Iterator
+  description: The first parameter has to be an array pointer. For every array child
+    the second parameter is evaluated. If it returns true, the value is kept. To actually
+    use the values of the children, a relative pointer should be used.
+  examples:
+  - document: '[1,true,3,"4"]'
+    input:
+    - ''''''
+    - _NOSTRING_ ISNUMBER($'')
+  - document: '[{"num":1},{"num":2},{"num":3},{"num":4}]'
+    input:
+    - ''''''
+    - _NOSTRING_ $'/num' > 2
+  input-parameters:
+  - description: Object or Array to iterate
+    name: iteratable
+    optional: false
+    type: Object/Array
+  - description: Predicate to evaluate for each child
+    name: predicate
+    optional: false
+    type: Bool
+  output: '**Array:** An array containing only the children for which the predicate
+    returned true'
+  short-description: Filters an array with a given predicate.
 FINDSTR:
   category: String
   description: ''
@@ -211,7 +373,7 @@ FINDSTR:
   short-description: Returns the position of the second string in the first string,
     or -1 if it is not contained.
 FLOAT:
-  category: Mathematical
+  category: Cast
   description: ''
   examples:
   - document: '1
@@ -251,6 +413,54 @@ FLOOR:
     type: Number
   output: "**Number:** \u230Ax\u230B"
   short-description: Calculates the floor of the given (floating point) number
+GREATER:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> > <rhs>`.
+  examples:
+  - input:
+    - 5
+    - 2
+  - input:
+    - 5
+    - 5
+  - input:
+    - A
+    - B
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number
+  output: '**Bool:** True if `lhs` > `rhs`'
+  short-description: Checks if `lhs` is greater than `rhs`.
+GREATEREQ:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> >= <rhs>`.
+  examples:
+  - input:
+    - 5
+    - 2
+  - input:
+    - 5
+    - 5
+  - input:
+    - A
+    - B
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number
+  output: '**Bool:** True if `lhs` >= `rhs`'
+  short-description: Checks if `lhs` is greater or equal than `rhs`.
 HASH:
   category: Misc
   description: In case of arrays or objects, the hash is calculated for the complete
@@ -288,6 +498,28 @@ ID:
   input-parameters: []
   output: '**Number:**'
   short-description: Returns the internal unique ID of the document.
+IMPLICATION:
+  category: Boolean Algebra
+  description: ''
+  examples:
+  - input:
+    - true
+    - false
+  - input:
+    - true
+    - true
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: Bool
+  - description: ''
+    name: rhs
+    optional: false
+    type: Bool
+  output: '**Bool:** `<lhs> -> <rhs>`'
+  short-description: Combines the two parameters with the Boolean implication (->)
+    operation.
 IN:
   category: Array
   description: The `element` value can only be an atomic value (Number, String, Bool,
@@ -311,7 +543,7 @@ IN:
     optional: false
     type: Array
   output: '**Bool:**'
-  short-description: Checks wether the `element` is contained in the `array`
+  short-description: Checks whether the `element` is contained in the `array`
 INT:
   category: Cast
   description: ''
@@ -361,7 +593,7 @@ ISARRAY:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of type array
+  short-description: Checks whether the attribute is of type array
 ISBOOL:
   category: Type
   description: ''
@@ -385,7 +617,7 @@ ISBOOL:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of type Bool
+  short-description: Checks whether the attribute is of type Bool
 ISNULL:
   category: Type
   description: ''
@@ -409,7 +641,7 @@ ISNULL:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of type null
+  short-description: Checks whether the attribute is of type null
 ISNUMBER:
   category: Type
   description: ''
@@ -433,7 +665,7 @@ ISNUMBER:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of numerical type
+  short-description: Checks whether the attribute is of numerical type
 ISOBJECT:
   category: Type
   description: ''
@@ -457,7 +689,7 @@ ISOBJECT:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of type object
+  short-description: Checks whether the attribute is of type object
 ISSTRING:
   category: Type
   description: ''
@@ -481,7 +713,7 @@ ISSTRING:
     optional: false
     type: Any
   output: '**Bool:** True/False depending on check'
-  short-description: Checks wether the attribute is of type string
+  short-description: Checks whether the attribute is of type string
 LEN:
   category: String
   description: ''
@@ -497,6 +729,54 @@ LEN:
     type: String
   output: '**Number:** The length of the given string'
   short-description: Returns the length of the passed string
+LESS:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> < <rhs>`.
+  examples:
+  - input:
+    - 5
+    - 2
+  - input:
+    - 5
+    - 5
+  - input:
+    - A
+    - B
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number
+  output: '**Bool:** True if `lhs` < `rhs`'
+  short-description: Checks if `lhs` is less than `rhs`.
+LESSEQ:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> <= <rhs>`.
+  examples:
+  - input:
+    - 5
+    - 2
+  - input:
+    - 5
+    - 5
+  - input:
+    - A
+    - B
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number
+  output: '**Bool:** True if `lhs` <= `rhs`'
+  short-description: Checks if `lhs` is less or equal than `rhs`.
 LISTATTRIBUTES:
   category: Object
   description: ''
@@ -540,6 +820,31 @@ LTRIM:
     type: String
   output: '**String:** `str` without whitespace to the left'
   short-description: Trims all whitespace to the left of the string
+MAP:
+  category: Iterator
+  description: The first parameter has to be an array pointer. For every array child
+    the second parameter is evaluated and returned. To actually use the values of
+    the children, a relative pointer should be used.
+  examples:
+  - document: '[1,true,3,"4"]'
+    input:
+    - ''''''
+    - _NOSTRING_ STRING($'')
+  - document: '[{"num":1},{"num":2},{"num":3},{"num":4}]'
+    input:
+    - ''''''
+    - _NOSTRING_ $'/num'
+  input-parameters:
+  - description: Object or Array to iterate
+    name: iteratable
+    optional: false
+    type: Object/Array
+  - description: Value to map the child into
+    name: map function
+    optional: false
+    type: Any
+  output: '**Array:** An array containing the mapped values'
+  short-description: Maps array children into another value
 MEMCOUNT:
   category: Object
   description: ''
@@ -555,7 +860,7 @@ MEMCOUNT:
     name: obj
     optional: false
     type: Object
-  output: '**Number:** Number of sttributes'
+  output: '**Number:** Number of attributes'
   short-description: Returns the number of members in the object
 MOD:
   category: Mathematical
@@ -578,6 +883,21 @@ MOD:
     type: Number
   output: '**Number:** x % y'
   short-description: Returns the remainder of the division of `x` by `y`
+NOT:
+  category: Boolean Algebra
+  description: This function can also be written as `!<x>`.
+  examples:
+  - input:
+    - true
+  - input:
+    - false
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Bool
+  output: '**Bool:** `!<x>`'
+  short-description: Negates the Boolean value
 NOW:
   category: Metadata
   description: ''
@@ -586,6 +906,27 @@ NOW:
   input-parameters: []
   output: '**Number:** UNIX timestamp in ms'
   short-description: Returns the current UNIX timestamp in milliseconds
+OR:
+  category: Boolean Algebra
+  description: This function can also be written as infix notation `<lhs> || <rhs>`.
+  examples:
+  - input:
+    - true
+    - false
+  - input:
+    - true
+    - true
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: Bool
+  - description: ''
+    name: rhs
+    optional: false
+    type: Bool
+  output: '**Bool:** `<lhs> || <rhs>`'
+  short-description: Combines the two parameters with the Boolean OR operation.
 PI:
   category: Mathematical
   description: ''
@@ -674,7 +1015,7 @@ REGEX:
     optional: false
     type: String
   output: '**Bool:** True if `str` matches `regexp`. false otherwise'
-  short-description: Checks wether `str` matches the regular expression `regexp`
+  short-description: Checks whether `str` matches the regular expression `regexp`
 REGEX_EXTRACT:
   category: String
   description: 'Note: "\\" have to be escaped in JODA strings'
@@ -693,6 +1034,24 @@ REGEX_EXTRACT:
     type: String
   output: '**Array[String]:** A list of all matches'
   short-description: Matches all `regexp` in `str` and returns them.
+REGEX_EXTRACT_FIRST:
+  category: String
+  description: 'Note: "\\" have to be escaped in JODA strings'
+  examples:
+  - input:
+    - 'Number: 345345 Other: 2343'
+    - (\\d+)
+  input-parameters:
+  - description: String to match
+    name: str
+    optional: false
+    type: String
+  - description: Regular expression
+    name: regexp
+    optional: false
+    type: String
+  output: '**String:** The first match, or `null` if none was found'
+  short-description: Matches first `regexp` in `str` and returns it.
 REGEX_REPLACE:
   category: String
   description: 'Note: "\\" have to be escaped in JODA strings'
@@ -765,7 +1124,7 @@ SCONTAINS:
     optional: false
     type: String
   output: '**Bool:** True if `str` contains `substr`'
-  short-description: Checks wether `str` contains `substr`
+  short-description: Checks whether `str` contains `substr`
 SEQNUM:
   category: Misc
   description: 'Note: due to the multi-threaded nature of JODA, the documents will
@@ -830,6 +1189,27 @@ SIZE:
     type: Array
   output: '**Number:** Size of the array'
   short-description: Returns the size of the array
+SPLIT:
+  category: String
+  description: ''
+  examples:
+  - input:
+    - Hello World
+    - ' '
+  - input:
+    - 5>=4>=2
+    - '>='
+  input-parameters:
+  - description: String to split
+    name: str
+    optional: false
+    type: String
+  - description: Delimiter to split by
+    name: delimiter
+    optional: false
+    type: String
+  output: '**Array[String]:** The split strings'
+  short-description: Splits a given string by the supplied delimiter
 SQRT:
   category: Mathematical
   description: ''
@@ -865,7 +1245,7 @@ STARTSWITH:
     optional: false
     type: String
   output: '**Bool:** True if `str` starts with `substr`'
-  short-description: Checks wether `str` starts with `substr`
+  short-description: Checks whether `str` starts with `substr`
 STRING:
   category: Cast
   description: 'If `jsonify` is false, only atomic values will be stringified.
@@ -1013,6 +1393,30 @@ TRUNC:
     type: Number
   output: '**Number:** trunc(x)'
   short-description: Truncates the floating point number
+TRUTHY:
+  category: Type
+  description: Truthy is defined as not falsy, where the falsy definition of [MDN](https://developer.mozilla.org/en-US/docs/Glossary/Falsy)
+    has been used. Equivalent to `!FALSY(<x>)`.
+  examples:
+  - input:
+    - false
+  - input:
+    - 0
+  - input:
+    - 1
+  - input:
+    - ''
+  - input:
+    - A
+  - input:
+    - null
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
+  output: '**Bool:** true, if value is truthy, false else'
+  short-description: Checks whether the given value is truthy.
 TYPE:
   category: Type
   description: "The type may be any of the following: \n- OBJECT\n- ARRAY\n- NUMBER\n\
@@ -1031,9 +1435,34 @@ TYPE:
       null'
     input:
     - ''''''
-  input-parameters: []
+  input-parameters:
+  - description: ''
+    name: x
+    optional: false
+    type: Any
   output: '**String:** The string name of the type'
   short-description: Returns the type of the given attribute
+UNEQUAL:
+  category: Comparison
+  description: This function can also be written as infix notation `<lhs> != <rhs>`.
+  examples:
+  - input:
+    - true
+    - true
+  - input:
+    - 5
+    - 2
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: String/Number/Bool/Object/Array
+  - description: ''
+    name: rhs
+    optional: false
+    type: String/Number/Bool/Object/Array
+  output: '**Bool:** True if the parameters doe not have the same values'
+  short-description: Checks if the given parameters do not have the same values.
 UPPER:
   category: String
   description: ''
@@ -1047,3 +1476,25 @@ UPPER:
     type: String
   output: '**String:** UTF-8 upper-case representation of string'
   short-description: Converts the given string to upper case
+XOR:
+  category: Boolean Algebra
+  description: ''
+  examples:
+  - input:
+    - true
+    - false
+  - input:
+    - true
+    - true
+  input-parameters:
+  - description: ''
+    name: lhs
+    optional: false
+    type: Bool
+  - description: ''
+    name: rhs
+    optional: false
+    type: Bool
+  output: '**Bool:** True if and only if one of the parameters is true.'
+  short-description: Combines the two parameters with the Boolean exclusive or (XOR)
+    operation.

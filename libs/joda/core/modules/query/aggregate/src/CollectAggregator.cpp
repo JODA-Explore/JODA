@@ -2,11 +2,10 @@
 // Created by Nico on 18/03/2019.
 //
 
-#include <joda/query/aggregation/CollectAggregator.h>
-#include <joda/query/aggregation/IAggregator.h>
-
 #include "joda/query/aggregation/CollectAggregator.h"
 
+#include <joda/query/aggregation/CollectAggregator.h>
+#include <joda/query/aggregation/IAggregator.h>
 #include <rapidjson/prettywriter.h>
 #include <rapidjson/stringbuffer.h>
 
@@ -27,8 +26,12 @@ void joda::query::CollectAggregator::merge(IAggregator* other) {
 }
 
 RJValue joda::query::CollectAggregator::terminate(
-    RJMemoryPoolAlloc& /*alloc*/) {
-  return std::move(*list);
+    RJMemoryPoolAlloc& term_alloc) {
+  if (list != nullptr) {
+    RJValue copy(*list, term_alloc, true);
+    return copy;
+  }
+  return RJValue(rapidjson::kArrayType);
 }
 
 std::unique_ptr<joda::query::IAggregator>
@@ -38,14 +41,14 @@ joda::query::CollectAggregator::duplicate() const {
 
 void joda::query::CollectAggregator::accumulate(const RapidJsonDocument& json,
                                                 RJMemoryPoolAlloc& /*alloc*/) {
-  const RJValue* val;
   RJValue val_;
-
   if (params[0]->isAtom()) {
     val_ = params[0]->getAtomValue(json, *this->alloc);
   } else {
-    val = params[0]->getValue(json, *this->alloc);
-    val_.CopyFrom(*val, *this->alloc, true);
+    const auto* val = params[0]->getValue(json, *this->alloc);
+    if (val != nullptr) {
+      val_.CopyFrom(*val, *this->alloc, true);
+    }
   }
   list->PushBack(std::move(val_), *this->alloc);
 }

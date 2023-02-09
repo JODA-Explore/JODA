@@ -20,6 +20,10 @@ std::unique_ptr<IOrigin> URLOrigin::clone() const {
   return std::make_unique<URLOrigin>(id, start, end, index);
 }
 
+std::unique_ptr<IDPositionOrigin> URLOrigin::cloneSpecific() const {
+  return std::make_unique<URLOrigin>(id, start, end, index);
+}
+
 URLOrigin::URLOrigin(FILEID url) : IDPositionOrigin(url) {}
 
 std::string URLOrigin::getStreamName() const {

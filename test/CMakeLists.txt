@@ -11,6 +11,8 @@ set_target_properties(gtest_main PROPERTIES FOLDER extern)
 set_target_properties(gmock PROPERTIES FOLDER extern)
 set_target_properties(gmock_main PROPERTIES FOLDER extern)
 
+target_compile_definitions(joda-core-lib PUBLIC JODA_ENABLE_TESTS)
+
 
 file(COPY data DESTINATION ${PROJECT_BINARY_DIR}/test/)
 
@@ -36,17 +38,25 @@ endmacro()
 ###############   Tests   ######################################
 ################################################################
 
-package_add_test(QueryParsing systemtests/QueryParsingTest.cpp ../libs/joda/core/modules/query/predicate/src/visitors/test/StaticEvalVisitorTest.cpp)
+package_add_test(QueryParsing systemtests/QueryParsingTest.cpp)
 package_add_test(FullStack systemtests/FullStack.cpp)
 package_add_test(FullStackNoStore systemtests/FullStack.cpp)
 target_compile_definitions(FullStackNoStore PRIVATE JODA_TEST_NOSTORE_MODE) #Test nostore mode
-package_add_test(ValueTest ../libs/joda/core/modules/query/values/test/IValueTestHelper.h ../libs/joda/core/modules/query/values/test/ValueTest.cpp)
+package_add_test(ValueTest ../libs/joda/core/modules/query/values/test/IValueTestHelper.h ../libs/joda/core/modules/query/values/test/ValueTest.cpp ../libs/joda/core/modules/query/values/test/OptimizeTest.cpp)
 package_add_test(AggregatorTest ../libs/joda/core/modules/query/aggregate/test/AggregatorTest.cpp ../libs/joda/core/modules/query/aggregate/test/AggregatorParsingTest.cpp ../libs/joda/core/modules/query/aggregate/test/NumberAggregatorTest.cpp)
 package_add_test(SimilarityTest ../libs/joda/core/modules/similarity/test/RJPathTest.cpp ../libs/joda/core/modules/similarity/test/RJAttributeTest.cpp ../libs/joda/core/modules/similarity/test/MeasureTest.cpp)
 package_add_test(ViewTest ../libs/joda/core/modules/storage/document/test/ViewTest.cpp ../libs/joda/core/modules/storage/document/test/VirtualObjectTest.cpp)
 package_add_test(DirectoryFileScannerTest ../libs/joda/core/modules/filesystem/test/DirectoryFileScannerTest.cpp)
 package_add_test(ServerTest ../libs/joda/core/modules/network/test/ServerTest.cpp ../libs/joda/core/modules/network/test/API2Test.cpp)
 package_add_test(StorageTest ../libs/joda/core/modules/storage/collection/test/CollectionTest.cpp)
+package_add_test(PipelineTest ../libs/joda/core/modules/queryexecution/test/TaskTest.cpp ../libs/joda/core/modules/queryexecution/test/PipelineTaskSetTest.cpp ../libs/joda/core/modules/queryexecution/test/PlanTest.cpp)
+package_add_test(MemoryManagerTest ../libs/joda/core/modules/indexing/test/MemoryManagerTest.cpp)
+package_add_test(AdaptiveHistogramTest ../libs/joda/core/modules/indexing/test/AdaptiveHistogramTest.cpp)
+package_add_test(NextQueryVisitorTest ../libs/joda/core/modules/indexing/test/NextQueryVisitorTest.cpp)
+package_add_test(SetPredicateVisitorTest ../libs/joda/core/modules/indexing/test/SetPredicateVisitorTest.cpp)
+package_add_test(AdaptiveIndexPredicateVisitorTest ../libs/joda/core/modules/indexing/test/AdaptiveIndexPredicateVisitorTest.cpp)
+#package_add_test(AdaptiveSystemTests systemtests/AdaptiveSystemTests.cpp)
+
 
 ################################################################
 ###############   Coverage   ######################################

@@ -82,7 +82,7 @@ class Benchmark {
   void addValueAt(const std::string &pointer, T &&val) {
     if (!valid) return;
     RJPointer ptr(pointer.c_str());
-    return addValueAt(ptr, val);
+    return addValueAt(ptr, std::forward<T>(val));
   }
 
   /**
@@ -91,12 +91,22 @@ class Benchmark {
    * @param pointer The pointer where the value will be stored
    * @param val The value to be stored
    */
-  template <typename T>
+  template <typename T , 
+              std::enable_if_t<!std::is_same_v<RJDocument,T>, int> = 0>
   void addValueAt(const RJPointer &pointer, T &&val) {
     if (!valid) return;
     std::lock_guard<std::mutex> lock(mut);
     DCHECK(currentLine.IsObject());
     pointer.Set(currentLine, val, benchDoc.GetAllocator());
+  }
+
+  void addValueAt(const RJPointer &pointer, const RJDocument &val) {
+    if (!valid) return;
+    std::lock_guard<std::mutex> lock(mut);
+    DCHECK(currentLine.IsObject());
+    RJValue tmp;
+    tmp.CopyFrom(val, benchDoc.GetAllocator());
+    pointer.Set(currentLine, tmp, benchDoc.GetAllocator());
   }
 
   /**

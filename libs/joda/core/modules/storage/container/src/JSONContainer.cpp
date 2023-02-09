@@ -23,22 +23,22 @@
 JSONContainer::JSONContainer() : JSONContainer(config::JSONContainerSize) {}
 
 JSONContainer::JSONContainer(size_t maxsize) : maxSize(maxsize) {
+  contId = contIdCounter.fetch_add(1);
   if (config::JSONContainerSize != 0) {
     this->maxSize = config::JSONContainerSize;
   } else {
     if (maxSize == 0) {
       this->maxSize = JSON_CONTAINER_DEFAULT_SIZE;
-      LOG(WARNING) << "JSONContainer size not able to autodetect, this should "
-                      "not happen. Fallback size: "
-                   << this->maxSize;
     }
   }
+  LOG(INFO) << "Created JSONContainer " << contId << " with maxSize " << maxSize;
 
   assert(maxSize > 0);
   alloc = std::make_unique<RJMemoryPoolAlloc>(
       maxSize * config::chunk_size);  // Container size * chunk-fraction
 
   cache = std::make_unique<QueryCache>();
+  moduleStorage = std::make_unique<joda::extension::ModuleExecutorStorage>();
 }
 
 bool JSONContainer::hasSpace(size_t size) const {
@@ -63,6 +63,63 @@ void JSONContainer::insertDoc(RapidJsonDocument&& doc, size_t baseIndex) {
 void JSONContainer::insertViewDoc(std::unique_ptr<RJDocument>&& doc,
                                   size_t baseIndex) {
   insertDoc({std::move(doc), std::make_unique<TemporaryOrigin>()}, baseIndex);
+}
+
+void JSONContainer::setDocuments(const DocIndex& docIndex,
+                                 std::vector<RapidJsonDocument*>& loadedDocs,
+                                 bool loadedCheck) {
+  ScopedRef useCont(this);
+
+  if (loadedCheck) {
+    for (size_t i = 0; i < docIndex.size(); ++i) {
+      if (docIndex[i] && loadedDocs[i] == nullptr && docs[i].isValid()) {
+        loadedDocs[i] = &docs[i];
+      }
+    }
+  } else {
+    for (size_t i = 0; i < docIndex.size(); ++i) {
+      if (docIndex[i] && docs[i].isValid()) {
+        loadedDocs[i] = &docs[i];
+      }
+    }
+  }
+  setLastUsed();
+}
+
+void JSONContainer::setDocuments(const std::vector<size_t>& docIndexes,
+                                 std::vector<RapidJsonDocument*>& loadedDocs,
+                                 bool isRange, bool loadedCheck) {
+  ScopedRef useCont(this);
+
+  if (loadedCheck) {
+    if (isRange) {
+      for (int i = 0; i < docIndexes.size(); i += 2) {
+        for (auto k = docIndexes[i]; k <= docIndexes[i + 1]; ++k) {
+          if (loadedDocs[k] != nullptr) continue;
+
+          loadedDocs[k] = &docs[k];
+        }
+      }
+    } else {
+      for (auto const& idx : docIndexes) {
+        if (loadedDocs[idx] != nullptr) continue;
+        loadedDocs[idx] = &docs[idx];
+      }
+    }
+  } else {
+    if (isRange) {
+      for (int i = 0; i < docIndexes.size(); i += 2) {
+        for (auto k = docIndexes[i]; k <= docIndexes[i + 1]; ++k) {
+          loadedDocs[k] = &docs[k];
+        }
+      }
+    } else {
+      for (auto const& idx : docIndexes) {
+        loadedDocs[idx] = &docs[idx];
+      }
+    }
+  }
+  setLastUsed();
 }
 
 unsigned long JSONContainer::size() const { return docs.size(); }
@@ -224,7 +281,8 @@ void JSONContainer::reparse() {
   intervals = FileOrigin::mergeIntervals(std::move(intervals));
   auto fileDocs = FileOrigin::parseIntervals(*alloc, std::move(intervals));
   // Reverse to be able to pop_back
-  DCHECK_EQ(std::count(parsed.begin(), parsed.end(), false), fileDocs.size())
+  DCHECK_EQ(((size_t)std::count(parsed.begin(), parsed.end(), false)),
+            fileDocs.size())
       << "All remaining documents should have been parsed";
   std::reverse(fileDocs.begin(), fileDocs.end());
   for (size_t i = 0; i < docs.size(); ++i) {
@@ -296,7 +354,8 @@ void JSONContainer::reparseSubset(unsigned long start, unsigned long end) {
   intervals = FileOrigin::mergeIntervals(std::move(intervals));
   auto fileDocs = FileOrigin::parseIntervals(*alloc, std::move(intervals));
   // Reverse to be able to pop_back
-  DCHECK_EQ(std::count(parsed.begin(), parsed.end(), false), fileDocs.size())
+  DCHECK_EQ(((size_t)std::count(parsed.begin(), parsed.end(), false)),
+            fileDocs.size())
       << "All remaining documents should have been parsed";
   std::reverse(fileDocs.begin(), fileDocs.end());
   for (size_t i = 0; i < docs.size(); ++i) {
@@ -363,7 +422,6 @@ void JSONContainer::reparseSubset(const DocIndex& index) {
       DCHECK(false) << "This should not happen";
     }
   }
-  
 
   // Merge intervals
   intervals = FileOrigin::mergeIntervals(std::move(intervals));
@@ -391,6 +449,20 @@ void JSONContainer::reparseSubset(const DocIndex& index) {
 
 const std::unique_ptr<QueryCache>& JSONContainer::getCache() const {
   return cache;
+}
+
+const std::unique_ptr<ContainerIndex>& JSONContainer::getAdaptiveIndex() const {
+  return adaptiveIndex;
+}
+
+const void JSONContainer::setAdaptiveIndex(
+    std::unique_ptr<ContainerIndex> index) {
+  adaptiveIndex = std::move(index);
+}
+
+const std::unique_ptr<joda::extension::ModuleExecutorStorage>&
+JSONContainer::getModuleStorage() const {
+  return moduleStorage;
 }
 
 std::vector<std::unique_ptr<RJDocument>> JSONContainer::projectDocuments(
@@ -456,8 +528,7 @@ DocumentCostHandler JSONContainer::createTempViewDocs(
       auto newDoc = std::make_unique<RJDocument>(tmpCont->getAlloc());
       newDoc->SetNull();
       costHandler.checkDocument(*newDoc);
-      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(),
-                         i);
+      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(), i);
     }
   } else {
     bool used = false;
@@ -616,14 +687,16 @@ std::unique_ptr<JSONContainer> JSONContainer::createViewFromContainer(
   ScopedRef useCont(this, false);  // Does not need to parse everything yet
   auto tmpCont = std::make_unique<JSONContainer>();
   tmpCont->baseContainer = this;
-  if (proj.empty() && setProj.empty()) {
+  if ((proj.empty() ||
+       (proj.size() == 1 &&
+        proj.front()->getType() == joda::query::PointerCopyProject::allCopy)) &&
+      setProj.empty()) {
     for (size_t i = 0; i < docs.size(); ++i) {
       if (!ids[i]) {
         continue;
       }
       auto newDoc = std::make_unique<RJDocument>(tmpCont->getAlloc());
-      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(),
-                         i);
+      tmpCont->insertDoc(std::move(newDoc), docs[i].getOrigin()->clone(), i);
     }
   } else {
     ScopedRef useContContent(
@@ -786,6 +859,7 @@ std::vector<std::string> JSONContainer::stringify(unsigned long start,
   }
   ScopedRef useCont(this, false);
   end = std::min(end, docs.size() - 1);
+  ret.reserve(end - start + 1);
   reparseSubset(start, end);
   if (start > end) {
     return ret;
@@ -822,7 +896,9 @@ void JSONContainer::writeFile(const std::string& file, bool append) {
 }
 
 std::unique_ptr<const DocIndex> JSONContainer::getAllIDs() const {
-  return std::make_unique<const DocIndex>(docs.size(), true);
+  auto allIds = std::make_unique<DocIndex>(docs.size());
+  allIds->set();
+  return allIds;
 }
 
 std::vector<std::unique_ptr<RJDocument>> JSONContainer::getRaw(
@@ -986,6 +1062,7 @@ JSONContainer::~JSONContainer() {
   if (isView()) {
     baseContainer->removeSubContainer(this);
   }
+  LOG(INFO) << "Removed JSONContainer " << contId;
 }
 
 void JSONContainer::preparePurge() {
@@ -1004,6 +1081,11 @@ void JSONContainer::materializeAttributesIfRequired(
     return;
   }
   if (atts.empty()) {
+    return;
+  }
+
+  // Empty view (selection only view) => no materialization required
+  if (materializedAttributes.empty()) {
     return;
   }
 
@@ -1127,7 +1209,8 @@ void JSONContainer::removeSubContainer(JSONContainer* cont) {
 }
 
 void JSONContainer::setViews() {
-  if (viewsComputed || !config::enable_views) {
+  //TODO views are always used, even in normal containers. How to fix?
+  if (viewsComputed || !config::enable_views /*|| baseContainer == nullptr*/) {
     return;
   }
   if (viewStruc == nullptr) {
@@ -1137,12 +1220,12 @@ void JSONContainer::setViews() {
     materializedAttributes.clear();
     materializedAttributes.emplace_back("");
     for (auto& doc : docs) {
-      if(!(doc.getJson()->IsObject() || doc.getJson()->IsArray())) {
+      if (!(doc.getJson()->IsObject() || doc.getJson()->IsArray())) {
         continue;
       }
       doc.setView(std::make_unique<ViewLayer>(doc.getJson().get(),
-                                                  &materializedAttributes,
-                                                  nullptr, viewStruc.get()));
+                                              &materializedAttributes, nullptr,
+                                              viewStruc.get()));
       DCHECK(doc.getView() != nullptr);
     }
   } else {
@@ -1151,8 +1234,7 @@ void JSONContainer::setViews() {
       auto& doc = docs[i];
       doc.setView(std::make_unique<ViewLayer>(
           doc.getJson().get(), &materializedAttributes,
-          baseContainer->docs[baseIds[i]].getView().get(),
-          viewStruc.get()));
+          baseContainer->docs[baseIds[i]].getView().get(), viewStruc.get()));
       DCHECK(doc.getView() != nullptr);
     }
   }
@@ -1180,7 +1262,7 @@ bool JSONContainer::useViewBasedOnSample(
     const DocIndex& ids,
     const std::vector<std::unique_ptr<joda::query::IProjector>>& proj,
     const std::vector<std::unique_ptr<joda::query::ISetProjector>>& setProj) {
-  auto count = std::count(ids.begin(), ids.end(), true);
+  auto count = ids.count();
   if (count <= 100) {
     return true;  // too small count, makes no sense
   }
@@ -1204,7 +1286,7 @@ bool JSONContainer::useViewBasedOnSample(
   DocumentCostHandler defaultCost;
   if (proj.empty() && setProj.empty()) {
     forAll(
-        [&defaultCost](const RapidJsonDocument& d) {
+        [&defaultCost](const RapidJsonDocument& d, size_t i) {
           defaultCost.checkDocument(*d.getJson());
         },
         tmpids);
@@ -1230,3 +1312,7 @@ size_t JSONContainer::parsedSize() const {
   }
   { return estimatedSize(); }
 }
+
+unsigned long JSONContainer::getContainerID() const { return contId; }
+
+std::atomic_ulong JSONContainer::contIdCounter{1};

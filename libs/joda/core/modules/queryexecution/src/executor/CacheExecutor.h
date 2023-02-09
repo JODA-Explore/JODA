@@ -5,7 +5,7 @@
 #ifndef JODA_CACHEEXECUTOR_H
 #define JODA_CACHEEXECUTOR_H
 
-#include "IQueryExecutor.h"
+#include <joda/queryexecution/IQueryExecutor.h>
 
 class CacheExecutor : public IQueryExecutor {
  public:

@@ -16,7 +16,9 @@ struct query_control : tao::pegtl::normal<Rule> {
   }
 };
 }  // namespace joda::queryparsing::grammar
-#include "error/LOAD_error.h"
+#include "error/Load_error.h"
+#include "error/Join_error.h"
+#include "error/Function_Error.h"
 #include "grammar/Grammar.h"
 
 namespace joda::queryparsing::grammar {
@@ -32,10 +34,10 @@ template <>
 const std::string query_control<tao::pegtl::sor<
     storeAsFileCommand, tao::pegtl::pad<storeIdent, tao::pegtl::space>>>::
     error_message = "'STORE' command is missing store specifier";
-// Delete
 template <>
-const std::string query_control<deleteIdent>::error_message =
-    "Missing 'DELETE' variable";
+const std::string query_control<inStreamKW>::error_message =
+    "IN STREAM not available without output stream.";
+
 // Unknown Aggregation KW
 template <>
 const std::string query_control<aggKeywords>::error_message =
@@ -66,8 +68,8 @@ const std::string query_control<projectSingleExp>::error_message =
 
 // Choose
 template <>
-const std::string query_control<qexp>::error_message =
-    "Error in 'CHOOSE' expression";
+const std::string query_control<predicate_expression>::error_message =
+    "Error in 'CHOOSE' expression. Does the function return a boolean? If not try using the TRUTHY function.";
 template <>
 const std::string query_control<functionstateaction>::error_message =
     "Atomic value, pointer or function expected.";
@@ -116,14 +118,14 @@ const std::string query_control<tao::pegtl::one<':'>>::error_message =
 // Wrong command/eof
 template <>
 const std::string query_control<queryCommand>::error_message =
-    "Expected STORE/DELETE/CHOOSE/AS/AGG/EOF";
+    "Expected JOIN/CHOOSE/AS/AGG/STORE/EOF";
 
 /*
  * Default
  */
 template <typename T>
 const std::string query_control<T>::error_message =
-    "Parse error matching " + tao::pegtl::internal::demangle<T>();
+    "Parse error matching " + std::string(tao::pegtl::demangle<T>());
 
 }  // namespace joda::queryparsing::grammar
 #endif  // JODA_CONTROL_H

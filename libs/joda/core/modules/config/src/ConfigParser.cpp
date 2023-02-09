@@ -5,24 +5,24 @@
 #include "joda/config/ConfigParser.h"
 #include <glog/logging.h>
 #include <joda/misc/MemoryUtility.h>
-#include <experimental/filesystem>
+#include <filesystem>
 #include <iostream>
 #include <thread>
 #include "joda/config/config.h"
 
-namespace fs = std::experimental::filesystem;
+namespace fs = std::filesystem;
 
 const po::options_description ConfigParser::getCMDOptions() {
   po::options_description options("Commandline");
   options.add_options()("help,h", "Show help")("version,v", "Show version")(
       "dump-config", "Dumps current config")(
       "query,q", po::value<std::vector<std::string>>(),
-      "Query to execute and then quit")(
-      "queryfile,f", po::value<std::string>(),
-      "Query file, containing lineseparated queries to execute and then quit")(
-      "benchmark,b", "Runs the benchmark")("profile",
-                                           "Shows statistics during execution")(
-      "server", "Starts the program in server mode.");
+      "Query to execute and then quit")
+      ("queryfile,f", po::value<std::string>(),
+      "Query file, containing lineseparated queries to execute and then quit")
+      ("profile","Shows statistics during execution")
+      ("module,m", po::value<std::vector<std::string>>(),"External module to load and register during startup.")
+      ("server", "Starts the program in server mode.");
   return options;
 }
 
@@ -30,8 +30,7 @@ const po::options_description ConfigParser::getConfigOptions() {
   po::options_description options("Configuration");
   options.add_options()
       // Directories
-      ("data_dir,d", po::value<std::string>()->default_value("."),
-       "Data dictionary for benchmarks (Default: Current directory)")(
+      (
           "tmpdir", po::value<std::string>(),
           "Directory for temporary files. (Default: OS chooses appropriate)")
       // Storage
@@ -53,9 +52,10 @@ const po::options_description ConfigParser::getConfigOptions() {
           "bind", po::value<std::string>()->default_value("localhost"),
           "Binding for server mode")
       // Misc
-      ("timing,c", "Times the execution")("logtostderr",
-                                          "Logs to terminal instead of file")(
-          "noninteractive", "Disables the interactive CLI")
+      ("timing,c", "Times the execution")
+      ("noninteractive", "Disables the interactive CLI")
+      // Logging
+      ("logtostderr","Logs to terminal instead of file")
 
       ;
 
@@ -82,6 +82,8 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
       // Indices
       ("indices.caching.enable", po::value<bool>()->default_value(true),
        "Enables caching")
+      ("indices.adaptiveIndex.enable", po::value<bool>()->default_value(false), "Enables adaptive Indexing")
+
       // Bloom
       ("indices.bloom.enable", po::value<bool>()->default_value(false),
        "Enables bloom")(
@@ -109,15 +111,6 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
                        po::value<unsigned long long>()->default_value(
                            MemoryUtility::totalRam().getBytes()),
                        "Maximum amount of memory used by the system")
-      // Parsing
-      ("parsing.read.bulk_size", po::value<unsigned int>()->default_value(50),
-       "# of lines to read/send in bulk")(
-          "parsing.read.reader",
-          po::value<std::string>()->default_value("MMAP"),
-          "Reader to choose per default (MMAP/FSTREAM)")(
-          "parsing.parse.bulk_size",
-          po::value<unsigned int>()->default_value(50),
-          "# of lines to parse/send in bulk")
       // Similarity
       //("sim.min_cont_size",po::value<size_t>()->default_value(100),"Minimum
       // container size (smaller will be merged)")
@@ -126,7 +119,7 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
           "sim.measure",
           po::value<config::Sim_Measures>()->default_value(
               config::NO_SIMILARITY),
-          "Similarity measure to use (NO_SIMILARITY, PATH_JACCARD)")
+          "Similarity measure to use (NO_SIMILARITY, PATH_JACCARD, ATTRIBUTE_JACCARD)")
       // ("sim.merge_on_parse",po::value<bool>()->default_value(false), "Enables
       // merging of similar containers") Delta Trees
       ("delta_tree.enable",
@@ -137,6 +130,9 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
           po::value<bool>()->default_value(true)->implicit_value(false),
           "Enable virtual object improvement. Uses more memory, but improves "
           "multiple queries on one delta tree.")
+      // Optimization
+      ("optimization.multiquery", po::value<bool>()->default_value(true),
+       "Enables merging of multiple queries into one pipeline")
       // History
       ("history.file", po::value<std::string>()->default_value(home),
        "Path to history file")("history.size",
@@ -144,6 +140,9 @@ const po::options_description ConfigParser::getHiddenConfigOptions() {
                                "Max size of history. 0 for unlimited")(
           "history.persistent", po::value<bool>()->default_value(persistent),
           "Keep persistent history file?")
+      //Logging
+      ("log.clean",po::value<unsigned int>()->default_value(3),"Removed log files older than X days. 0 = never")   
+      // Functions
       ("dump-functions", "Dumps the names of all implemented functions (IValueProviders)")
           ;
 
@@ -203,9 +202,10 @@ const po::variables_map ConfigParser::parseConfigs(int argc, char** argv) {
 }
 
 void ConfigParser::setConfig(const po::variables_map& vm) {
-  LOG(INFO) << "Setting configs";
   // Indices
   config::queryCache = vm["indices.caching.enable"].as<bool>();
+  config::adaptiveIndex = vm["indices.adaptiveIndex.enable"].as<bool>();
+
 
   // Bloom
   config::bloom_enabled = vm["indices.bloom.enable"].as<bool>();
@@ -213,7 +213,6 @@ void ConfigParser::setConfig(const po::variables_map& vm) {
   config::bloom_prob = vm["indices.bloom.fp_prob"].as<double>();
 
   // Directories
-  config::home = vm["data_dir"].as<std::string>();
   if (vm.count("tmpdir") != 0u) {
     config::tmpdir = vm["tmpdir"].as<std::string>();
   } else {
@@ -255,10 +254,6 @@ void ConfigParser::setConfig(const po::variables_map& vm) {
                                       config::readingThreads));
   }
 
-  // Parsing
-  config::read_bulk_size = vm["parsing.read.bulk_size"].as<unsigned int>();
-  config::read_reader = vm["parsing.read.reader"].as<std::string>();
-  config::parse_bulk_size = vm["parsing.parse.bulk_size"].as<unsigned int>();
 
   // Similarity
   config::sim_measure = vm["sim.measure"].as<config::Sim_Measures>();
@@ -285,6 +280,19 @@ void ConfigParser::setConfig(const po::variables_map& vm) {
   config::enable_views_vo = vm.count("delta_tree.vo_enable") != 0u
                                 ? vm["delta_tree.vo_enable"].as<bool>()
                                 : false;
+
+  // Multi QUery
+  config::enable_multi_query = vm.count("optimization.multiquery") != 0u
+                             ? vm["optimization.multiquery"].as<bool>()
+                             : false;
+  // Logging
+  auto log_clean = vm["log.clean"].as<unsigned int>();
+  if(log_clean == 0){
+    google::DisableLogCleaner();
+  }else{
+    google::EnableLogCleaner(log_clean);
+  }
+  
 }
 
 void ConfigParser::produceHelpMessage() {
@@ -298,6 +306,8 @@ void ConfigParser::produceHelpMessage() {
 void ConfigParser::dumpConfig() {
   // Indices
   std::cout << "indices.caching.enable:" << config::queryCache << std::endl;
+  std::cout << "indices.adaptiveIndex.enable:"<< config::adaptiveIndex <<std::endl;
+
 
   // Bloom
   std::cout << "indices.bloom.enable:" << config::bloom_enabled << std::endl;
@@ -306,7 +316,6 @@ void ConfigParser::dumpConfig() {
   std::cout << "indices.bloom.fp_prob:" << config::bloom_prob << std::endl;
 
   // Directories
-  std::cout << "data_dir:" << config::home << std::endl;
   std::cout << "tmpdir:" << config::tmpdir << std::endl;
 
   // Storage
@@ -328,11 +337,6 @@ void ConfigParser::dumpConfig() {
   std::cout << "maxthreads:" << config::storageRetrievalThreads << std::endl;
   std::cout << "readthreads:" << config::readingThreads << std::endl;
 
-  // Parsing
-  std::cout << "parsing.read.bulk_size:" << config::read_bulk_size << std::endl;
-  std::cout << "parsing.read.reader:" << config::read_reader << std::endl;
-  std::cout << "parsing.parse.bulk_size:" << config::parse_bulk_size
-            << std::endl;
 
   // Similarity
   std::cout << "sim.measure:" << config::sim_measure << std::endl;

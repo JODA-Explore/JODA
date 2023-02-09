@@ -3,7 +3,9 @@
 //
 
 #include "ViewCursor.h"
+
 #include <glog/logging.h>
+
 #include <algorithm>
 
 ViewCursor::ViewCursor(const RJValue* doc, ViewCursor* prev,
@@ -63,12 +65,30 @@ void ViewCursor::followAtt(const std::string& attr) {
     found = true;
   }
 
+  // Follow Object member
   if ((!found) && _stack.back() != nullptr && _stack.back()->IsObject()) {
     DCHECK(_stack.back() != nullptr);
     auto iterator = _stack.back()->FindMember(attr);
     if (iterator != _stack.back()->MemberEnd()) {
       _stack.emplace_back(&iterator->value);
       found = true;
+    }
+  }
+
+  // Follow Array child
+  if ((!found) && _stack.back() != nullptr && _stack.back()->IsArray()) {
+    DCHECK(_stack.back() != nullptr);
+    // Try to parse Index
+    try {
+      auto index = std::stoul(attr);
+      // Array is large enough
+      if (_stack.back()->Size() > index) {
+        const auto& val = _stack.back()->operator[](index);
+        _stack.emplace_back(&val);
+        found = true;
+      }
+    } catch (const std::exception&) {
+      // Not an index
     }
   }
 

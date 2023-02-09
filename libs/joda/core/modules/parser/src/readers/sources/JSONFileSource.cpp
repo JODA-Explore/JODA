@@ -3,35 +3,25 @@
 //
 
 #include "../../../include/joda/parser/JSONFileSource.h"
+
 #include <joda/fs/DirectoryFileScanner.h>
 
 #include <utility>
+
+#include <joda/parser/pipeline/ListFile.h>
 
 joda::docparsing::JSONFileSource::JSONFileSource(const std::string& filePath,
                                                  const double sample)
     : JSONFileSource(filePath, false, sample) {}
 
-void joda::docparsing::JSONFileSource::feedSources(
-    JODA_READER_QUEUE<JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t& queue,
-    JODA_READER_QUEUE<
-        JODA_JSON_FILE_LINESEPERATED_READER_FLAG>::queue_t::ptok_t& ptok) {
-  DCHECK(JODA_JSON_FILE_LINESEPERATED_READER_FLAG == getReaderFlag())
-      << "Wrong flag called, this should be checked beforehand";
-
-  // Send single file to queue
-  SampleFile file{sample, filePath};
-  queue.send(ptok, std::move(file));
-}
-
-void joda::docparsing::JSONFileSource::feedSources(
-    JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t& queue,
-    JODA_READER_QUEUE<JODA_JSON_FILE_BEAUTIFIED_READER_FLAG>::queue_t::ptok_t&
-        ptok) {
-  DCHECK(JODA_JSON_FILE_BEAUTIFIED_READER_FLAG == getReaderFlag())
-      << "Wrong flag called, this should be checked beforehand";
-  // Send single file to queue
-  SampleFile file{sample, filePath};
-  queue.send(ptok, std::move(file));
+joda::docparsing::JSONFileSource::PipelineTaskPtr
+joda::docparsing::JSONFileSource::getTask() const {
+  if(lineSeparated){
+    return std::make_unique<queryexecution::pipeline::tasks::load::LSListFileTask>(
+      filePath, sample);
+  }
+  return std::make_unique<queryexecution::pipeline::tasks::load::ListFileTask>(
+      filePath, sample);
 }
 
 const std::string joda::docparsing::JSONFileSource::toString() {
@@ -55,16 +45,11 @@ const std::string joda::docparsing::JSONFileSource::toQueryString() {
 joda::docparsing::JSONFileSource::JSONFileSource(std::string filePath,
                                                  bool lineSeparated,
                                                  const double sample)
-    : IImportSource(lineSeparated ? JODA_JSON_FILE_LINESEPERATED_READER_FLAG
-                                  : JODA_JSON_FILE_BEAUTIFIED_READER_FLAG,
-                    lineSeparated ? JODA_JSON_TEXT_PARSER_FLAG
-                                  : JODA_JSON_TEXT_STREAM_PARSER_FLAG,
-                    JODA_JSON_CONTAINER_FLAG),
-      filePath(std::move(filePath)),
+    :       filePath(std::move(filePath)),
       sample(sample),
       lineSeparated(lineSeparated) {}
 
 size_t joda::docparsing::JSONFileSource::estimatedSize() {
   joda::filesystem::DirectoryFileScanner dfs;
-  return dfs.getFileSize(filePath)*config::text_binary_mod;
+  return dfs.getFileSize(filePath) * config::text_binary_mod;
 }

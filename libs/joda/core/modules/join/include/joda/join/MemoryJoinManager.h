@@ -32,10 +32,10 @@ class MemoryJoinManager : public JoinManager {
   const std::string &getName() const override;
 
   /**
-   * Fills the given JSONStorage with containers containing the joined documents
-   * @param load the JSONStorage to fill.
+   * Returns a full join container.
+   * Has to be repeated until nullptr is returned.
    */
-  void loadJoin(std::shared_ptr<JSONStorage> &load);
+  std::shared_ptr<JSONContainer> loadOneJoinCont();
 
  protected:
   std::mutex mut;
@@ -45,6 +45,7 @@ class MemoryJoinManager : public JoinManager {
   bool trueValCreated = false;
   bool falseValCreated = false;
   JODA_JOINID getJoinVal(const RJValue &val);
+  size_t joinSize = 0;
 
   std::unordered_map<JODA_JOINID, std::unique_ptr<MemoryJoinDoc>> docs;
 };

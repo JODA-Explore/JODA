@@ -18,6 +18,8 @@ enum Source_Value {
   FILE_SOURCE,
   DIRECTORY_SOURCE,
   URL_SOURCE,
+  STREAM_SOURCE,
+  CUSTOM_SOURCE
 };
 
 struct loadState {
@@ -36,6 +38,12 @@ struct loadState {
         std::move(groupvalprov)));
   }
 
+  // inline loadState() {}
+  // template <typename Input>
+  // inline void success(const Input &in) {};
+  // template <typename Input>
+  // inline void failure(const Input &in) {};
+
   inline bool putValProv(std::unique_ptr<joda::query::IValueProvider> &&val) {
     assert(val != nullptr && "Should not pass nullptr");
     if (val == nullptr) return false;
@@ -51,6 +59,7 @@ struct loadState {
   std::string loadFile;
   std::unique_ptr<joda::query::IValueProvider> groupvalprov;
   Source_Value source = NO_SOURCE;
+  std::string custom_name;
   double sampleNum = 1;
   bool lineSeperated = JODA_DEFAULT_LINE_SEPERATED;
   std::vector<std::unique_ptr<docparsing::IImportSource>> sources;

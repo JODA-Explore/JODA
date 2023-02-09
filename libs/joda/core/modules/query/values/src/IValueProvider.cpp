@@ -2,6 +2,7 @@
 // Created by Nico Schäfer on 12/11/17.
 //
 #include "../include/joda/query/values/IValueProvider.h"
+
 #include <glog/logging.h>
 #include <joda/query/values/AtomProvider.h>
 #include <joda/query/values/NullProvider.h>
@@ -59,14 +60,33 @@ void joda::query::IValueProvider::replaceConstSubexpressions(
   }
 }
 
+std::unique_ptr<joda::query::IValueProvider>
+joda::query::IValueProvider::optimize() {
+  for (auto& param : params) {
+    // Get optimized version of param
+    auto new_param = param->optimize();
+    if (new_param != nullptr) {
+      param = std::move(new_param);
+    }
+  }
+  return nullptr;
+}
+
 bool joda::query::IValueProvider::constBoolCheck(
     std::unique_ptr<IValueProvider>& val) {
+  bool unused = false;
+  return constBoolCheck(val, unused);
+}
+
+bool joda::query::IValueProvider::constBoolCheck(
+    std::unique_ptr<IValueProvider>& val, bool& result) {
   if (val->isBool() && val->isConst() &&
       !((val->toString() == JODA_TRUE_STRING) ||
         (val->toString() == JODA_FALSE_STRING))) {
     RJMemoryPoolAlloc alloc;
     auto bVal = val->getAtomValue(RapidJsonDocument(), alloc);
     if (bVal.IsBool()) {
+      result = bVal.GetBool();
       LOG(INFO) << "\"" + val->toString() << "\" evaluates to "
                 << (bVal.GetBool() ? JODA_TRUE_STRING : JODA_FALSE_STRING)
                 << " and was replaced";
@@ -118,7 +138,7 @@ void joda::query::IValueProvider::checkParamSize(unsigned int expected) {
 void joda::query::IValueProvider::checkMinParamSize(unsigned int expected) {
   if (params.size() < expected) {
     throw WrongParameterCountException(params.size(), expected, getName(),
-                                        true);
+                                       true);
   }
 }
 
@@ -130,12 +150,41 @@ void joda::query::IValueProvider::checkParamType(unsigned int i,
   }
 }
 
-
-  void joda::query::IValueProvider::checkOptionalParamType(unsigned int i, IValueType expected) {
-    if(params.size() < i+1) {
-      return;
-    }
-    if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {
-      throw WrongParameterTypeException(i, expected, getName());
+void joda::query::IValueProvider::checkParamType(
+    unsigned int i, const std::vector<IValueType>& expectedTypes) {
+  DCHECK_GE(params.size(), i) << "Checked for not existing parameter";
+  bool isExpected = false;
+  for (auto&& expected : expectedTypes) {
+    if (params[i]->getReturnType() == expected || params[i]->isAny()) {
+      isExpected = true;
+      break;
     }
   }
+  if (!isExpected) {
+    throw WrongParameterTypeException(i, expectedTypes, getName());
+  }
+}
+
+void joda::query::IValueProvider::checkOptionalParamType(unsigned int i,
+                                                         IValueType expected) {
+  if (params.size() < i + 1) {
+    return;
+  }
+  if (!(params[i]->isAny() || params[i]->getReturnType() == expected)) {
+    throw WrongParameterTypeException(i, expected, getName());
+  }
+}
+
+bool joda::query::IValueProvider::getNonTruthyBool(
+    const RapidJsonDocument& json, RJMemoryPoolAlloc& alloc) const {
+  if (isAtom()) {
+    auto val = getAtomValue(json, alloc);
+    if (!val.IsBool()) return false;
+    return val.GetBool();
+  } else {
+    auto* val = getValue(json, alloc);
+    if (val == nullptr) return false;
+    if (!val->IsBool()) return false;
+    return val->GetBool();
+  }
+}

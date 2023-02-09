@@ -22,6 +22,7 @@ class URLOrigin : public IDPositionOrigin {
 
   std::string toString() const override;
   std::unique_ptr<IOrigin> clone() const override;
+  virtual std::unique_ptr<IDPositionOrigin> cloneSpecific() const override;
   std::string getStreamName() const override;
 
  protected:

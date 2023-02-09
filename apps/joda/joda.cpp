@@ -1,7 +1,7 @@
 
 
 #include <glog/logging.h>
-#include <joda/cli/CLI.h>
+#include <joda/cli/BasicCLI.h>
 #include <joda/concurrency/ThreadManager.h>
 #include <joda/config/ConfigParser.h>
 #include <joda/config/config.h>
@@ -10,6 +10,11 @@
 #include <joda/storage/collection/StorageCollection.h>
 #include <joda/version.h>
 #include <joda/queryparsing/QueryParser.h>
+#include <joda/extension/ModuleRegister.h>
+
+#ifdef JODA_ENABLE_PYTHON
+#include <Python.h>
+#endif
 
 #include <fstream>
 #include <iostream>
@@ -28,12 +33,13 @@ int main(int argc, char* argv[]) {
    */
 
   // Fix order of initialization (and thereby deconstruction)
-  volatile auto& dr = joda::filesystem::DirectoryRegister::getInstance();
-  volatile auto& sc = StorageCollection::getInstance();
+  [[maybe_unused]] volatile auto& dr = joda::filesystem::DirectoryRegister::getInstance();
+  [[maybe_unused]] volatile auto& sc = StorageCollection::getInstance();
 
   google::InitGoogleLogging(argv[0]);
   // Log segfault & co
   google::InstallFailureSignalHandler();
+
 
   boost::program_options::variables_map options;
   try {
@@ -82,6 +88,19 @@ int main(int argc, char* argv[]) {
     return 0;
   }
 
+  // Load modules
+  if(options.count("module")){
+    auto modules = options["module"].as<std::vector<std::string>>();
+    for (const auto& m : modules){
+      LOG(INFO) << "Loading module " << m;
+      try{
+        joda::extension::ModuleRegister::getInstance().registerModule(m);
+      } catch (const std::exception& e){
+        LOG(ERROR) << "Error while loading module " << m << ": " << e.what();
+      }
+    }
+  }
+
   std::vector<std::string> onceQueries;
 
   if (options.count("queryfile")) {
@@ -122,13 +141,15 @@ int main(int argc, char* argv[]) {
             << JODA_API_VERSION_STRING << ")";
   LOG(INFO) << "Build revision " << JODA_GIT_REVISION << " (" << JODA_BUILD_TIME
             << ")" << std::endl;
+
+
   /*
    * Main Loop
    */
 
   if (!server) {  // Local Execution Mode
-    joda::cli::CLI cli;
-    cli.start(onceQueries);
+    joda::cli::BasicCLI cli(onceQueries);
+    cli.start();
   } else {  // Server mode
     try {
       joda::network::JodaServer serv;
@@ -149,6 +170,7 @@ int main(int argc, char* argv[]) {
       LOG(ERROR) << "Exception while starting server: " << e.what();
     }
   }
+  sc.getInstance().clear();
 
   return 0;
 }

@@ -3,37 +3,57 @@
 //
 
 #include "../include/joda/query/Query.h"
-#include <joda/query/predicate/AttributeVisitor.h>
-#include <joda/query/project/PointerCopyProject.h>
 
-#include "../predicate/include/joda/query/predicate/CopyPredicateVisitor.h"
-#include "../predicate/include/joda/query/predicate/ToStringVisitor.h"
-#include "../predicate/include/joda/query/predicate/ValToPredicate.h"
+#include <joda/query/project/PointerCopyProject.h>
+#include <joda/query/values/AtomProvider.h>
 
 bool joda::query::Query::check(const RapidJsonDocument& json) const {
-  return pred->check(json);
+  RJMemoryPoolAlloc alloc;
+  if (!pred->isAtom()) {
+    auto ret = pred->getValue(json, alloc);
+    if (ret == nullptr) {
+      return false;
+    }
+    if (!ret->IsBool()) {
+      return false;
+    }
+    return ret->GetBool();
+  } else {
+    auto ret = pred->getAtomValue(json, alloc);
+    if (!ret.IsBool()) {
+      return false;
+    }
+    return ret.GetBool();
+  }
+  return false;
 }
 
-void joda::query::Query::setPredicate(std::unique_ptr<Predicate>&& predicate) {
+void joda::query::Query::setChoose(
+    std::unique_ptr<IValueProvider>&& predicate) {
+  DCHECK(predicate->isBool() || predicate->isAny()) << "Choose predicate must be a boolean";
   pred = std::move(predicate);
 }
 
-std::unique_ptr<joda::query::Predicate> joda::query::Query::getPredicate()
+std::unique_ptr<joda::query::IValueProvider> joda::query::Query::getChoose()
     const {
-  CopyPredicateVisitor copy;
-  pred->accept(copy);
-  return copy.getPredicate();
+  return pred->duplicate();
 }
 
 void joda::query::Query::addAggregator(std::unique_ptr<IAggregator>&& agg) {
   aggregators.push_back(std::move(agg));
 }
 
-bool joda::query::Query::hasAggregators() { return !aggregators.empty(); }
+bool joda::query::Query::hasAggregators() const { return !aggregators.empty(); }
 
-joda::query::Query::Query() {
-  setPredicate(std::make_unique<ValToPredicate>(true));
+void joda::query::Query::setAggWindowSize(uint64_t size) {
+  aggWindowSize = size;
 }
+
+uint64_t joda::query::Query::getAggWindowSize() const { return aggWindowSize; }
+
+bool joda::query::Query::hasAggWindow() const { return aggWindowSize != 0; }
+
+joda::query::Query::Query() { setChoose(std::make_unique<BoolProvider>(true)); }
 
 const std::vector<std::unique_ptr<joda::query::IAggregator>>&
 joda::query::Query::getAggregators() const {
@@ -55,18 +75,19 @@ void joda::query::Query::setLoad(const std::string& load) {
   joda::query::Query::load = load;
 }
 
-const std::string& joda::query::Query::getDelete() const { return del; }
-
-void joda::query::Query::setDelete(const std::string& del) {
-  joda::query::Query::del = del;
-}
-
 bool joda::query::Query::isDefault() const {
   // No special query happens
-  bool val;
-  return chooseIsConst(val) && val && aggregators.empty() &&
-         projectors.empty() && setProjectors.empty() &&
+  return !hasChoose() && !hasAggregators() && !hasAS() && !hasJOIN() &&
          exportDestination == nullptr;
+}
+
+bool joda::query::Query::hasChoose() const {
+  bool val;
+  return !(chooseIsConst(val) && val);
+}
+
+bool joda::query::Query::hasAS() const {
+  return !projectors.empty() || !setProjectors.empty();
 }
 
 const std::vector<std::unique_ptr<joda::query::ISetProjector>>&
@@ -79,14 +100,12 @@ void joda::query::Query::addProjection(std::unique_ptr<ISetProjector>&& expr) {
 }
 
 bool joda::query::Query::chooseIsConst(bool& val) const {
-  auto* predVal = dynamic_cast<ValToPredicate*>(pred.get());
-  if (predVal != nullptr) {
-    auto pvTrue = predVal->isConstTrue();
-    auto pvFalse = predVal->isConstFalse();
-    val = pvTrue;
-    return pvTrue || pvFalse;
+  if(!pred->isConst()) {
+    return false;
   }
-  return false;
+  RapidJsonDocument doc;
+  val = check(doc);
+  return true;
 }
 
 std::string joda::query::Query::toString() const {
@@ -104,9 +123,19 @@ std::string joda::query::Query::toString() const {
   // CHOOSE
   bool choose;
   if (!(chooseIsConst(choose) && choose)) {
-    ToStringVisitor chooseString;
-    pred->accept(chooseString);
-    ret += " CHOOSE " + chooseString.popString();
+    ret += " CHOOSE " + pred->toString();
+  }
+
+  if (hasJOIN()) {
+    ret += " JOIN ";
+    if (subQuery != nullptr) {
+      ret += "(";
+      ret += subQuery->toString();
+      ret += ")";
+    } else {
+      ret += joinPartner;
+    }
+    ret += " " + joinExecutor->toString();
   }
 
   // AS (Flat)
@@ -135,10 +164,6 @@ std::string joda::query::Query::toString() const {
     ret += " " + exportDestination->toQueryString();
   }
 
-  // Delete
-  if (!del.empty()) {
-    ret += " DELETE " + del;
-  }
   return ret;
 }
 
@@ -172,8 +197,8 @@ void joda::query::Query::addImportSource(
   importSources.push_back(std::move(source));
 }
 
-std::unique_ptr<IExportDestination>&
-joda::query::Query::getExportDestination() {
+const std::unique_ptr<IExportDestination>&
+joda::query::Query::getExportDestination() const {
   return exportDestination;
 }
 
@@ -184,9 +209,7 @@ void joda::query::Query::setExportDestination(
 
 std::vector<std::string> joda::query::Query::getAllUsedAttributes() const {
   // Get Choose attributes
-  AttributeVisitor attVisitor;
-  pred->accept(attVisitor);
-  std::vector<std::string> ret = attVisitor.getAttributes();
+  std::vector<std::string> ret = pred->getAttributes();
   // Get AS Attributes
   for (const auto& item : projectors) {
     auto tmp = item->getMaterializeAttributes();
@@ -207,9 +230,7 @@ std::vector<std::string> joda::query::Query::getAllUsedAttributes() const {
 }
 
 std::vector<std::string> joda::query::Query::getChooseAttributes() const {
-  AttributeVisitor attVisitor;
-  pred->accept(attVisitor);
-  std::vector<std::string> ret = attVisitor.getAttributes();
+  std::vector<std::string> ret = pred->getAttributes();
   std::sort(ret.begin(), ret.end());
   ret.erase(std::unique(ret.begin(), ret.end()), ret.end());
   return ret;
@@ -248,4 +269,31 @@ bool joda::query::Query::canCreateView() const {
                PointerCopyProject::allCopy)                 // Delta Tree
           || (projectors.empty() && setProjectors.empty())  // Star expression
          );
+}
+
+bool joda::query::Query::hasJOIN() const { return joinExecutor != nullptr; }
+
+std::shared_ptr<joda::join::ContainerJoinExecutor>
+joda::query::Query::getJoinExecutor() const {
+  return joinExecutor;
+}
+
+void joda::query::Query::setJoinExecutor(
+    std::shared_ptr<joda::join::ContainerJoinExecutor> joinExecutor) {
+  joda::query::Query::joinExecutor = std::move(joinExecutor);
+}
+
+std::string joda::query::Query::getJoinPartner() const { return joinPartner; }
+
+void joda::query::Query::setJoinPartner(const std::string& joinPartner) {
+  joda::query::Query::joinPartner = joinPartner;
+}
+
+void joda::query::Query::setSubQuery(
+    std::shared_ptr<joda::query::Query> subquery) {
+  joda::query::Query::subQuery = std::move(subquery);
+}
+
+std::shared_ptr<joda::query::Query> joda::query::Query::getSubQuery() const {
+  return subQuery;
 }

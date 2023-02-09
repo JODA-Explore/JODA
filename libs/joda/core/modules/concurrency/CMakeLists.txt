@@ -6,6 +6,7 @@ set(joda-core-concurrency-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/blockingconcurrentqueue.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/concurrentqueue.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/readerwriterqueue.h
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/MPMCQueue.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/IOThreadPool.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/IThreadUser.h
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/concurrency/ThreadManager.h

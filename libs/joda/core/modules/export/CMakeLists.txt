@@ -10,6 +10,10 @@ set(joda-core-export-SOURCES
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/JoinExport.h
         ${CMAKE_CURRENT_LIST_DIR}/src/DirectoryExport.cpp
         ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/DirectoryExport.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/StreamExport.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/StreamExport.h
+        ${CMAKE_CURRENT_LIST_DIR}/src/JSONStringifier.cpp
+        ${CMAKE_CURRENT_LIST_DIR}/include/joda/export/JSONStringifier.h
         )
 
 set(JODA-CORE-SOURCE-FILES ${JODA-CORE-SOURCE-FILES} ${joda-core-export-SOURCES} PARENT_SCOPE )
@@ -19,7 +23,7 @@ target_include_directories(joda-core-export-lib
         INTERFACE ./include/
         )
 
-target_link_libraries(joda-core-export-lib INTERFACE joda-core-concurrency-lib)
+target_link_libraries(joda-core-export-lib INTERFACE joda-core-concurrency-lib joda-core-pipelineatomics-lib)
 
 #########################################################
 #

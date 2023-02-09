@@ -16,6 +16,6 @@ services:
     container_name: joda-web
     restart: always
     ports:
-      - "8080:8080"
+      - "5633:8080"
     image: nicotin/joda-web:latest
     command: "http://joda:5632"

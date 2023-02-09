@@ -17,6 +17,7 @@
 #include <joda/query/values/ListAttributesProvider.h>
 #include <joda/query/values/NullProvider.h>
 #include <joda/query/values/RegexExtractProvider.h>
+#include <joda/query/values/RegexExtractFirstProvider.h>
 #include <joda/query/values/RegexProvider.h>
 #include <joda/query/values/RegexReplaceProvider.h>
 #include <joda/query/values/SeqNumberProvider.h>
@@ -25,6 +26,11 @@
 #include <joda/query/values/UnaryNumberProvider.h>
 #include <joda/query/values/UnaryStringProvider.h>
 #include <joda/query/values/CastProvider.h>
+#include <joda/query/values/BinaryBoolProvider.h>
+#include <joda/query/values/EqualityProvider.h>
+#include <joda/query/values/ComparisonProvider.h>
+#include <joda/query/values/NotProvider.h>
+#include <joda/query/values/IteratorProvider.h>
 #include <rapidjson/writer.h>
 #include "IValueTestHelper.h"
 #include "rapidjson/stringbuffer.h"
@@ -69,7 +75,7 @@ class DummyArray : public IValueProvider {
     return std::unique_ptr<IValueProvider>();
   }
 
-  std::string getName() const override { return "DummyObject"; }
+  std::string getName() const override { return "DummyArray"; }
 
   bool isConst() const override { return true; }
 
@@ -145,20 +151,21 @@ class ValueTest : public ::testing::Test {
     return T::_FACTORY(std::move(params));
   }
 
-  template <class T, typename N, typename R>
-  auto testBinaryAtom(N lhs, N rhs, R res) {
+  template <class T, typename N1, typename N2, typename R>
+  auto testBinaryAtom(N1 lhs, N2 rhs, R res) {
     std::stringstream ss;
     ss << "FUNC(" << lhs << "," << rhs << ") = " << res;
     SCOPED_TRACE(ss.str());
     std::vector<std::unique_ptr<IValueProvider>> params;
-    params.emplace_back(std::make_unique<AtomProvider<N>>(lhs));
-    params.emplace_back(std::make_unique<AtomProvider<N>>(rhs));
+    params.emplace_back(std::make_unique<AtomProvider<N1>>(lhs));
+    params.emplace_back(std::make_unique<AtomProvider<N2>>(rhs));
     auto func = T::_FACTORY(std::move(params));
 
     std::unique_ptr<IValueProvider> resObj =
         std::make_unique<AtomProvider<R>>(res);
     EXPECT_TRUE(checkFunction(func, resObj));
   }
+
 
   template <class T, typename N>
   auto testBinaryAtom(N lhs, N rhs) {
@@ -409,6 +416,15 @@ class ValueTest : public ::testing::Test {
         << " ; DuplicatedValue: " << IValueToValueString(dupe);
   }
 
+  template<typename R>
+  ::testing::AssertionResult checkFunctionWithAtomRes(
+      std::unique_ptr<IValueProvider>& ival,
+      R res) {
+    std::unique_ptr<IValueProvider> resObj =
+        std::make_unique<AtomProvider<R>>(res);
+    return checkFunction(ival, resObj);
+  }
+
   ::testing::AssertionResult checkFunction(
       std::unique_ptr<IValueProvider>& ival,
       std::unique_ptr<IValueProvider>& res) {
@@ -532,9 +548,9 @@ TEST_F(ValueTest, DivProvider) {
   // Check Function
 
   {
-    testBinaryAtom<TestType, double, double>(1, 2, 0.5);
-    testBinaryAtom<TestType, int64_t, int64_t>(1, 2, 0);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(1, 2, 0);
+    testBinaryAtom<TestType, double, double, double>(1, 2, 0.5);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(1, 2, 0);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(1, 2, 0);
   }
 
   // 1/0 => NullPtr
@@ -546,8 +562,8 @@ TEST_F(ValueTest, DivProvider) {
 
   //-4/2 => -2
   {
-    testBinaryAtom<TestType, double, double>(-4, 2, -2);
-    testBinaryAtom<TestType, int64_t, int64_t>(-4, 2, -2);
+    testBinaryAtom<TestType, double, double, double>(-4, 2, -2);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(-4, 2, -2);
   }
 }
 
@@ -571,22 +587,22 @@ TEST_F(ValueTest, ProductProvider) {
   // Check Function
   // 2*2 = 4
   {
-    testBinaryAtom<TestType, double, double>(2, 2, 4);
-    testBinaryAtom<TestType, int64_t, int64_t>(2, 2, 4);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(2, 2, 4);
+    testBinaryAtom<TestType, double, double, double>(2, 2, 4);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(2, 2, 4);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(2, 2, 4);
   }
 
   // 1*0 => 0
   {
-    testBinaryAtom<TestType, double, double>(1, 0, 0);
-    testBinaryAtom<TestType, int64_t, int64_t>(1, 0, 0);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(1, 0, 0);
+    testBinaryAtom<TestType, double, double, double>(1, 0, 0);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(1, 0, 0);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(1, 0, 0);
   }
 
   //-4*2 => -8
   {
-    testBinaryAtom<TestType, double, double>(-4, 2, -8);
-    testBinaryAtom<TestType, int64_t, int64_t>(-4, 2, -8);
+    testBinaryAtom<TestType, double, double, double>(-4, 2, -8);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(-4, 2, -8);
   }
 }
 
@@ -610,22 +626,22 @@ TEST_F(ValueTest, SumProvider) {
   // Check Function
   // 3+2 = 5
   {
-    testBinaryAtom<TestType, double, double>(3, 2, 5);
-    testBinaryAtom<TestType, int64_t, int64_t>(3, 2, 5);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(3, 2, 5);
+    testBinaryAtom<TestType, double, double, double>(3, 2, 5);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(3, 2, 5);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(3, 2, 5);
   }
 
   // 1+0 => 1
   {
-    testBinaryAtom<TestType, double, double>(1, 0, 1);
-    testBinaryAtom<TestType, int64_t, int64_t>(1, 0, 1);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(1, 0, 1);
+    testBinaryAtom<TestType, double, double, double>(1, 0, 1);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(1, 0, 1);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(1, 0, 1);
   }
 
   //-4+2 => -2
   {
-    testBinaryAtom<TestType, double, double>(-4, 2, -2);
-    testBinaryAtom<TestType, int64_t, int64_t>(-4, 2, -2);
+    testBinaryAtom<TestType, double, double, double>(-4, 2, -2);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(-4, 2, -2);
   }
 }
 
@@ -649,22 +665,22 @@ TEST_F(ValueTest, SubtractProvider) {
   // Check Function
   // 2-2 = 0
   {
-    testBinaryAtom<TestType, double, double>(2, 2, 0);
-    testBinaryAtom<TestType, int64_t, int64_t>(2, 2, 0);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(2, 2, 0);
+    testBinaryAtom<TestType, double, double, double>(2, 2, 0);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(2, 2, 0);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(2, 2, 0);
   }
 
   // 1-0 => 1
   {
-    testBinaryAtom<TestType, double, double>(1, 0, 1);
-    testBinaryAtom<TestType, int64_t, int64_t>(1, 0, 1);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(1, 0, 1);
+    testBinaryAtom<TestType, double, double, double>(1, 0, 1);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(1, 0, 1);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(1, 0, 1);
   }
 
   //-4-2 => -6
   {
-    testBinaryAtom<TestType, double, double>(-4, 2, -6);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(-4, 2, -6);
+    testBinaryAtom<TestType, double, double, double>(-4, 2, -6);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(-4, 2, -6);
   }
 }
 
@@ -689,27 +705,27 @@ TEST_F(ValueTest, ModuloProvider) {
   // Check Function
   // 2%2 = 0
   {
-    testBinaryAtom<TestType, double, double>(2, 2, 0);
-    testBinaryAtom<TestType, int64_t, int64_t>(2, 2, 0);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(2, 2, 0);
+    testBinaryAtom<TestType, double, double, double>(2, 2, 0);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(2, 2, 0);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(2, 2, 0);
   }
 
   // 3%2 => 1
   {
-    testBinaryAtom<TestType, double, double>(3, 2, 1);
-    testBinaryAtom<TestType, int64_t, int64_t>(3, 2, 1);
-    testBinaryAtom<TestType, u_int64_t, u_int64_t>(3, 2, 1);
+    testBinaryAtom<TestType, double, double, double>(3, 2, 1);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(3, 2, 1);
+    testBinaryAtom<TestType, u_int64_t, u_int64_t, u_int64_t>(3, 2, 1);
   }
 
   //-182%-24 => -14
   {
-    testBinaryAtom<TestType, double, double>(-182, -24, -14);
-    testBinaryAtom<TestType, int64_t, int64_t>(-182, -24, -14);
+    testBinaryAtom<TestType, double, double, double>(-182, -24, -14);
+    testBinaryAtom<TestType, int64_t, int64_t, int64_t>(-182, -24, -14);
   }
 
   // 6.7%2.553 =>1.594
   {
-    testBinaryAtom<TestType, double, double>(6.7, 2.553, std::fmod(6.7, 2.553));
+    testBinaryAtom<TestType, double, double, double>(6.7, 2.553, std::fmod(6.7, 2.553));
   }
 }
 
@@ -1365,6 +1381,57 @@ TEST_F(ValueTest, RegexExtractProvider) {
   }
 }
 
+TEST_F(ValueTest, RegexExtractFirstProvider) {
+  SCOPED_TRACE("RegexExtractFirstProvider");
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p,
+                          IValueTestHelper::getStringVal(
+                              "some string with 'the data i want' inside"),
+                          IValueTestHelper::getStringVal("'(.*?)'"));
+  auto ival = RegexExtractFirstProvider::_FACTORY(std::move(p));
+  checkType(ival, IV_String);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_String, IV_String};
+  testParams<RegexExtractFirstProvider>(t, true, false);
+  {
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("some string without my data inside"),
+        IValueTestHelper::getStringVal("'(.*?'"));
+    EXPECT_THROW(RegexExtractFirstProvider::_FACTORY(std::move(p)),
+                 WrongParameterException);
+  }
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  {
+    SCOPED_TRACE("RegexExtractFirstProvider_Func1");
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"("the data i want")");
+  }
+  {
+    SCOPED_TRACE("RegexExtractFirstProvider_Func2");
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("some string without my data inside"),
+        IValueTestHelper::getStringVal("'(.*?)'"));
+    ival = RegexExtractFirstProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"(null)");
+  }
+  {
+    SCOPED_TRACE("RegexExtractFirstProvider_Func3");
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("'more' '' 'data' to be had "),
+        IValueTestHelper::getStringVal("'(.*?)'"));
+    ival = RegexExtractFirstProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"("more")");
+  }
+}
+
 TEST_F(ValueTest, RegexProvider) {
   SCOPED_TRACE("RegexProvider");
   // Return Type
@@ -1389,7 +1456,6 @@ TEST_F(ValueTest, RegexProvider) {
 
   // Duplicate
   checkDuplicate(ival);
-
   // Check Function
   {
     SCOPED_TRACE("RegexProvider_Func1");
@@ -1542,6 +1608,54 @@ TEST_F(ValueTest, FINDSTRProvider) {
     std::unique_ptr<IValueProvider> res =
         IValueTestHelper::getNumVal(static_cast<int64_t>(std::string::npos));
     EXPECT_TRUE(checkFunction(ival, res));
+  }
+}
+
+TEST_F(ValueTest, SPLITProvider) {
+  SCOPED_TRACE("SPLITProvider");
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p,
+                          IValueTestHelper::getStringVal(
+                              "some string with 'the data i want' inside"),
+                          IValueTestHelper::getStringVal("'the data i want'"));
+  auto ival = SPLITProvider::_FACTORY(std::move(p));
+  checkType(ival, IV_Array);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_String, IV_String};
+  testParams<SPLITProvider>(t);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  {
+    SCOPED_TRACE("SPLITProvider_Func1");
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("some string"),
+        IValueTestHelper::getStringVal(" "));
+    ival = SPLITProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"(["some","string"])");
+  }
+  {
+    SCOPED_TRACE("SPLITProvider_Func2");
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("some string "),
+        IValueTestHelper::getStringVal(" "));
+    ival = SPLITProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"(["some","string",""])");
+  }
+    {
+    SCOPED_TRACE("SPLITProvider_Func3");
+    IValueTestHelper::param(
+        p, IValueTestHelper::getStringVal("1<=2<=3<=4"),
+        IValueTestHelper::getStringVal("<="));
+    ival = SPLITProvider::_FACTORY(std::move(p));
+    auto val = IValueToValueString(ival);
+    EXPECT_STREQ(val.c_str(), R"(["1","2","3","4"])");
   }
 }
 
@@ -1698,11 +1812,11 @@ TEST_F(ValueTest, Atan2Provider) {
   checkDuplicate(ival);
   // Check Function
 
-  testBinaryAtom<TestType, double, double>(
+  testBinaryAtom<TestType, double, double, double>(
       -10, 10, -0.78539816339744830961566084581987572);
-  testBinaryAtom<TestType, int64_t, double>(
+  testBinaryAtom<TestType, int64_t, int64_t, double>(
       -10, 10, -0.78539816339744830961566084581987572);
-  testBinaryAtom<TestType, u_int64_t, double>(13, 53,
+  testBinaryAtom<TestType, u_int64_t, u_int64_t, double>(13, 53,
                                               0.240534247945904616990335055618);
 }
 
@@ -2091,10 +2205,10 @@ TEST_F(ValueTest, ConcatProvider) {
   checkDuplicate(ival);
   // Check Function
 
-  testBinaryAtom<TestType, std::string, std::string>("", "", "");
-  testBinaryAtom<TestType, std::string, std::string>("", "a", "a");
-  testBinaryAtom<TestType, std::string, std::string>("b", "", "b");
-  testBinaryAtom<TestType, std::string, std::string>("a", "b", "ab");
+  testBinaryAtom<TestType, std::string, std::string, std::string>("", "", "");
+  testBinaryAtom<TestType, std::string, std::string, std::string>("", "a", "a");
+  testBinaryAtom<TestType, std::string, std::string, std::string>("b", "", "b");
+  testBinaryAtom<TestType, std::string, std::string, std::string>("a", "b", "ab");
 }
 
 TEST_F(ValueTest, UpperProvider) {
@@ -2262,7 +2376,7 @@ TEST_F(ValueTest, StringCastProvider) {
   Params p = {};
   IValueTestHelper::param(p, IValueTestHelper::getNumVal(2l));
   std::unique_ptr<IValueProvider> ival = TestType::_FACTORY(std::move(p));
-  checkType(ival, IV_Number);
+  checkType(ival, IV_String);
 
 
   // Duplicate
@@ -2279,4 +2393,385 @@ TEST_F(ValueTest, StringCastProvider) {
   testUnaryAtom<TestType, bool, std::string>(false, "false");
 
   testUnaryAtom<TestType, std::string, std::string>("aas","aas");
+}
+
+TEST_F(ValueTest, AndProvider) {
+  SCOPED_TRACE("AndProvider");
+  using TestType = AndProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Bool, IV_Bool};
+  testParams<TestType>(t, false);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, true);
+}
+
+TEST_F(ValueTest, OrProvider) {
+  SCOPED_TRACE("OrProvider");
+  using TestType = OrProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Bool, IV_Bool};
+  testParams<TestType>(t, false);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, true);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, true);
+}
+
+TEST_F(ValueTest, XorProvider) {
+  SCOPED_TRACE("XorProvider");
+  using TestType = XorProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Bool, IV_Bool};
+  testParams<TestType>(t, false);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, true);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, false);
+}
+
+TEST_F(ValueTest, ImplicationProvider) {
+  SCOPED_TRACE("ImplicationProvider");
+  using TestType = ImplicationProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Bool, IV_Bool};
+  testParams<TestType>(t, false);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, true);
+}
+
+TEST_F(ValueTest, EqualProvider) {
+  SCOPED_TRACE("EqualProvider");
+  using TestType = EqualProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Any, IV_Any};
+  testParams<TestType>(t, true);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- Bool
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, false);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, true);
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("  A  ", "A", false);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, false);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, true);
+  testBinaryAtom<TestType, double, double, bool>(1,2, false);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, true);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, false);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, false);
+
+  // -- Mixed Type
+  testBinaryAtom<TestType, double, std::string, bool>(1,"1", false);
+  testBinaryAtom<TestType, u_int64_t, bool, bool>(1,true, false);
+
+  // Objects/Arrays
+  // TODO
+}
+
+TEST_F(ValueTest, UnequalProvider) {
+  SCOPED_TRACE("UnequalProvider");
+  using TestType = UnequalProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true),
+                          IValueTestHelper::getBoolVal(false));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+  // Parameters
+  std::vector<IValueType> t = {IV_Any, IV_Any};
+  testParams<TestType>(t, true);
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- Bool
+  testBinaryAtom<TestType, bool, bool, bool>(false, false, !true);
+  testBinaryAtom<TestType, bool, bool, bool>(true, false, !false);
+  testBinaryAtom<TestType, bool, bool, bool>(false, true, !false);
+  testBinaryAtom<TestType, bool, bool, bool>(true, true, !true);
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", !false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", !true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", !false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("  A  ", "A", !false);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, !true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, !false);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, !false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, !true);
+  testBinaryAtom<TestType, double, double, bool>(1,2, !false);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, !false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, !true);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, !false);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, !false);
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, !false);
+
+  // -- Mixed Type
+  testBinaryAtom<TestType, double, std::string, bool>(1,"1", !false);
+  testBinaryAtom<TestType, u_int64_t, bool, bool>(1,true, !false);
+
+  // Objects/Arrays
+  // TODO
+}
+
+TEST_F(ValueTest, LessProvider) {
+  SCOPED_TRACE("LessProvider");
+  using TestType = LessProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(1ul),
+                          IValueTestHelper::getNumVal(1ul));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", true);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, false);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, false);
+  testBinaryAtom<TestType, double, double, bool>(1,2, true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, false);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, false);
+}
+
+TEST_F(ValueTest, LessEqualProvider) {
+  SCOPED_TRACE("LessEqualProvider");
+  using TestType = LessEqualProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(1ul),
+                          IValueTestHelper::getNumVal(1ul));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", true);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, true);
+  testBinaryAtom<TestType, double, double, bool>(1,2, true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, true);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, false);
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, true);
+}
+
+TEST_F(ValueTest, GreaterEqualProvider) {
+  SCOPED_TRACE("GreaterEqualProvider");
+  using TestType = GreaterEqualProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(1ul),
+                          IValueTestHelper::getNumVal(1ul));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", !true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", !false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", !true);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, !false);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, !true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, !false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, !false);
+  testBinaryAtom<TestType, double, double, bool>(1,2, !true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, !false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, !false);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, !true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, !false);
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, !false);
+}
+
+TEST_F(ValueTest, GreaterProvider) {
+  SCOPED_TRACE("GreaterProvider");
+  using TestType = GreaterProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getNumVal(1ul),
+                          IValueTestHelper::getNumVal(1ul));
+  auto ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+
+
+  // Duplicate
+  checkDuplicate(ival);
+
+  // Check Function
+
+  // -- String
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "B", !true);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "A", !false);
+  testBinaryAtom<TestType, std::string, std::string, bool>("A", "a", !true);
+
+  // -- Int
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,1, !false);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,2, !true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(2,1, true);
+  testBinaryAtom<TestType, int64_t, int64_t, bool>(1,-1, !false);
+
+  // -- Double
+  testBinaryAtom<TestType, double, double, bool>(1,1, !false);
+  testBinaryAtom<TestType, double, double, bool>(1,2, !true);
+  testBinaryAtom<TestType, double, double, bool>(2,1, true);
+  testBinaryAtom<TestType, double, double, bool>(1,-1, !false);
+
+  // -- Mixed Num
+  testBinaryAtom<TestType, double, int64_t, bool>(1,1, !false);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(1,2, !true);
+  testBinaryAtom<TestType, double, int64_t, bool>(1,-1, !false);
+  testBinaryAtom<TestType, u_int64_t, double, bool>(2,1, true);;
+  testBinaryAtom<TestType, u_int64_t, int64_t, bool>(1,1, !false);
+}
+
+
+TEST_F(ValueTest, NotProvider) {
+  SCOPED_TRACE("NotProvider");
+  using TestType = NotProvider;
+  // Return Type
+  Params p = {};
+  IValueTestHelper::param(p, IValueTestHelper::getBoolVal(true));
+  std::unique_ptr<IValueProvider> ival = TestType::_FACTORY(std::move(p));
+  checkType(ival, IV_Bool);
+  // Parameters
+  std::vector<IValueType> t = {IV_Bool};
+  testParams<TestType>(t, true);
+  // Duplicate
+  checkDuplicate(ival);
+  
+  // Check Function
+  testUnaryAtom<TestType, bool, bool>(false, true);
+  testUnaryAtom<TestType, bool, bool>(true, false);
 }

@@ -7,24 +7,16 @@
 
 #include <joda/container/ContainerFlags.h>
 #include <joda/misc/RecurringTimer.h>
+#include <joda/pipelineatomics/PipelineTask.h>
 
 /**
  * This Interface represents a method to export the documents contained in JODA
  */
 class IExportDestination {
+  protected:
+    typedef joda::queryexecution::pipeline::tasks::PipelineTaskPtr PipelineTaskPtr;
  public:
   virtual ~IExportDestination() = default;
-
-  /**
-   * Consumes (and times) a queue of containers.
-   * Normally this queue is filled with the results of a query.
-   * @param queue The queue to consume from
-   */
-  virtual void consume(JsonContainerQueue::queue_t &queue) {
-    timer.start();
-    this->consumeContainer(queue);
-    timer.stop();
-  };
 
   /**
    * Returns a pair consisting of the name of the Export Destination and a time
@@ -48,19 +40,14 @@ class IExportDestination {
    */
   virtual const std::string toQueryString() = 0;
 
+  /**
+   * Returns the exporting task
+   * @return the task to be executed to export the documents
+   */
+  virtual PipelineTaskPtr getTask() const = 0;
+
  protected:
-  virtual void consumeContainer(JsonContainerQueue::queue_t &queue) {
-    std::unique_ptr<JSONContainer> cont;
-    while (!queue.isFinished()) {
-      queue.retrieve(cont);
-      if (cont == nullptr) {
-        LOG(WARNING) << "Received nullptr as container.";
-        continue;
-      }
-      this->exportContainer(std::move(cont));
-    }
-  };
-  virtual void exportContainer(std::unique_ptr<JSONContainer> &&cont) = 0;
+
   virtual const std::string getTimerName() = 0;
   RecurringTimer timer;
 };

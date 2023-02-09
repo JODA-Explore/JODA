@@ -18,18 +18,27 @@ struct loadAction : tao::pegtl::nothing<Rule> {};
  * Keywords
  */
 #ifndef __CLION_IDE__  // Prevent lag from expanding all macros
-struct loadKW : TAOCPP_PEGTL_KEYWORD("LOAD") {};
-struct fromFileKW : TAOCPP_PEGTL_KEYWORD("FROM FILE") {};
-struct fromFilesKW : TAOCPP_PEGTL_KEYWORD("FROM FILES") {};
-struct fromGroupedKW : TAOCPP_PEGTL_KEYWORD("FROM GROUPED") {};
-struct fromURLKW : TAOCPP_PEGTL_KEYWORD("FROM URL") {};
-struct sampleKW : TAOCPP_PEGTL_KEYWORD("SAMPLE") {};
-struct lineSeperatedKW : TAOCPP_PEGTL_KEYWORD("LINESEPARATED") {};
+struct loadKW : TAO_PEGTL_KEYWORD("LOAD") {};
+struct fromFileKW : TAO_PEGTL_KEYWORD("FROM FILE") {};
+struct fromFilesKW : TAO_PEGTL_KEYWORD("FROM FILES") {};
+struct fromGroupedKW : TAO_PEGTL_KEYWORD("FROM GROUPED") {};
+struct fromURLKW : TAO_PEGTL_KEYWORD("FROM URL") {};
+struct sampleKW : TAO_PEGTL_KEYWORD("SAMPLE") {};
+struct lineSeperatedKW : TAO_PEGTL_KEYWORD("LINESEPARATED") {};
+struct fromStreamKW : TAO_PEGTL_KEYWORD("FROM STREAM") {};
 #endif
+
+// TODO Empty/no parameter
+// TODO Error reporting on unknown function
+struct customFromId : tao::pegtl::identifier {};
+struct customFromPartKW : TAO_PEGTL_KEYWORD("FROM") {};
+struct customFrom : tao::pegtl::seq<customFromPartKW,tao::pegtl::pad<customFromId, tao::pegtl::space>> {};
+
+
 }  // namespace joda::queryparsing::grammar
 #include "Literals.h"
 namespace joda::queryparsing::grammar {
-struct loadFileName : tao::pegtl::plus<tao::pegtl::not_one<'"'>> {};
+struct loadFileName : tao::pegtl::star<tao::pegtl::not_one<'"'>> {};
 struct loadIdent : tao::pegtl::identifier {};
 struct sampleNum : tao::pegtl::seq<tao::pegtl::one<'0'>, tao::pegtl::one<'.'>,
                                    tao::pegtl::plus<tao::pegtl::digit>> {};
@@ -40,7 +49,7 @@ struct sampleCommand
                                                     tao::pegtl::space>>,
           tao::pegtl::space> {};
 
-struct loadFilesKWs : tao::pegtl::sor<fromFilesKW, fromFileKW, fromURLKW> {};
+struct loadFilesKWs : tao::pegtl::sor<fromFilesKW, fromFileKW, fromURLKW, customFrom> {};
 
 struct loadFileLiteralStart : tao::pegtl::one<'"'> {};
 struct loadFileLiteralEnd : tao::pegtl::one<'"'> {};
@@ -53,11 +62,13 @@ struct loadFilesCommand
                       tao::pegtl::pad<tao::pegtl::must<loadFilesliteral>,
                                       tao::pegtl::space>> {};
 
+struct loadStreamCommand: tao::pegtl::pad<fromStreamKW, tao::pegtl::space> {};
+
 struct loadFilesLineSeperatedCommand
     : tao::pegtl::pad<lineSeperatedKW, tao::pegtl::space> {};
 
 struct loadAndSampleCommand
-    : tao::pegtl::seq<loadFilesCommand,
+    : tao::pegtl::seq<tao::pegtl::sor<loadStreamCommand,loadFilesCommand>,
                       tao::pegtl::opt<loadFilesLineSeperatedCommand>,
                       tao::pegtl::opt<sampleCommand>> {};
 
@@ -80,8 +91,10 @@ struct loadImportSources
 struct loadCommand
     : tao::pegtl::seq<
           tao::pegtl::pad<tao::pegtl::must<loadKW>, tao::pegtl::space>,
-          tao::pegtl::pad<tao::pegtl::must<loadIdent>, tao::pegtl::space>,
-          tao::pegtl::opt<loadImportSources>> {};
+          tao::pegtl::sor<loadImportSources,
+            tao::pegtl::seq<tao::pegtl::pad<loadIdent, tao::pegtl::space>,tao::pegtl::opt<loadImportSources>>
+           >
+          > {};
 
 }  // namespace joda::queryparsing::grammar
 #endif  // JODA_LOADSTATEMENT_H

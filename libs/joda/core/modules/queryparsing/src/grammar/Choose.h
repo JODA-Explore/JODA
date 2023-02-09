@@ -19,7 +19,7 @@ struct chooseExpAction : tao::pegtl::nothing<Rule> {};
  * Keywords
  */
 #ifndef __CLION_IDE__  // Prevent lag from expanding all macros
-struct chooseKW : TAOCPP_PEGTL_KEYWORD("CHOOSE") {};
+struct chooseKW : TAO_PEGTL_KEYWORD("CHOOSE") {};
 #endif
 
 }  // namespace joda::queryparsing::grammar

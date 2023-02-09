@@ -11,21 +11,23 @@ std::unique_ptr<RJDocument> IDPositionOrigin::reparse(
   return nullptr;
 }
 
-long IDPositionOrigin::getStart() const { return start; }
+size_t IDPositionOrigin::getStart() const { return start; }
 
-void IDPositionOrigin::setStart(long start) { IDPositionOrigin::start = start; }
+void IDPositionOrigin::setStart(size_t start) { IDPositionOrigin::start = start; }
 
-long IDPositionOrigin::getEnd() const { return end; }
+size_t IDPositionOrigin::getEnd() const { return end; }
 
-void IDPositionOrigin::setEnd(long end) { IDPositionOrigin::end = end; }
+void IDPositionOrigin::setEnd(size_t end) { IDPositionOrigin::end = end; }
 
 int IDPositionOrigin::getIndex() const { return index; }
 
 void IDPositionOrigin::setIndex(int index) { IDPositionOrigin::index = index; }
 
+FILEID IDPositionOrigin::getID() const { return id; }
+
 IDPositionOrigin::IDPositionOrigin(FILEID id) : id(id) {}
 
-IDPositionOrigin::IDPositionOrigin(FILEID id, long start, long end, int index)
+IDPositionOrigin::IDPositionOrigin(FILEID id, size_t start, size_t end, int index)
     : id(id), start(start), end(end), index(index) {}
 
 bool IDPositionOrigin::operator<(const IOrigin& x) const {
@@ -38,10 +40,10 @@ bool IDPositionOrigin::operator<(const IOrigin& x) const {
 }
 
 bool IDPositionOrigin::operator<(const IDPositionOrigin& other) const {
-  if (id < other.id) {
-    return true;
+  if(id == other.id) {
+    return start < other.start;
   }
-  return start < other.start;
+  return id < other.id;
 }
 
 bool IDPositionOrigin::operator==(const IDPositionOrigin& other) const {

@@ -197,14 +197,95 @@ struct BoolParameter {
  **/
 template <std::size_t k>
 struct ObjectParameter {
-  typedef ValueAccepter ReturnT;
-
+typedef ValueAccepter ReturnT;
   static void check(
       const std::vector<std::unique_ptr<IValueProvider>> &parameters,
       const std::string &name) {
     if (k >= parameters.size()) throw MissingParameterException(k, name);
     if (!(parameters[k]->isObject() || parameters[k]->isAny()))
       throw WrongParameterTypeException(k, IValueType::IV_Object, name);
+    return;
+  }
+
+  static ReturnT extractValue(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
+    auto &param = parameters[k];
+    return ValueAccepter(param);
+  }
+
+  template <class Handler>
+  static bool accept(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      Handler &handler, const RapidJsonDocument &json,
+      RJMemoryPoolAlloc &alloc) {
+    auto &param = parameters[k];
+    ValueAccepter accepter(param);
+    if (param->isAtom()) {
+      auto v = param->getAtomValue(json, alloc);
+      return v.Accept(handler);
+    }
+    return accepter.Accept(param, json, alloc, handler);
+  }
+};
+
+/**
+ * A parameter of type Array
+ * @tparam k the index of the parameter
+ * @throws WrongParameterException if there is a problem with the parameter
+ **/
+template <std::size_t k>
+struct ArrayParameter {
+typedef ValueAccepter ReturnT;
+  static void check(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      const std::string &name) {
+    if (k >= parameters.size()) throw MissingParameterException(k, name);
+    if (!(parameters[k]->isArray() || parameters[k]->isAny()))
+      throw WrongParameterTypeException(k, IValueType::IV_Array, name);
+    return;
+  }
+
+  static ReturnT extractValue(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      const RapidJsonDocument &json, RJMemoryPoolAlloc &alloc) {
+    auto &param = parameters[k];
+    return ValueAccepter(param);
+  }
+
+  template <class Handler>
+  static bool accept(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      Handler &handler, const RapidJsonDocument &json,
+      RJMemoryPoolAlloc &alloc) {
+    auto &param = parameters[k];
+    ValueAccepter accepter(param);
+    if (param->isAtom()) {
+      auto v = param->getAtomValue(json, alloc);
+      return v.Accept(handler);
+    }
+    return accepter.Accept(param, json, alloc, handler);
+  }
+};
+
+/**
+ * A parameter of type Object or Array
+ * @tparam k the index of the parameter
+ * @throws WrongParameterException if there is a problem with the parameter
+ **/
+template <std::size_t k>
+struct IteratableParameter {
+typedef ValueAccepter ReturnT;
+  static void check(
+      const std::vector<std::unique_ptr<IValueProvider>> &parameters,
+      const std::string &name) {
+    if (k >= parameters.size()) throw MissingParameterException(k, name);
+    if (!(parameters[k]->isObject() || parameters[k]->isArray() ||
+          parameters[k]->isAny())) {
+      std::vector<IValueType> types = {IValueType::IV_Object,
+                                       IValueType::IV_Array};
+      throw WrongParameterTypeException(k, types, name);
+    }
     return;
   }
 

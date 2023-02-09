@@ -7,18 +7,12 @@
 
 #include <utility>
 
-void StorageExport::consumeContainer(JsonContainerQueue::queue_t& queue) {
-  store->insertDocumentsQueue(&queue);
-}
 
 const std::string StorageExport::getTimerName() { return "Store"; }
 
 StorageExport::StorageExport(std::shared_ptr<JSONStorage> store)
     : store(std::move(store)) {}
 
-void StorageExport::exportContainer(std::unique_ptr<JSONContainer>&& cont) {
-  store->insertDocuments(std::move(cont));
-}
 
 unsigned long StorageExport::getTemporaryResultID() const {
   return StorageCollection::getInstance().addTemporaryStorage(store);
@@ -36,4 +30,9 @@ std::string StorageExport::getStorageName() const { return store->getName(); }
 
 const std::shared_ptr<JSONStorage>& StorageExport::getStore() const {
   return store;
+}
+
+ StorageExport::PipelineTaskPtr StorageExport::getTask() const {
+   return nullptr;
+
 }
