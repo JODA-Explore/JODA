@@ -5,7 +5,7 @@ permalink: /functions/isbool
 
 # ISBOOL - Type
 
-Checks wether the attribute is of type Bool
+Checks whether the attribute is of type Bool
 
 ## Input parameters
 

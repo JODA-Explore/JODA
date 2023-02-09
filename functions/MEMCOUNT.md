@@ -15,7 +15,7 @@ Returns the number of members in the object
 
 ## Output
 
-**Number:** Number of sttributes
+**Number:** Number of attributes
 
 ## Usage
 

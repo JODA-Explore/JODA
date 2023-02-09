@@ -5,7 +5,7 @@ permalink: /functions/isarray
 
 # ISARRAY - Type
 
-Checks wether the attribute is of type array
+Checks whether the attribute is of type array
 
 ## Input parameters
 

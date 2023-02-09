@@ -5,7 +5,7 @@ permalink: /functions/scontains
 
 # SCONTAINS - String
 
-Checks wether `str` contains `substr`
+Checks whether `str` contains `substr`
 
 ## Input parameters
 

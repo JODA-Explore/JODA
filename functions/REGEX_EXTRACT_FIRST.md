@@ -1,11 +1,11 @@
 ---
-title: REGEX
-permalink: /functions/regex
+title: REGEX_EXTRACT_FIRST
+permalink: /functions/regex_extract_first
 ---
 
-# REGEX - String
+# REGEX_EXTRACT_FIRST - String
 
-Checks whether `str` matches the regular expression `regexp`
+Matches first `regexp` in `str` and returns it.
 
 ## Details
 
@@ -20,12 +20,12 @@ Note: "\\" have to be escaped in JODA strings
 
 ## Output
 
-**Bool:** True if `str` matches `regexp`. false otherwise
+**String:** The first match, or `null` if none was found
 
 ## Usage
 
 ```joda
-REGEX(<str>, <regexp>)
+REGEX_EXTRACT_FIRST(<str>, <regexp>)
 ```
 
 ## Examples
@@ -36,25 +36,11 @@ REGEX(<str>, <regexp>)
 #### Query
 ```joda
 LOAD tmp
-AS ('': REGEX("dogsitter", "sitter$"))
+AS ('': REGEX_EXTRACT_FIRST("Number: 345345 Other: 2343", "(\\d+)"))
 ```
 #### Result
 ```json
-true
-```
-
-
-### Example 2
-
-
-#### Query
-```joda
-LOAD tmp
-AS ('': REGEX("345345", "\\d+"))
-```
-#### Result
-```json
-true
+"345345"
 ```
 
 

@@ -4,8 +4,7 @@
 <img id="logo" src="assets/img/JODA.svg" alt="JODA" />
 <div class="small-logo-container">
 <div class="small-logo-row">
-<a class="small-logo" href="https://dbis.cs.uni-kl.de/index.php/en/"><img  src="assets/img/dbislogo.svg" alt="DBIS Lab" /></a>
-<a class="small-logo" href="https://www.uni-kl.de/en/"><img  src="assets/img/TUKL_LOGO.svg" alt="TUK" /></a>
+  <a class="small-logo" href="https://dbis.cs.uni-kl.de/index.php/en/"><img  src="assets/img/RPTU-Logo-Organisation-RGB.svg" alt="DBIS Lab" /></a>
 </div>
 </div>
 
@@ -23,6 +22,7 @@ If you are just getting started, check out the following resources:
   <a href="getting-started/" class="button">Getting Started</a>
   <a href="language/" class="button">Language Reference</a>
   <a href="docs/" class="button">Code Documentation</a>
+  <a href="udm/" class="button">User Defined Modules</a>
 </div> 
 
 

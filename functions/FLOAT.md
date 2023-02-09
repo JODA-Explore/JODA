@@ -3,7 +3,7 @@ title: FLOAT
 permalink: /functions/float
 ---
 
-# FLOAT - Mathematical
+# FLOAT - Cast
 
 Casts the given value to floating point
 
