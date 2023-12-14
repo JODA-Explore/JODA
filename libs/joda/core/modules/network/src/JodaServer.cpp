@@ -57,6 +57,8 @@ bool joda::network::JodaServer::start(const std::string& addr, int port) {
   apiv2::API::registerEndpoint(prefix, server);
   server.Get("/favicon.ico", favicon);
 
+  server.set_payload_max_length(1024 * 1024 * 16) // 16 MB max request size
+
   LOG(INFO) << "Starting server on " << addr << ":" << port;
   return server.listen(addr.c_str(), port);
 }
