@@ -67,4 +67,5 @@ target_link_libraries(joda-core-network-lib INTERFACE Boost::boost Boost::system
 # httplib
 #
 #########################################################
+target_compile_definitions(joda-core-network-lib INTERFACE CPPHTTPLIB_FORM_URL_ENCODED_PAYLOAD_MAX_LENGTH=16777216) # 16 MiB max request size
 target_link_libraries(joda-core-network-lib INTERFACE httplib)
